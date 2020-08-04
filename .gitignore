@@ -1,0 +1,11 @@
+/downloads
+/buildDir
+.ansible_fact_cache
+.vagrant
+test*.yml
+python_venv
+sonatype
+onecloud*
+nodejs_venv
+nexus-data
+*.log

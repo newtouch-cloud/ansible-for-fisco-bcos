@@ -1,0 +1,7 @@
+- name: Checking system assets
+  assert:
+    that:
+      - "ansible_distribution == 'Ubuntu'"
+      - "ansible_distribution_version >= '16.04'"
+
+- include_tasks: "{{ fisco_deploy_mode }}.yml"

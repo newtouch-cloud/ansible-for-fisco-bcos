@@ -1,0 +1,50 @@
+- block:
+
+    # Node
+    - name: Building a single-group 4-node consortium chain
+      command: "bash build_chain.sh -l '127.0.0.1:4' -p 30300,20200,8545 -v {{ fisco_version }}"
+      args:
+        chdir: "{{ ansible_user_dir }}/fisco/"
+      changed_when: false
+
+    - name: Starting FISCO BCOS chain
+      command: bash nodes/127.0.0.1/start_all.sh
+      args:
+        chdir: "{{ ansible_user_dir }}/fisco/"
+      changed_when: false
+
+    - name: Wait for started
+      shell: "grep connected {{ ansible_user_dir }}/fisco/nodes/127.0.0.1/node0/log/log*"
+      changed_when: false
+      register: _start_state
+      until: "'count=3' in _start_state.stdout"
+      retries: 99
+
+    # Console
+    - name: Run download_console.sh
+      command: bash download_console.sh -v {{ fisco_version }}
+      args:
+        chdir: "{{ ansible_user_dir }}/fisco/"
+      changed_when: false
+
+    - name: Copy some files
+      copy:
+        remote_src: true
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+      with_items:
+        - src: "{{ ansible_user_dir }}/fisco/console/conf/applicationContext-sample.xml"
+          dest: "{{ ansible_user_dir }}/fisco/console/conf/applicationContext.xml"
+        - src: "{{ ansible_user_dir }}/fisco/nodes/127.0.0.1/sdk/"
+          dest: "{{ ansible_user_dir }}/fisco/console/conf/"
+
+    - name: Starting FISCO BCOS console
+      command: bash start.sh
+      args:
+        chdir: "{{ ansible_user_dir }}/fisco/console"
+      changed_when: false
+
+  rescue:
+
+    - include_tasks: prepare.yml
+    - include_tasks: single.yml

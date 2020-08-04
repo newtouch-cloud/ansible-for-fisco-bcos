@@ -1,0 +1,21 @@
+- name: "Create {{ ansible_user_dir }}/fisco"
+  file:
+    path: "{{ ansible_user_dir }}/fisco"
+    state: directory
+
+- name: Installing tools
+  apt:
+    name:
+      - openssl
+      - curl
+      - default-jdk
+
+- name: Downloading build_chain.sh script
+  get_url:
+    url: "{{ fisco_build_chain_url }}"
+    dest: "{{ ansible_user_dir }}/fisco/"
+
+- name: Downloading download_console.sh
+  get_url:
+    url: "{{ fisco_download_console_url }}"
+    dest: "{{ ansible_user_dir }}/fisco/"
