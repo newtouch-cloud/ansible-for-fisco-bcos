@@ -1,21 +1,42 @@
-- name: "Create {{ ansible_user_dir }}/fisco"
-  file:
-    path: "{{ ansible_user_dir }}/fisco"
-    state: directory
+- block:
+    - name: "Create {{ ansible_user_dir }}/fisco"
+      file:
+        path: "{{ ansible_user_dir }}/fisco"
+        state: directory
 
-- name: Installing tools
-  apt:
-    name:
-      - openssl
-      - curl
-      - default-jdk
+    - name: Installing tools
+      package:
+        name:
+          - openssl
+          - curl
+          - default-jdk
 
-- name: Downloading build_chain.sh script
-  get_url:
-    url: "{{ fisco_build_chain_url }}"
-    dest: "{{ ansible_user_dir }}/fisco/"
+    - name: Downloading build_chain.sh script
+      get_url:
+        url: "{{ fisco_build_chain_url }}"
+        dest: "{{ ansible_user_dir }}/fisco/"
 
-- name: Downloading download_console.sh
-  get_url:
-    url: "{{ fisco_download_console_url }}"
-    dest: "{{ ansible_user_dir }}/fisco/"
+    - name: Downloading download_console.sh
+      get_url:
+        url: "{{ fisco_download_console_url }}"
+        dest: "{{ ansible_user_dir }}/fisco/"
+  when: fisco_deploy_mode == 'single'
+
+
+- block:
+    - name: Install tools
+      package:
+        name:
+          - git
+          - openssl
+          - curl
+          - python3
+
+    - name: Clone/update generator
+      git:
+        repo: https://github.com/FISCO-BCOS/generator.git
+        dest: /tmp/generator
+        depth: 1
+  when: fisco_deploy_mode == 'enterprise'
+  delegate_to: localhost
+  become: false
