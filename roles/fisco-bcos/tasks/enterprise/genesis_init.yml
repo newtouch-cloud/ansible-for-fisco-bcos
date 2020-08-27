@@ -1,0 +1,26 @@
+- block:
+    - name: Create/update group_genesis.ini
+      template:
+        src: group_genesis.ini.j2
+        dest: "{{ inventory_dir }}/agency_{{ agency_name }}/conf/group_genesis.ini"
+        backup: true
+        mode: 0666
+
+    - name: Generating group genesis
+      command: "{{ item }}"
+      with_items:
+        - "./generator --create_group_genesis ./group"
+      args:
+        chdir: "{{ inventory_dir }}/agency_{{ agency_name }}"
+      changed_when: false
+  when: ansible_hostname in groups['group_genesis_creator']
+
+- name: Transfer genesis block to other agency under the same group
+  command: "cp {{ inventory_dir }}/agency_{{ item.0 }}/group/group.1.genesis {{ inventory_dir }}/generator-{{ item.1 }}/meta/"
+  args:
+    warn: false
+  when:
+    - ansible_hostname in groups['group_genesis_follower']
+  with_nested:
+    - "{{ groups['group_genesis_creator'] }}"
+    - "{{ groups['group_genesis_follower'] }}"

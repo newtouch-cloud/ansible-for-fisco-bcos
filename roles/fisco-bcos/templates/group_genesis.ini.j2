@@ -1,0 +1,9 @@
+[group]
+group_id={{ agency_group_id }}
+
+[nodes]
+{% for node in groups['group_' + (agency_group_id | string)] %}
+{% for seq in range(0, agency_nodes.count) %}
+{{ node }}{{ seq }}={{ hostvars[node]['ansible_host'] }}:{{ agency_nodes.p2p_port_start_from + seq }}
+{% endfor %}
+{% endfor %}

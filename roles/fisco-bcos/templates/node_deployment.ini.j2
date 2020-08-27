@@ -1,0 +1,14 @@
+[group]
+group_id={{ agency_group_id }}
+
+; Owned nodes
+{% for item in range(0, agency_nodes.count) %}
+[node{{ item }}]
+p2p_ip={{ ansible_host }}
+rpc_ip={{ ansible_host }}
+channel_ip=0.0.0.0
+p2p_listen_port={{ agency_nodes.p2p_port_start_from + item }}
+channel_listen_port={{ agency_nodes.channel_port_start_from + item }}
+jsonrpc_listen_port={{ agency_nodes.jsonrpc_port_start_from + item }}
+
+{% endfor %}

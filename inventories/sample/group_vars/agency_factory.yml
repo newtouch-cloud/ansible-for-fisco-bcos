@@ -1,0 +1,9 @@
+# 机构名称
+agency_name: factory
+
+# 机构组编号
+agency_group_id: 1
+
+# 加入的目标机构
+agency_join_to:
+  - agency_bank

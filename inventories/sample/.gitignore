@@ -1,0 +1,3 @@
+agency_*
+generator
+!group_vars/**

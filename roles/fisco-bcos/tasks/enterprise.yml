@@ -1,19 +1,12 @@
+- name: Group hosts by group ID
+  group_by:
+    key: "{{ item }}"
+  with_items:
+    - "group_{{ agency_genesis | default(false) | ternary('genesis_creator', 'genesis_follower') }}"
+    - "group_{{ agency_group_id }}"
+  changed_when: false
+
 - block:
-    - name: Install generator
-      command: bash ./scripts/install.sh
-      args:
-        chdir: /tmp/generator
-      changed_when: false
-
-    - name: Pull the latest fisco-bcos binary to the meta
-      comand: ./generator --download_fisco ./meta
-      args:
-        chdir: /tmp/generator
-      changed_when: false
-
-  rescue:
-
-    - include_tasks: prepare.yml
-
+    - include_tasks: enterprise/agency_init.yml
+    - include_tasks: enterprise/genesis_init.yml
   delegate_to: localhost
-  become: false

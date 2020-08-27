@@ -20,7 +20,7 @@ SUPPORTED_OS = {
 }
 
 # Defaults for config options defined in CONFIG
-$num_instances = 1
+$num_instances = 3
 $instance_name_prefix = "node"
 $vm_gui = false
 $vm_memory = 16384

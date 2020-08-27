@@ -1,0 +1,19 @@
+- block:
+    - name: Install generator
+      command: bash ./scripts/install.sh
+      args:
+        chdir: "{{ inventory_dir }}/generator"
+      changed_when: false
+
+    - name: Pull the latest fisco-bcos binary to the meta
+      command: ./generator --download_fisco ./meta --cdn
+      args:
+        chdir: "{{ inventory_dir }}/generator"
+      changed_when: false
+
+  rescue:
+
+    - include_tasks: prepare.yml
+
+  run_once: true
+  delegate_to: localhost
