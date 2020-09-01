@@ -8,7 +8,7 @@
     - name: Generating node files
       shell: "{{ item }}"
       with_items:
-        - "rsync -a --exclude dir_chain_ca --exclude dir_agency_ca --exclude tmp_one_click --exclude 'node_deployment.ini' {{ inventory_dir }}/generator/ {{ inventory_dir }}/agency_{{ agency_name }}/"
+        - "rsync -a --exclude-from '{{ role_path }}/files/rsync-exclude-list.txt' {{ inventory_dir }}/generator/ {{ inventory_dir }}/agency_{{ agency_name }}/"
         - "./generator --generate_chain_certificate ./dir_chain_ca"
         - "./generator --generate_agency_certificate ./dir_agency_ca ./dir_chain_ca agency_{{ agency_name }}"
         - "cp ./dir_agency_ca/agency_{{ agency_name }}/* {{ inventory_dir }}/agency_{{ agency_name }}/meta/"
@@ -19,18 +19,57 @@
 
     - name: Create/update node_deployment.ini
       template:
-        src: node_deployment.ini.j2
-        dest: "{{ inventory_dir }}/agency_{{ agency_name }}/conf/node_deployment.ini"
+        src: "{{ item }}.j2"
+        dest: "{{ inventory_dir }}/agency_{{ agency_name }}/conf/{{ item }}"
         backup: true
         mode: 0666
+      with_items:
+        - node_deployment.ini
+        - group_genesis.ini
 
     - name: Generating agency node info
       command: "{{ item }}"
       with_items:
-        - "./generator --generate_all_certificates ./agency_{{ agency_name }}_node_info"
+        - "./generator --generate_all_certificates {{ inventory_dir }}/agency_{{ agency_name }}/agency_{{ agency_name }}_node_info"
       args:
         chdir: "{{ inventory_dir }}/agency_{{ agency_name }}"
       changed_when: false
+
+    - name: Set agency leader fact
+      set_fact:
+        __agency_leader_ip: >-
+          {{ groups['group_genesis_creator']
+              | map('extract', hostvars)
+              | selectattr('agency_group_id', 'equalto', agency_group_id)
+              | map(attribute='ansible_host')
+              | list
+          }}
+        __agency_leader_name: >-
+          {{ groups['group_genesis_creator']
+              | map('extract', hostvars)
+              | selectattr('agency_group_id', 'equalto', agency_group_id)
+              | map(attribute='ansible_hostname')
+              | list
+              | first
+          }}
+        __agency_leader_count: >-
+          {{ groups['group_genesis_creator']
+              | map('extract', hostvars)
+              | selectattr('agency_group_id', 'equalto', agency_group_id)
+              | map(attribute='agency_nodes')
+              | map(attribute='count')
+              | list
+              | first
+          }}
+      when: inventory_hostname in groups['group_genesis_follower']
+
+    - name: Send peers info to follower
+      template:
+        src: roles/fisco-bcos/templates/peers.txt.j2
+        dest: "{{ inventory_dir }}/agency_{{ agency_name }}/meta/peers_{{ __agency_leader_name }}.txt"
+        mode: 0666
+      delegate_to: localhost
+      when: inventory_hostname in groups['group_genesis_follower']
 
   rescue:
 

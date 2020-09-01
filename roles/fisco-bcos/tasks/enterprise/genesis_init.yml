@@ -13,14 +13,15 @@
       args:
         chdir: "{{ inventory_dir }}/agency_{{ agency_name }}"
       changed_when: false
-  when: ansible_hostname in groups['group_genesis_creator']
+  when: agency_genesis | default(false)
 
-- name: Transfer genesis block to other agency under the same group
-  command: "cp {{ inventory_dir }}/agency_{{ item.0 }}/group/group.1.genesis {{ inventory_dir }}/generator-{{ item.1 }}/meta/"
-  args:
-    warn: false
-  when:
-    - ansible_hostname in groups['group_genesis_follower']
-  with_nested:
-    - "{{ groups['group_genesis_creator'] }}"
-    - "{{ groups['group_genesis_follower'] }}"
+# - name: Transfer genesis block to other agency under the same group
+#   copy:
+#     src: "{{ inventory_dir }}/agency_{{ item.0 }}/group/group.{{ item.0.agency_group_id }}.genesis"
+#     dest: "{{ inventory_dir }}/generator-{{ item.1.agency_name }}/meta/group.{{ item.0.agency_group_id }}.genesis"
+#   args:
+#     warn: false
+#   when: not agency_genesis | default(false)
+#   with_together:
+#     - "{{ groups['group_genesis_creator'] | map('extract', hostvars) | map(attribute='agency_name') | list }}"
+#     - "{{ groups['group_genesis_follower'] }}"
