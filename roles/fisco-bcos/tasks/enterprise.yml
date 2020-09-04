@@ -6,7 +6,53 @@
     - "group_{{ agency_group_id }}"
   changed_when: false
 
+- name: Set local facts
+  set_fact:
+    __dir_chain_ca_st: "{{ lookup('fileglob', '{{ inventory_dir }}/generator/dir_chain_ca/ca.*') }}"
+    __dir_agency_ca_st: "{{ lookup('fileglob', '{{ inventory_dir }}/generator/dir_agency_ca/') }}"
+
+- name: Set agency leader fact
+  set_fact:
+    __agency_leader_name: >-
+      {{ groups['group_genesis_creator']
+          | map('extract', hostvars)
+          | selectattr('agency_group_id', 'equalto', agency_group_id)
+          | map(attribute='agency_name')
+          | list
+          | first
+      }}
+    __agency_leader_info: >-
+      {{ groups['group_genesis_creator']
+          | map('extract', hostvars)
+          | selectattr('agency_group_id', 'equalto', agency_group_id)
+          | map(attribute='agency_nodes')
+          | list
+          | first
+      }}
+  when:
+    - inventory_hostname in groups['group_genesis_follower']
+
+- name: Set agency follower fact
+  set_fact:
+    __agency_follower_name: >-
+      {{ groups['group_genesis_follower']
+          | map('extract', hostvars)
+          | selectattr('agency_group_id', 'equalto', agency_group_id)
+          | map(attribute='agency_name')
+          | list
+      }}
+    __agency_follower_info: >-
+      {{ groups['group_genesis_follower']
+          | map('extract', hostvars)
+          | selectattr('agency_group_id', 'equalto', agency_group_id)
+          | map(attribute='agency_nodes')
+          | list
+      }}
+  when: inventory_hostname in groups['group_genesis_creator']
+
 - block:
     - include_tasks: enterprise/agency_init.yml
     - include_tasks: enterprise/genesis_init.yml
+    - include_tasks: enterprise/agency_install.yml
   delegate_to: localhost
+  become: no

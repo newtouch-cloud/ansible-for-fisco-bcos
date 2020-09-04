@@ -5,6 +5,7 @@
         state: directory
 
     - name: Installing tools
+      become: true
       package:
         name:
           - openssl
@@ -25,6 +26,7 @@
 
 - block:
     - name: Install tools
+      become: true
       package:
         name:
           - git

@@ -3,7 +3,7 @@
       command: bash ./scripts/install.sh
       args:
         chdir: "{{ inventory_dir }}/generator"
-      changed_when: false
+      register: __command_result
 
     - name: Pull the latest fisco-bcos binary to the meta
       command: ./generator --download_fisco ./meta --cdn

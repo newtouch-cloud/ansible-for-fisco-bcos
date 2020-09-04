@@ -2,7 +2,7 @@
 group_id={{ agency_group_id }}
 
 ; Owned nodes
-{% for seq in range(0, agency_nodes.count) %}
+{% for seq in range(0, agency_nodes.instance) %}
 [node{{ seq }}]
 p2p_ip={{ ansible_host }}
 rpc_ip={{ ansible_host }}

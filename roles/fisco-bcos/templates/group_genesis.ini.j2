@@ -2,8 +2,13 @@
 group_id={{ agency_group_id }}
 
 [nodes]
-{% for node in groups['group_' + (agency_group_id | string)] %}
-{% for seq in range(0, agency_nodes.count) %}
-{{ node }}{{ seq }}={{ hostvars[node]['ansible_host'] }}:{{ agency_nodes.p2p_port_start_from + seq }}
+{% for seq in range(0, agency_nodes.instance) %}
+{{ ansible_host }}:{{ agency_nodes.p2p_port_start_from + seq }}
+{% endfor %}
+{% if __agency_follower_info is defined %}
+{% for info in __agency_follower_info %}
+{% for seq in range(0, info.instance) %}
+{{ info.ip }}:{{ info.p2p_port_start_from + seq }}
 {% endfor %}
 {% endfor %}
+{% endif %}
