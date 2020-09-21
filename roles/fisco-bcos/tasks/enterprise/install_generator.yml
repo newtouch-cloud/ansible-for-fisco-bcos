@@ -10,10 +10,3 @@
       args:
         chdir: "{{ inventory_dir }}/generator"
       changed_when: false
-
-  rescue:
-
-    - include_tasks: prepare.yml
-
-  run_once: true
-  delegate_to: localhost

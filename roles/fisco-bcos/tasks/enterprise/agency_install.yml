@@ -5,4 +5,4 @@
   loop: "{{ __agency_follower_name }}"
   when: inventory_hostname in groups['group_genesis_creator']
   register: __command_result
-  failed_when: "'ERROR' in __command_result"
+  failed_when: "'ERROR' in __command_result.stdout"

@@ -3,8 +3,14 @@
       template:
         src: group_genesis.ini.j2
         dest: "{{ inventory_dir }}/agency_{{ agency_name }}/conf/group_genesis.ini"
-        backup: true
         mode: 0666
+      register: __group_genesis_ini_st
+
+    - name: "Remove {{ inventory_dir }}/agency_{{ agency_name }}/group/group.{{ agency_group_id }}.genesis when group_genesis.ini is changed"
+      file:
+        path: "{{ inventory_dir }}/agency_{{ agency_name }}/group/group.{{ agency_group_id }}.genesis"
+        state: absent
+      when: __group_genesis_ini_st is changed
 
     - name: Generating group genesis
       command: "{{ item }}"
@@ -13,8 +19,8 @@
       args:
         chdir: "{{ inventory_dir }}/agency_{{ agency_name }}"
       changed_when: false
-      register: __command_result
-      failed_when: "'ERROR' in __command_result"
+      when: __group_genesis_ini_st is changed
+
   when: inventory_hostname in groups['group_genesis_creator']
 
 - name: Transfer genesis block to other agency under the same group

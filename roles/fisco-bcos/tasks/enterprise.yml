@@ -1,57 +1,24 @@
-- name: Group hosts by group ID
-  group_by:
-    key: "{{ item }}"
-  with_items:
-    - "group_{{ agency_genesis | default(false) | ternary('genesis_creator', 'genesis_follower') }}"
-    - "group_{{ agency_group_id }}"
-  changed_when: false
-
-- name: Set local facts
-  set_fact:
-    __dir_chain_ca_st: "{{ lookup('fileglob', '{{ inventory_dir }}/generator/dir_chain_ca/ca.*') }}"
-    __dir_agency_ca_st: "{{ lookup('fileglob', '{{ inventory_dir }}/generator/dir_agency_ca/') }}"
-
-- name: Set agency leader fact
-  set_fact:
-    __agency_leader_name: >-
-      {{ groups['group_genesis_creator']
-          | map('extract', hostvars)
-          | selectattr('agency_group_id', 'equalto', agency_group_id)
-          | map(attribute='agency_name')
-          | list
-          | first
-      }}
-    __agency_leader_info: >-
-      {{ groups['group_genesis_creator']
-          | map('extract', hostvars)
-          | selectattr('agency_group_id', 'equalto', agency_group_id)
-          | map(attribute='agency_nodes')
-          | list
-          | first
-      }}
-  when:
-    - inventory_hostname in groups['group_genesis_follower']
-
-- name: Set agency follower fact
-  set_fact:
-    __agency_follower_name: >-
-      {{ groups['group_genesis_follower']
-          | map('extract', hostvars)
-          | selectattr('agency_group_id', 'equalto', agency_group_id)
-          | map(attribute='agency_name')
-          | list
-      }}
-    __agency_follower_info: >-
-      {{ groups['group_genesis_follower']
-          | map('extract', hostvars)
-          | selectattr('agency_group_id', 'equalto', agency_group_id)
-          | map(attribute='agency_nodes')
-          | list
-      }}
-  when: inventory_hostname in groups['group_genesis_creator']
+- include_tasks: enterprise/set_fact.yml
 
 - block:
-    - include_tasks: enterprise/agency_init.yml
+    - include_tasks: enterprise/set_stat.yml
+  delegate_to: localhost
+  run_once: true
+
+- block:
+    - include_tasks: prepare.yml
+    - include_tasks: enterprise/install_generator.yml
+  when: not __generator_dir.stat.exists
+  delegate_to: localhost
+  become: no
+  run_once: true
+
+- block:
+    - include_tasks:
+        file: enterprise/agency_init.yml
+      with_sequence: "start={{ __agency_group_id_min }} end={{ __agency_group_id_max }} format=group_%x"
+      loop_control:
+        loop_var: group_now
     - include_tasks: enterprise/genesis_init.yml
     - include_tasks: enterprise/agency_install.yml
   delegate_to: localhost
