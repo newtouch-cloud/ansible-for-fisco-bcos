@@ -1,8 +1,0 @@
-- name: Build install package
-  command: ./generator --build_install_package ./meta/peers_{{ item }}.txt ./node_{{ agency_name }}/
-  args:
-    chdir: "{{ inventory_dir }}/agency_{{ agency_name }}"
-  loop: "{{ __agency_follower_name }}"
-  when: inventory_hostname in groups['group_genesis_creator']
-  register: __command_result
-  failed_when: "'ERROR' in __command_result.stdout"

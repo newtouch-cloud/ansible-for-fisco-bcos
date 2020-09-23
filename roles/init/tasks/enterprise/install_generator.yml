@@ -1,11 +1,11 @@
 - block:
-    - name: Install generator
+    - name: 安装 generator
       command: bash ./scripts/install.sh
       args:
         chdir: "{{ inventory_dir }}/generator"
       register: __command_result
 
-    - name: Pull the latest fisco-bcos binary to the meta
+    - name: 获取最新的 fisco-bcos 执行文件
       command: ./generator --download_fisco ./meta --cdn
       args:
         chdir: "{{ inventory_dir }}/generator"

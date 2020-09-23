@@ -2,8 +2,4 @@
 agency_name: garage
 
 # 机构组编号
-agency_group_id: 2
-
-# 生成创世区块。一个群组里只允许一个机构生成群组创世区块。
-# 如无设置则默认为 false。
-agency_genesis: true
+agency_group_id: 1

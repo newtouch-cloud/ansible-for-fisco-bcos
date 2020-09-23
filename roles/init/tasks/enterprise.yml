@@ -3,7 +3,7 @@
 - block:
     - include_tasks: enterprise/set_stat.yml
   delegate_to: localhost
-  run_once: true
+  # run_once: true
 
 - block:
     - include_tasks: prepare.yml
@@ -14,11 +14,7 @@
   run_once: true
 
 - block:
-    - include_tasks:
-        file: enterprise/agency_init.yml
-      with_sequence: "start={{ __agency_group_id_min }} end={{ __agency_group_id_max }} format=group_%x"
-      loop_control:
-        loop_var: group_now
+    - include_tasks: enterprise/agency_init.yml
     - include_tasks: enterprise/genesis_init.yml
     - include_tasks: enterprise/agency_install.yml
   delegate_to: localhost

@@ -1,0 +1,63 @@
+- name: 获取 GROUP ID 的最大值
+  set_fact:
+    __agency_group_id_max: >-
+      {{ groups['all']
+          | map('extract', hostvars)
+          | map(attribute='agency_group_id')
+          | list
+          | max
+      }}
+
+- name: 根据 GROUP ID 创建临时组
+  group_by:
+    key: "{{ item }}"
+  with_items:
+    - "group_{{ agency_genesis | default(false) | ternary('leader', 'follower') }}"
+    - "group_{{ agency_group_id }}"
+  changed_when: false
+
+- block:
+    - name: 获取创世区块机构（Leader）信息
+      set_fact:
+        __agency_leader_name: >-
+          {{ groups['group_leader']
+              | map('extract', hostvars)
+              | selectattr('agency_group_id', 'equalto', agency_group_id)
+              | map(attribute='agency_name')
+              | list
+              | first
+          }}
+        __agency_leader_info: >-
+          {{ groups['group_leader']
+              | map('extract', hostvars)
+              | selectattr('agency_group_id', 'equalto', agency_group_id)
+              | map(attribute='agency_nodes')
+              | list
+              | first
+          }}
+    - debug:
+        msg: "agency_{{ agency_name }}({{ inventory_hostname }}) 从属于 agency_{{ __agency_leader_name }} 机构"
+  when:
+    - inventory_hostname in groups['group_follower']
+
+- block:
+    - name: 获取从属节点（Follower）信息
+      set_fact:
+        __agency_follower_name: >-
+          {{ groups['group_follower']
+              | map('extract', hostvars)
+              | selectattr('agency_group_id', 'equalto', agency_group_id)
+              | map(attribute='agency_name')
+              | list
+          }}
+        __agency_follower_info: >-
+          {{ groups['group_follower']
+              | map('extract', hostvars)
+              | selectattr('agency_group_id', 'equalto', agency_group_id)
+              | map(attribute='agency_nodes')
+              | list
+          }}
+    - debug:
+        msg: "agency_{{ agency_name }}({{ inventory_hostname }}) 的从属机构有 {{ 'agency_' + __agency_follower_name | join(', ') }}"
+      when: __agency_follower_name != []
+  when: inventory_hostname in groups['group_leader']
