@@ -1,0 +1,37 @@
+- name: 检查同组内是否有且只有 1 个创世区块机构
+  fail:
+    msg: "组 {{ agency.group_id }} 出现了多个或没有指定创世区块机构（拥有 create_genesis: true 属性）。请排查并确定同组内，有且只有 1 个创世区块机构。"
+  when: >-
+    ( agencies
+        | selectattr('group_id', 'equalto', agency.group_id)
+        | selectattr('create_genesis', 'defined')
+        | selectattr('create_genesis')
+        | map(attribute='name')
+        | list
+        | count
+    ) != 1
+
+- name: 获取同组创世区块机构名称
+  set_fact:
+    __group_leader: >-
+      {{ agencies
+          | selectattr('group_id', 'equalto', agency.group_id)
+          | selectattr('create_genesis', 'defined')
+          | selectattr('create_genesis')
+          | map(attribute='name')
+          | list
+          | first
+      }}
+
+- name: "记录同组创世区块机构名称到 {{ fisco_workdir }}/group_vars/all/group_leader.yml"
+  lineinfile:
+    path: "{{ inventory_dir }}/group_vars/all/group_leader.yml"
+    line: "group_{{ agency.group_id }}_leader: {{ __group_leader }}"
+    regexp: "^group_{{ agency.group_id }}_leader: "
+    create: true
+    backup: true
+
+- name: "检查 {{ fisco_workdir }}/agency_{{ agency.name }}/"
+  stat:
+    path: "{{ fisco_workdir }}/agency_{{ agency.name }}"
+  register: __agency_dir

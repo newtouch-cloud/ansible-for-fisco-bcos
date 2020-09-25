@@ -1,3 +1,2 @@
-agency_*
-generator
+deploy
 !group_vars/**

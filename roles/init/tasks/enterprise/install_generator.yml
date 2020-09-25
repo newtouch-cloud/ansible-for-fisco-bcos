@@ -1,12 +1,34 @@
-- block:
-    - name: 安装 generator
-      command: bash ./scripts/install.sh
-      args:
-        chdir: "{{ inventory_dir }}/generator"
-      register: __command_result
+- name: 安装必要工具
+  become: true
+  package:
+    name:
+      - git
+      - openssl
+      - curl
+      - python3
 
-    - name: 获取最新的 fisco-bcos 执行文件
-      command: ./generator --download_fisco ./meta --cdn
-      args:
-        chdir: "{{ inventory_dir }}/generator"
-      changed_when: false
+- name: “获取 {{ fisco_generator_git }} 代码”
+  become: false
+  git:
+    repo: "{{ fisco_generator_git }}"
+    dest: "{{ fisco_workdir }}/generator"
+    depth: 1
+
+- name: 安装 generator
+  command: bash ./scripts/install.sh
+  args:
+    chdir: "{{ fisco_workdir }}/generator"
+  register: __command_result
+
+- name: 获取最新的 fisco-bcos 执行文件
+  command: ./generator --download_fisco ./meta --cdn
+  args:
+    chdir: "{{ fisco_workdir }}/generator"
+  changed_when: false
+
+- name: 初始化联盟链证书
+  command: "./generator --generate_chain_certificate ./dir_chain_ca"
+  args:
+    chdir: "{{ fisco_workdir }}/generator/"
+    warn: false
+  changed_when: false

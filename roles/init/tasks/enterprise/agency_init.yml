@@ -1,89 +1,88 @@
-- name: 初始化机构目录
-  command: >-
-    rsync -a --exclude-from '{{ role_path }}/files/rsync-exclude-list.txt' \
-      {{ inventory_dir }}/generator/ {{ inventory_dir }}/agency_{{ agency_name }}/
-  args:
-    chdir: "{{ inventory_dir }}/generator/"
-    warn: false
-  changed_when: false
+- include_tasks: check_list.yml
 
-- name: 初始化联盟链证书
-  when: not __dir_chain_ca_dir.stat.exists
-  command: "./generator --generate_chain_certificate ./dir_chain_ca"
-  args:
-    chdir: "{{ inventory_dir }}/generator/"
-    warn: false
-  changed_when: false
+- debug:
+    msg: "###################### 开始机构 {{ agency.name }} 初始化 ######################"
 
-- name: 生成机构证书
-  when: not __dir_agency_ca_dir.stat.exists
-  command: "./generator --generate_agency_certificate ./dir_agency_ca ./dir_chain_ca agency_{{ agency_name }}"
-  args:
-    chdir: "{{ inventory_dir }}/generator/"
-    warn: false
-  changed_when: false
+- block:
+    - name: "初始化机构目录 {{ fisco_workdir }}/agency_{{ agency.name }}/"
+      command: >-
+        rsync -a --exclude-from '{{ role_path }}/files/rsync-exclude-list.txt' \
+          {{ fisco_workdir }}/generator/ {{ fisco_workdir }}/agency_{{ agency.name }}/
+      args:
+        chdir: "{{ fisco_workdir }}/generator/"
+        warn: false
+      changed_when: false
 
-- name: 拷贝机构证书
-  local_action:
-    module: copy
-    src: "{{ inventory_dir }}/{{ item.src }}"
-    dest: "{{ inventory_dir }}/{{ item.dest }}"
-  with_items:
-    - src: "generator/dir_agency_ca/agency_{{ agency_name }}/agency.crt"
-      dest: "agency_{{ agency_name }}/meta/agency.crt"
-    - src: "generator/dir_agency_ca/agency_{{ agency_name }}/agency.key"
-      dest: "agency_{{ agency_name }}/meta/agency.key"
-    - src: "generator/dir_agency_ca/agency_{{ agency_name }}/ca.crt"
-      dest: "agency_{{ agency_name }}/meta/ca.crt"
+    - name: "生成机构证书在 {{ fisco_workdir }}/generator/dir_agency_ca/agency_{{ agency.name }}/"
+      command: "./generator --generate_agency_certificate ./dir_agency_ca ./dir_chain_ca agency_{{ agency.name }}"
+      changed_when: false
+      args:
+        chdir: "{{ fisco_workdir }}/generator/"
+        warn: false
 
-- name: "创建/更新节点配置文件"
+    - name: "拷贝机构证书到 {{ fisco_workdir }}/agency_{{ agency.name }}/meta/"
+      copy:
+        src: "{{ item }}"
+        dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/{{ item | basename }}"
+      with_fileglob:
+        - "{{ fisco_workdir + '/generator/dir_agency_ca/agency_' + agency.name + '/*' }}"
+
+  when: not __agency_dir.stat.exists
+
+
+- name: "创建/更新节点配置文件到 {{ fisco_workdir }}/agency_{{ agency.name }}/conf/"
   template:
     src: "{{ item }}.j2"
-    dest: "{{ inventory_dir }}/agency_{{ agency_name }}/conf/{{ item }}"
+    dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/conf/{{ item }}"
     mode: 0600
   with_items:
     - group_genesis.ini
     - node_deployment.ini
 
-- name: 生成节点信息
-  command: "{{ item }}"
-  with_items:
-    - "./generator --generate_all_certificates ./agency_{{ agency_name }}_node_info"
+- name: "生成机构节点信息 {{ fisco_workdir }}/agency_{{ agency.name }}/agency_{{ agency.name }}_node_info"
+  command: "./generator --generate_all_certificates ./agency_{{ agency.name }}_node_info"
   args:
-    chdir: "{{ inventory_dir }}/agency_{{ agency_name }}"
+    chdir: "{{ fisco_workdir }}/agency_{{ agency.name }}"
   changed_when: false
 
-- name: 同步创世区块节点 P2P 连接地址文件
-  local_action:
-    module: copy
-    src: "{{ inventory_dir }}/{{ item.src }}"
-    dest: "{{ inventory_dir }}/{{ item.dest }}"
-  with_items:
-    - src: "agency_{{ __agency_leader_name }}/agency_{{ __agency_leader_name }}_node_info/peers.txt"
-      dest: "agency_{{ agency_name }}/meta/peers_{{ __agency_leader_name }}.txt"
-    - src: "agency_{{ agency_name }}/agency_{{ agency_name }}_node_info/peers.txt"
-      dest: "agency_{{ __agency_leader_name }}/meta/peers_{{ agency_name }}.txt"
-  when: inventory_hostname in groups['group_follower']
-
 - block:
-    - name: 同步从属节点 P2P 连接地址文件
-      local_action:
-        module: copy
-        src: "{{ inventory_dir }}/agency_{{ item }}/agency_{{ item }}_node_info/peers.txt"
-        dest: "{{ inventory_dir }}/agency_{{ agency_name }}/meta/peers_{{ item }}.txt"
-      loop: "{{ __agency_follower_name }}"
-    - name: 同步节点 P2P 连接地址文件
-      local_action:
-        module: copy
-        src: "{{ inventory_dir }}/agency_{{ agency_name }}/agency_{{ agency_name }}_node_info/peers.txt"
-        dest: "{{ inventory_dir }}/agency_{{ item }}/meta/peers_{{ agency_name }}.txt"
-      loop: "{{ __agency_follower_name }}"
-  when: inventory_hostname in groups['group_leader']
+    - name: “拷贝创世区块机构 {{ __group_leader }} 地址文件到机构 {{ agency.name }}”
+      copy:
+        src: "{{ fisco_workdir }}/agency_{{ __group_leader }}/agency_{{ __group_leader }}_node_info/peers.txt"
+        dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/peers_{{ __group_leader }}.txt"
 
-- name: 发送节点证书到创世区块机构
-  local_action:
-    module: copy
-    src: "{{ inventory_dir }}/agency_{{ agency_name }}/agency_{{ agency_name }}_node_info/cert_{{ ansible_host }}_{{ (agency_nodes.p2p_port_start_from|int) + (item|int) }}.crt"
-    dest: "{{ inventory_dir }}/agency_{{ __agency_leader_name }}/meta/cert_{{ ansible_host }}_{{ (agency_nodes.p2p_port_start_from|int) + (item|int) }}.crt"
-  with_sequence: "start=0 end={{ agency_nodes.instance - 1 }}"
-  when: inventory_hostname in groups['group_follower']
+    - name: "拷贝机构 {{ agency.name }} 地址文件到创世区块机构 {{ __group_leader }}"
+      copy:
+        src: "{{ fisco_workdir }}/agency_{{ agency.name }}/agency_{{ agency.name }}_node_info/peers.txt"
+        dest: "{{ fisco_workdir }}/agency_{{ __group_leader }}/meta/peers_{{ agency.name }}.txt"
+
+    - name: "发送机构 {{ agency.name }} 证书到创世区块机构 {{ __group_leader }}"
+      copy:
+        src: "{{ item }}"
+        dest: "{{ fisco_workdir }}/agency_{{ __group_leader }}/meta/{{ item | basename }}"
+      with_fileglob:
+        - "{{ fisco_workdir }}/agency_{{ agency.name }}/agency_{{ agency.name }}_node_info/*.crt"
+
+    - name: "在机构 {{ __group_leader }} 生成群组 {{ agency.group_id }} 创世区块"
+      command: ./generator --create_group_genesis ./group
+      args:
+        chdir: "{{ fisco_workdir }}/agency_{{ __group_leader }}"
+      changed_when: false
+
+    - name: "拷贝创世区块 'group.{{ agency.group_id }}.genesis' 到 {{ fisco_workdir }}/agency_{{ agency.name }}/meta/"
+      copy:
+        src: "{{ fisco_workdir }}/agency_{{ __group_leader }}/group/group.{{ agency.group_id }}.genesis"
+        dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/group.{{ agency.group_id }}.genesis"
+  when: agency.name != __group_leader
+
+- name: "生成机构 {{ agency.name }} 部署文件"
+  command: ./generator --build_install_package ./meta/peers_{{ __group_leader }}.txt ./fisco_deploy_agency_{{ agency.name }}/
+  args:
+    chdir: "{{ fisco_workdir }}/agency_{{ agency.name }}"
+  changed_when: false
+
+- name: "生成创世区块机构 {{ __group_leader }} 部署文件"
+  command: ./generator --build_install_package ./meta/peers_{{ agency.name }}.txt ./fisco_deploy_agency_{{ __group_leader }}/
+  args:
+    chdir: "{{ fisco_workdir }}/agency_{{ __group_leader }}"
+  changed_when: false

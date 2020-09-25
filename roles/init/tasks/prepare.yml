@@ -22,24 +22,3 @@
         url: "{{ fisco_download_console_url }}"
         dest: "{{ ansible_user_dir }}/fisco/"
   when: fisco_deploy_mode == 'single'
-  run_once: true
-
-- block:
-    - name: Install tools
-      become: true
-      package:
-        name:
-          - git
-          - openssl
-          - curl
-          - python3
-
-    - name: Clone/update generator
-      become: false
-      git:
-        repo: "{{ fisco_generator_git }}"
-        dest: "{{ inventory_dir }}/generator"
-        depth: 1
-  when: fisco_deploy_mode == 'enterprise'
-  run_once: true
-  delegate_to: localhost

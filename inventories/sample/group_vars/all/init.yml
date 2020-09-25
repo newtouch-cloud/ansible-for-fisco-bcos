@@ -1,0 +1,20 @@
+agencies:
+  - name: A
+    create_genesis: true # 是否生成创世区块，同组必须有且只有 1 个创世区块机构。
+    nodes:
+      - 172.17.8.101
+      - 172.17.8.102
+    group_id: 1
+  - name: B
+    nodes:
+      - 172.17.8.103
+      - 172.17.8.104
+    group_id: 1
+  - name: C
+    create_genesis: true
+    nodes:
+      - 172.17.8.105
+      - 172.17.8.106
+    group_id: 2
+    group_join_to:
+      - 1

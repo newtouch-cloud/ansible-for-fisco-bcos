@@ -1,14 +1,13 @@
 [group]
-group_id={{ agency_group_id }}
+group_id={{ agency.group_id }}
 
-; Owned nodes
-{% for seq in range(0, agency_nodes.instance) %}
-[node{{ seq }}]
-p2p_ip={{ ansible_host }}
-rpc_ip={{ ansible_host }}
+{% for node in agency.nodes %}
+[node{{ loop.index0 }}]
+p2p_ip={{ node }}
+rpc_ip={{ node }}
 channel_ip=0.0.0.0
-p2p_listen_port={{ agency_nodes.p2p_port_start_from + seq }}
-channel_listen_port={{ agency_nodes.channel_port_start_from + seq }}
-jsonrpc_listen_port={{ agency_nodes.jsonrpc_port_start_from + seq }}
+p2p_listen_port=30300
+channel_listen_port=20200
+jsonrpc_listen_port=8545
 
 {% endfor %}

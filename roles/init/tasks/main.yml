@@ -1,9 +1,1 @@
-- name: 前置条件检查
-  assert:
-    that:
-      - "ansible_distribution == 'Ubuntu'"
-      - "ansible_distribution_version >= '16.04'"
-      - "agency_nodes.instance >= 1"
-      - "(agency_nodes.instance + agency_nodes.p2p_port_start_from) <= 65535"
-
 - include_tasks: "{{ fisco_deploy_mode }}.yml"

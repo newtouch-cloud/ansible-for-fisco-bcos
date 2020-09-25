@@ -1,14 +1,11 @@
 [group]
-group_id={{ agency_group_id }}
+group_id={{ agency.group_id }}
 
 [nodes]
-{% for seq in range(0, agency_nodes.instance) %}
-node{{ seq }}={{ ansible_host }}:{{ agency_nodes.p2p_port_start_from + seq }}
-{% endfor %}
-{% if __agency_follower_info is defined %}
-{% for info in __agency_follower_info %}
-{% for seq in range(0, info.instance) %}
-node{{ seq + agency_nodes.instance }}={{ info.ip }}:{{ info.p2p_port_start_from + seq }}
+{% set ns = namespace(seq=0) %}
+{% for a in agencies if a.group_id == agency.group_id %}
+{% for node in a.nodes %}
+node{{ ns.seq }}={{ node }}:30300
+{% set ns.seq = ns.seq + 1 %}
 {% endfor %}
 {% endfor %}
-{% endif %}
