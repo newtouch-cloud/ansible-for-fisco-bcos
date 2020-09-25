@@ -79,7 +79,7 @@
     - include_tasks: agency_join.yml
       loop: "{{ __join_to_agencies }}"
       loop_control:
-        loop_var: join_to
+        loop_var: join_agency
   when:
     - agency.group_join_to is defined
     - agency.group_join_to != []

@@ -1,16 +1,35 @@
-- name: "发送机构 {{ agency.name }} 证书到其它群组机构 {{ join_to.name }}"
+- name: "发送机构 {{ agency.name }} 证书到其它群组机构 {{ join_agency }}"
   copy:
     src: "{{ item }}"
-    dest: "{{ fisco_workdir }}/agency_{{ join_to.name }}/meta/{{ item | basename }}"
+    dest: "{{ fisco_workdir }}/agency_{{ join_agency }}/meta/{{ item | basename }}"
   with_fileglob:
     - "{{ fisco_workdir }}/agency_{{ agency.name }}/agency_{{ agency.name }}_node_info/*.crt"
 
-- name: "机构 {{ agency.name }} 发送节点信息到其它群组机构 {{ join_to.name }}"
+- name: "机构 {{ agency.name }} 发送节点信息到其它群组机构 {{ join_agency }}"
   copy:
     src: "{{ fisco_workdir }}/agency_{{ agency.name }}/agency_{{ agency.name }}_node_info/peers.txt"
-    dest: "{{ fisco_workdir }}/agency_{{ join_to.name }}/meta/peers_{{ agency.name }}.txt"
+    dest: "{{ fisco_workdir }}/agency_{{ join_agency }}/meta/peers_{{ agency.name }}.txt"
+    remote_src: true
 
-- name: "其它群组机构 {{ join_to.name }} 发送节点信息到机构 {{ agency.name }}"
+- name: "其它群组机构 {{ join_agency }} 发送节点信息到机构 {{ agency.name }}"
   copy:
-    src: "{{ fisco_workdir }}/agency_{{ join_to.name }}/agency_{{ agency.name }}_node_info/peers.txt"
+    src: "{{ fisco_workdir }}/agency_{{ join_agency }}/agency_{{ join_agency }}_node_info/peers.txt"
     dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/peers_{{ agency.name }}.txt"
+    remote_src: true
+
+- name: "创建群组 {{ join_agency.group_id }} 的创世区块"
+  command: ./generator --create_group_genesis ./group
+  args:
+    chdir: "{{ fisco_workdir }}/agency_{{ join_agency }}/"
+  changed_when: false
+
+- name: "发送机构 {{ join_agency }} 创世区块到机构 {{ agency.name }}"
+  copy:
+    src: "{{ fisco_workdir }}/agency_{{ join_agency }}/meta/group.{{ agency.group_id }}.genesis"
+    dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/group/group.{{ agency.group_id }}.genesis"
+
+- name: "生成创世区块机构 {{ join_agency }} 部署文件"
+  command: ./generator --build_install_package ./meta/peers_{{ agency.name }}.txt ./fisco_deploy_agency_{{ join_agency }}/
+  args:
+    chdir: "{{ fisco_workdir }}/agency_{{ join_agency }}"
+  changed_when: false

@@ -2,10 +2,6 @@
 group_id={{ agency.group_id }}
 
 [nodes]
-{% for node in agencies
-  | selectattr('group_id', '==', agency.group_id)
-  | sum(attribute='nodes', start=[])
-  | list
-%}
+{% for node in (__same_group_nodes + __join_to_nodes) %}
 node{{ loop.index }}={{ node }}:30300
 {% endfor %}
