@@ -1,7 +1,7 @@
-- include_tasks: check_list.yml
-
 - debug:
     msg: "###################### 开始机构 {{ agency.name }} 初始化 ######################"
+
+- include_tasks: check_list.yml
 
 - block:
     - name: "初始化机构目录 {{ fisco_workdir }}/agency_{{ agency.name }}/"
@@ -26,9 +26,7 @@
         dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/{{ item | basename }}"
       with_fileglob:
         - "{{ fisco_workdir + '/generator/dir_agency_ca/agency_' + agency.name + '/*' }}"
-
   when: not __agency_dir.stat.exists
-
 
 - name: "创建/更新节点配置文件到 {{ fisco_workdir }}/agency_{{ agency.name }}/conf/"
   template:
@@ -45,13 +43,14 @@
     chdir: "{{ fisco_workdir }}/agency_{{ agency.name }}"
   changed_when: false
 
+# 同组
 - block:
-    - name: “拷贝创世区块机构 {{ __group_leader }} 地址文件到机构 {{ agency.name }}”
+    - name: “创世区块机构 {{ __group_leader }} 发送节点信息到机构 {{ agency.name }}”
       copy:
         src: "{{ fisco_workdir }}/agency_{{ __group_leader }}/agency_{{ __group_leader }}_node_info/peers.txt"
         dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/peers_{{ __group_leader }}.txt"
 
-    - name: "拷贝机构 {{ agency.name }} 地址文件到创世区块机构 {{ __group_leader }}"
+    - name: "机构 {{ agency.name }} 发送节点信息到创世区块机构 {{ __group_leader }}"
       copy:
         src: "{{ fisco_workdir }}/agency_{{ agency.name }}/agency_{{ agency.name }}_node_info/peers.txt"
         dest: "{{ fisco_workdir }}/agency_{{ __group_leader }}/meta/peers_{{ agency.name }}.txt"
@@ -74,6 +73,16 @@
         src: "{{ fisco_workdir }}/agency_{{ __group_leader }}/group/group.{{ agency.group_id }}.genesis"
         dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/group.{{ agency.group_id }}.genesis"
   when: agency.name != __group_leader
+
+# 异组
+- block:
+    - include_tasks: agency_join.yml
+      loop: "{{ __join_to_agencies }}"
+      loop_control:
+        loop_var: join_to
+  when:
+    - agency.group_join_to is defined
+    - agency.group_join_to != []
 
 - name: "生成机构 {{ agency.name }} 部署文件"
   command: ./generator --build_install_package ./meta/peers_{{ __group_leader }}.txt ./fisco_deploy_agency_{{ agency.name }}/

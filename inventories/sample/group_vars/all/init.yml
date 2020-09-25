@@ -1,10 +1,19 @@
+# 变量注释
+# name:           （必填）机构名称
+# create_genesis: 是否生成创世区块，同组必须有且只有 1 个创世区块机构。（不设置则默认为 false）
+# nodes:          （必填）机构各节点连接信息
+# group_id:       （必填）群组编号
+# group_join_to:  （可选）额外要加入的目标群组编号
+
 agencies:
   - name: A
-    create_genesis: true # 是否生成创世区块，同组必须有且只有 1 个创世区块机构。
+    create_genesis: true
     nodes:
       - 172.17.8.101
       - 172.17.8.102
     group_id: 1
+    group_join_to:
+      - 2
   - name: B
     nodes:
       - 172.17.8.103
@@ -16,5 +25,3 @@ agencies:
       - 172.17.8.105
       - 172.17.8.106
     group_id: 2
-    group_join_to:
-      - 1

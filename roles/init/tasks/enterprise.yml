@@ -10,7 +10,7 @@
   loop_control:
     loop_var: agency
 
-- name: 生成压缩包
+- name: 打包部署文件
   archive:
     path: "{{ fisco_workdir }}/agency_{{ agency.name }}/fisco_deploy_agency_{{ agency.name }}"
     dest: "{{ fisco_workdir }}/fisco_deploy_agency_{{ agency.name }}.tgz"

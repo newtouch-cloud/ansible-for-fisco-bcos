@@ -2,10 +2,10 @@
 group_id={{ agency.group_id }}
 
 [nodes]
-{% set ns = namespace(seq=0) %}
-{% for a in agencies if a.group_id == agency.group_id %}
-{% for node in a.nodes %}
-node{{ ns.seq }}={{ node }}:30300
-{% set ns.seq = ns.seq + 1 %}
-{% endfor %}
+{% for node in agencies
+  | selectattr('group_id', '==', agency.group_id)
+  | sum(attribute='nodes', start=[])
+  | list
+%}
+node{{ loop.index }}={{ node }}:30300
 {% endfor %}
