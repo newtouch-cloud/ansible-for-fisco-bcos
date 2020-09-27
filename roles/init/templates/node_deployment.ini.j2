@@ -1,7 +1,7 @@
 [group]
-group_id={{ agency.group_id }}
+group_id={{ agency_config.group_id }}
 
-{% for node in agency.nodes %}
+{% for node in agency_config.nodes %}
 [node{{ loop.index0 }}]
 p2p_ip={{ node }}
 rpc_ip={{ node }}

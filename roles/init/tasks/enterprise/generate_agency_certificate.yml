@@ -1,0 +1,13 @@
+- name: "生成机构证书"
+  command: "./generator --generate_agency_certificate ./dir_agency_ca ./dir_chain_ca agency_{{ agency_cert.name }}"
+  changed_when: false
+  args:
+    chdir: "{{ fisco_workdir }}/generator/"
+    warn: false
+
+- name: "拷贝机构证书"
+  copy:
+    src: "{{ item }}"
+    dest: "{{ fisco_workdir }}/agency_{{ agency_cert.name }}/meta/{{ item | basename }}"
+  with_fileglob:
+    - "{{ fisco_workdir + '/generator/dir_agency_ca/agency_' + agency_cert.name + '/*' }}"

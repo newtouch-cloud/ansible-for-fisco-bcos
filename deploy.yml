@@ -1,4 +1,4 @@
-- hosts: all
+- hosts: localhost
   become: no
   roles:
     - init

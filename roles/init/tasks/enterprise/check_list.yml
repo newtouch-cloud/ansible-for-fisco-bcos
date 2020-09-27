@@ -35,17 +35,17 @@
         create: true
         backup: true
 
-- block:
-    - name: 获取同组机构节点列表
-      set_fact:
-        __same_group_nodes: >-
-          {{ agencies
-            | selectattr('group_id', '==', agency.group_id)
-            | sum(attribute='nodes', start=[])
-            | list
-          }}
-    - debug:
-        msg: "组 {{ agency.group_id }} 一共有节点 {{ __same_group_nodes }}"
+# - block:
+#     - name: 获取同组机构节点列表
+#       set_fact:
+#         __same_group_nodes: >-
+#           {{ agencies
+#             | selectattr('group_id', '==', agency.group_id)
+#             | sum(attribute='nodes', start=[])
+#             | list
+#           }}
+#     - debug:
+#         msg: "组 {{ agency.group_id }} 一共有节点 {{ __same_group_nodes }}"
 
 - block:
     - name: 获取其它目标的机构信息
@@ -61,22 +61,17 @@
         msg: "机构 {{ agency.name }} 还将加入其它机构 {{ item }} 所在的群组。"
       loop: "{{ __join_to_agencies }}"
 
-    - name: 获取其它目标机构的节点列表
-      set_fact:
-        __join_to_nodes: >-
-          {{ agencies
-            | selectattr('group_id', '==', item)
-            | sum(attribute='nodes', start=[])
-            | list
-          }}
-      with_items: "{{ agency.group_join_to }}"
-    - debug:
-        msg: "机构 {{ agency.name }} 还将加入其它机构的节点 {{ __join_to_nodes }}。"
+    # - name: 获取其它目标机构的节点列表
+    #   set_fact:
+    #     __join_to_nodes: >-
+    #       {{ agencies
+    #         | selectattr('group_id', '==', item)
+    #         | sum(attribute='nodes', start=[])
+    #         | list
+    #       }}
+    #   with_items: "{{ agency.group_join_to }}"
+    # - debug:
+    #     msg: "机构 {{ agency.name }} 还将加入其它机构的节点 {{ __join_to_nodes }}。"
   when:
     - agency.group_join_to is defined
     - agency.group_join_to != []
-
-- name: "检查 {{ fisco_workdir }}/agency_{{ agency.name }}/"
-  stat:
-    path: "{{ fisco_workdir }}/agency_{{ agency.name }}"
-  register: __agency_dir

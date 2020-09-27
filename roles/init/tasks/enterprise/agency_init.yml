@@ -4,44 +4,37 @@
 - include_tasks: check_list.yml
 
 - block:
-    - name: "初始化机构目录 {{ fisco_workdir }}/agency_{{ agency.name }}/"
+    - name: "检查机构目录是否存在"
+      stat:
+        path: "{{ fisco_workdir }}/agency_{{ item.name }}"
+      loop: "{{ agencies }}"
+      loop_control:
+        label: "{{ fisco_workdir }}/agency_{{ item.name }}"
+      register: __agency_dir
+
+    - name: "初始化机构目录"
       command: >-
         rsync -a --exclude-from '{{ role_path }}/files/rsync-exclude-list.txt' \
-          {{ fisco_workdir }}/generator/ {{ fisco_workdir }}/agency_{{ agency.name }}/
+          {{ fisco_workdir }}/generator/ {{ item.invocation.module_args.path }}
       args:
         chdir: "{{ fisco_workdir }}/generator/"
         warn: false
-      changed_when: false
+      loop: "{{ __agency_dir.results }}"
+      loop_control:
+        label: "{{ item.invocation.module_args.path }}"
+      when: not item.stat.exists
 
-    - name: "生成机构证书在 {{ fisco_workdir }}/generator/dir_agency_ca/agency_{{ agency.name }}/"
-      command: "./generator --generate_agency_certificate ./dir_agency_ca ./dir_chain_ca agency_{{ agency.name }}"
-      changed_when: false
-      args:
-        chdir: "{{ fisco_workdir }}/generator/"
-        warn: false
+- include_tasks:
+    file: generate_agency_certificate.yml
+  loop: "{{ agencies }}"
+  loop_control:
+    loop_var: agency_cert
 
-    - name: "拷贝机构证书到 {{ fisco_workdir }}/agency_{{ agency.name }}/meta/"
-      copy:
-        src: "{{ item }}"
-        dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/{{ item | basename }}"
-      with_fileglob:
-        - "{{ fisco_workdir + '/generator/dir_agency_ca/agency_' + agency.name + '/*' }}"
-  when: not __agency_dir.stat.exists
-
-- name: "创建/更新节点配置文件到 {{ fisco_workdir }}/agency_{{ agency.name }}/conf/"
-  template:
-    src: "{{ item }}.j2"
-    dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/conf/{{ item }}"
-    mode: 0600
-  with_items:
-    - group_genesis.ini
-    - node_deployment.ini
-
-- name: "生成机构节点信息 {{ fisco_workdir }}/agency_{{ agency.name }}/agency_{{ agency.name }}_node_info"
-  command: "./generator --generate_all_certificates ./agency_{{ agency.name }}_node_info"
-  args:
-    chdir: "{{ fisco_workdir }}/agency_{{ agency.name }}"
-  changed_when: false
+- include_tasks:
+    file: generate_agency_config.yml
+  loop: "{{ agencies }}"
+  loop_control:
+    loop_var: agency_config
 
 # 同组
 - block:
@@ -79,7 +72,7 @@
     - include_tasks: agency_join.yml
       loop: "{{ __join_to_agencies }}"
       loop_control:
-        loop_var: join_agency
+        loop_var: join_to_agency
   when:
     - agency.group_join_to is defined
     - agency.group_join_to != []

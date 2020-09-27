@@ -16,3 +16,6 @@ fisco_algorithm_type: PBFT # 共识算法 https://fisco-bcos-documentation.readt
 
 # Enterprise
 fisco_generator_git: https://github.com/FISCO-BCOS/generator.git
+
+fisco_config:
+  log_level: info

@@ -1,0 +1,16 @@
+- hosts: test
+  become: yes
+  serial: 1
+  tasks:
+    - name: Sync install files to target
+      ignore_errors: true
+      synchronize:
+        src: "{{ inventory_dir }}/deploy/agency_{{ item }}/fisco_deploy_agency_{{ item }}/node_{{ ansible_host }}_30300"
+        dest: "/opt/"
+      with_items:
+        - A
+        - B
+        - C
+    - name: Start fisco node
+      command: "/opt/node_{{ ansible_host }}_30300/start.sh"
+      changed_when: false
