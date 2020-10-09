@@ -60,12 +60,12 @@
       args:
         chdir: "{{ fisco_workdir }}/agency_{{ __group_leader }}"
       changed_when: false
+      when: not __group_genesis_block_st.stat.exists
 
     - name: "拷贝创世区块 'group.{{ agency.group_id }}.genesis' 到 {{ fisco_workdir }}/agency_{{ agency.name }}/meta/"
       copy:
         src: "{{ fisco_workdir }}/agency_{{ __group_leader }}/group/group.{{ agency.group_id }}.genesis"
         dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/group.{{ agency.group_id }}.genesis"
-  when: agency.name != __group_leader
 
 # 异组
 - block:
@@ -82,6 +82,8 @@
   args:
     chdir: "{{ fisco_workdir }}/agency_{{ agency.name }}"
   changed_when: false
+  register: __cmd_result
+  failed_when: "'ERROR' in __cmd_result.stdout_lines"
 
 - name: "生成创世区块机构 {{ __group_leader }} 部署文件"
   command: ./generator --build_install_package ./meta/peers_{{ agency.name }}.txt ./fisco_deploy_agency_{{ __group_leader }}/

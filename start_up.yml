@@ -1,0 +1,23 @@
+# 注意：本剧本只用于测试场景，生产环境请手动传送对应的压缩包，并解压执行。
+- hosts: test
+  serial: 1
+  become: true
+  vars_files:
+    - roles/init/defaults/main.yml
+  tasks:
+    - name: 同步
+      synchronize:
+        src: "{{ fisco_workdir }}/agency_{{ item.name }}/fisco_deploy_agency_{{ item.name }}/node_{{ ansible_host }}_30300"
+        dest: /opt/
+      loop: "{{ agencies }}"
+      when: ansible_host in item.nodes
+
+    - name: 启动
+      shell: ./start.sh
+      args:
+        chdir: "/opt/node_{{ ansible_host }}_30300"
+      changed_when: false
+
+    - name: 等待
+      wait_for:
+        port: 30300

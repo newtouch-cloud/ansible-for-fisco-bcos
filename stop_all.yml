@@ -1,0 +1,17 @@
+# 注意：本剧本只用于测试场景，生产环境请手动传送对应的压缩包，并解压执行。
+- hosts: test
+  serial: 1
+  become: true
+  vars_files:
+    - roles/init/defaults/main.yml
+  tasks:
+    - name: 停止
+      shell: ./stop.sh
+      args:
+        chdir: "/opt/node_{{ ansible_host }}_30300"
+      changed_when: false
+
+    - name: 等待
+      wait_for:
+        port: 30300
+        state: stopped
