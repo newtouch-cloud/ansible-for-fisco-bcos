@@ -74,6 +74,8 @@ Vagrant.configure("2") do |config|
 
   (1..$num_instances).each do |i|
     config.vm.define vm_name = "%s-%01d" % [$instance_name_prefix, i] do |node|
+      node.vm.network "forwarded_port", guest: 20200, host: 20200 + i
+      node.vm.network "forwarded_port", guest: 30300, host: 30300 + i
 
       node.vm.hostname = vm_name
 
@@ -88,7 +90,7 @@ Vagrant.configure("2") do |config|
         vb.cpus = $vm_cpus
         vb.gui = $vm_gui
         vb.linked_clone = true
-        # vb.customize ["modifyvm", :id, "--vram", "8"] # ubuntu defaults to 256 MB which is a waste of precious RAM
+        vb.customize ["modifyvm", :id, "--vram", "8"] # ubuntu defaults to 256 MB which is a waste of precious RAM
         # Get disk path
         vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
         line = `VBoxManage list systemproperties | grep "Default machine folder"`
