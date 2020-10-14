@@ -22,6 +22,7 @@
         src: "{{ fisco_workdir }}/agency_{{ item.name }}/fisco_deploy_agency_{{ item.name }}/node_{{ ansible_host }}_30300"
         dest: /opt/
         use_ssh_args: true
+        delete: true
       loop: "{{ agencies }}"
       when: ansible_host in item.nodes
 
