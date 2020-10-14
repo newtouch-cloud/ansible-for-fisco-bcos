@@ -1,3 +1,19 @@
+- block: 
+    - name: 获取其它目标的机构信息
+      set_fact:
+        __join_to_agencies: >-
+          {{ agencies
+            | selectattr('group_id', '==', item)
+            | list
+          }}
+      with_items: "{{ agency.group_join_to }}"
+    - debug:
+        msg: "机构 {{ agency.name }} 还将加入其它机构 {{ item.name }} 所在的群组。"
+      loop: "{{ __join_to_agencies }}"
+  when:
+    - agency.group_join_to is defined
+    - agency.group_join_to != []
+
 - name: "发送机构 {{ agency.name }} 证书到其它群组机构 {{ join_to_agency.name }}"
   copy:
     src: "{{ item }}"

@@ -5,16 +5,41 @@
     - include_tasks: enterprise/install_generator.yml
   when: not __generator_dir.stat.exists
 
-- include_tasks: enterprise/agency_init.yml
+- include_tasks: enterprise/generate_agency_certificate.yml
   loop: "{{ agencies }}"
   loop_control:
     loop_var: agency
+    label: "{{ agency.name }}"
 
-- name: 打包部署文件
-  archive:
-    path: "{{ fisco_workdir }}/agency_{{ agency.name }}/fisco_deploy_agency_{{ agency.name }}"
-    dest: "{{ fisco_workdir }}/fisco_deploy_agency_{{ agency.name }}.tgz"
+- include_tasks: enterprise/generate_agency_config.yml
   loop: "{{ agencies }}"
   loop_control:
     loop_var: agency
-    label: "{{ fisco_workdir }}/fisco_deploy_agency_{{ agency.name }}.tgz"
+    label: "{{ agency.name }}"
+
+- include_tasks: enterprise/generate_peers_file.yml
+  loop: "{{ agencies }}"
+  loop_control:
+    loop_var: agency
+    label: "{{ agency.name }}"
+
+- include_tasks: enterprise/generate_genesis.yml
+  loop: "{{ agencies }}"
+  loop_control:
+    loop_var: agency
+    label: "{{ agency.name }}"
+
+- include_tasks: enterprise/build_install_package.yml
+  loop: "{{ agencies }}"
+  loop_control:
+    loop_var: agency
+    label: "{{ agency.name }}"
+
+# - name: 打包部署文件
+#   archive:
+#     path: "{{ fisco_workdir }}/agency_{{ agency.name }}/fisco_deploy_agency_{{ agency.name }}"
+#     dest: "{{ fisco_workdir }}/fisco_deploy_agency_{{ agency.name }}.tgz"
+#   loop: "{{ agencies }}"
+#   loop_control:
+#     loop_var: agency
+#     label: "{{ fisco_workdir }}/fisco_deploy_agency_{{ agency.name }}.tgz"

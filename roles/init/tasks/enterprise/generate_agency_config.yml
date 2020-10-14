@@ -1,67 +1,41 @@
-- block:
-    - name: 获取同组机构节点列表
-      set_fact:
-        __config_same_group_nodes: >-
-          {{ agencies
-            | selectattr('group_id', '==', agency_config.group_id)
-            | sum(attribute='nodes', start=[])
-            | list
-          }}
-    - debug:
-        msg: "组 {{ agency_config.group_id }} 一共有节点 {{ __config_same_group_nodes }}"
-
-- block:
-    - name: 获取其它目标的机构信息
-      set_fact:
-        __config_join_to_agencies: >-
-          {{ agencies
-            | selectattr('group_id', '==', __target_group_id)
-            | map(attribute='name')
-            | list
-          }}
-      with_items: "{{ agency_config.group_join_to }}"
-      loop_control:
-        loop_var: __target_group_id
-        label: "{{ agency_config.name }} 还需加入群组 {{ __target_group_id }}"
-
-    - debug:
-        msg: "机构 {{ agency_config.name }} 还将加入其它机构 {{ __target_agency }} 所在的群组。"
-      loop: "{{ __config_join_to_agencies }}"
-      loop_control:
-        loop_var: __target_agency
-
-    - name: 获取其它目标机构的节点列表
-      set_fact:
-        __config_join_to_nodes: >-
-          {{ agencies
-            | selectattr('group_id', '==', __target_group_id)
-            | sum(attribute='nodes', start=[])
-            | list
-          }}
-      with_items: "{{ agency_config.group_join_to }}"
-      loop_control:
-        loop_var: __target_group_id
-
-    - debug:
-        msg: "机构 {{ agency_config.name }} 还将加入其它机构的节点 {{ __config_join_to_nodes }}。"
-  when:
-    - agency_config.group_join_to is defined
-    - agency_config.group_join_to != []
+- include_tasks: enterprise/check_list.yml
 
 - name: "更新区块配置文件"
   template:
     src: "group_genesis.ini.j2"
-    dest: "{{ fisco_workdir }}/agency_{{ agency_config.name }}/conf/group_genesis.ini"
+    dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/conf/group_genesis.ini"
     mode: 0600
 
 - name: "更新节点配置文件"
   template:
     src: "node_deployment.ini.j2"
-    dest: "{{ fisco_workdir }}/agency_{{ agency_config.name }}/conf/node_deployment.ini"
+    dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/conf/node_deployment.ini"
     mode: 0600
 
 - name: "生成机构节点信息"
-  command: "./generator --generate_all_certificates ./agency_{{ agency_config.name }}_node_info"
+  command: "./generator --generate_all_certificates ./agency_{{ agency.name }}_node_info"
   args:
-    chdir: "{{ fisco_workdir }}/agency_{{ agency_config.name }}"
+    chdir: "{{ fisco_workdir }}/agency_{{ agency.name }}"
   changed_when: false
+
+
+  # with_fileglob:
+  #   - "{{ fisco_workdir }}/agency_{{ agency.name }}/agency_{{ agency.name }}_node_info/cert*.crt"
+  # when: agency.name != __same_group_leader
+
+# - name: “创世区块机构 {{ __group_leader }} 发送节点信息到机构 {{ agency.name }}”
+#   copy:
+#     src: "{{ fisco_workdir }}/agency_{{ __group_leader }}/agency_{{ __group_leader }}_node_info/peers.txt"
+#     dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/peers_{{ __group_leader }}.txt"
+#
+# - name: "机构 {{ agency.name }} 发送节点信息到创世区块机构 {{ __group_leader }}"
+#   copy:
+#     src: "{{ fisco_workdir }}/agency_{{ agency.name }}/agency_{{ agency.name }}_node_info/peers.txt"
+#     dest: "{{ fisco_workdir }}/agency_{{ __group_leader }}/meta/peers_{{ agency.name }}.txt"
+#
+# - name: "发送机构 {{ agency.name }} 证书到创世区块机构 {{ __group_leader }}"
+#   copy:
+#     src: "{{ item }}"
+#     dest: "{{ fisco_workdir }}/agency_{{ __group_leader }}/meta/{{ item | basename }}"
+#   with_fileglob:
+#     - "{{ fisco_workdir }}/agency_{{ agency.name }}/agency_{{ agency.name }}_node_info/*.crt"

@@ -1,13 +1,30 @@
-- name: "生成机构证书"
-  command: "./generator --generate_agency_certificate ./dir_agency_ca ./dir_chain_ca agency_{{ agency_cert.name }}"
-  changed_when: false
-  args:
-    chdir: "{{ fisco_workdir }}/generator/"
-    warn: false
+- name: "检查机构证书是否已生成"
+  stat:
+    path: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/agency.crt"
+    get_attributes: false
+    get_checksum: false
+    get_mime: false
+  register: __agency_ca_st
 
-- name: "拷贝机构证书"
-  copy:
-    src: "{{ item }}"
-    dest: "{{ fisco_workdir }}/agency_{{ agency_cert.name }}/meta/{{ item | basename }}"
-  with_fileglob:
-    - "{{ fisco_workdir + '/generator/dir_agency_ca/agency_' + agency_cert.name + '/*' }}"
+- block:
+    - name: "初始化机构目录"
+      command: >-
+        rsync -a --exclude-from '{{ role_path }}/files/rsync-exclude-list.txt' \
+          {{ fisco_workdir }}/generator/ {{ fisco_workdir }}/agency_{{ agency.name }}
+      args:
+        warn: false
+      changed_when: false
+
+    - name: "生成机构证书"
+      command: "./generator --generate_agency_certificate ./dir_agency_ca ./dir_chain_ca agency_{{ agency.name }}"
+      args:
+        chdir: "{{ fisco_workdir }}/generator/"
+      changed_when: false
+
+    - name: "拷贝机构证书"
+      copy:
+        src: "{{ item }}"
+        dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/{{ item | basename }}"
+      with_fileglob:
+        - "{{ fisco_workdir + '/generator/dir_agency_ca/agency_' + agency.name + '/*' }}"
+  when: not __agency_ca_st.stat.exists

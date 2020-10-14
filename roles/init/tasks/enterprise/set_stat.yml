@@ -6,6 +6,10 @@
     get_mime: false
   register: __generator_dir
 
+- name: "机构列表整理排序"
+  set_fact:
+    agencies: "{{ agencies | sort(attribute='group_id,name') }}"
+
 # - name: "检查创世区块是否已生成"
 #   stat:
 #     path: "{{ fisco_workdir }}/agency_{{ item.name }}/group/group.{{ item.group_id }}.genesis"

@@ -5,10 +5,23 @@
   vars_files:
     - roles/init/defaults/main.yml
   tasks:
+    - name: 停止
+      shell: ./stop.sh
+      args:
+        chdir: "/opt/node_{{ ansible_host }}_30300"
+      changed_when: false
+      ignore_errors: true
+
+    - name: 等待
+      wait_for:
+        port: 30300
+        state: stopped
+
     - name: 同步
       synchronize:
         src: "{{ fisco_workdir }}/agency_{{ item.name }}/fisco_deploy_agency_{{ item.name }}/node_{{ ansible_host }}_30300"
         dest: /opt/
+        use_ssh_args: true
       loop: "{{ agencies }}"
       when: ansible_host in item.nodes
 

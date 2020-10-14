@@ -1,5 +1,0 @@
-{% for info in __agency_leader_info if __agency_leader_info is defined %}
-{% for seq in range(0, info.instance) %}
-{{ info.ip }}:{{ info.p2p_port_start_from + seq }}
-{% endfor %}
-{% endfor %}

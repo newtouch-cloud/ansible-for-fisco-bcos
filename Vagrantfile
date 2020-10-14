@@ -75,7 +75,6 @@ Vagrant.configure("2") do |config|
   (1..$num_instances).each do |i|
     config.vm.define vm_name = "%s-%01d" % [$instance_name_prefix, i] do |node|
       node.vm.network "forwarded_port", guest: 20200, host: 20200 + i
-      node.vm.network "forwarded_port", guest: 30300, host: 30300 + i
 
       node.vm.hostname = vm_name
 
