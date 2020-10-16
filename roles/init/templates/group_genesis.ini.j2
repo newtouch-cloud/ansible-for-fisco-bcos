@@ -3,5 +3,5 @@ group_id={{ agency.group_id }}
 
 [nodes]
 {% for node in (__same_group_nodes + __other_agency_nodes) %}
-node{{ loop.index0 }}={{ node }}:30300
+node{{ loop.index0 }}={{ node.split(':')[0] }}:{{ node.split(':')[1] | default('30300') }}
 {% endfor %}

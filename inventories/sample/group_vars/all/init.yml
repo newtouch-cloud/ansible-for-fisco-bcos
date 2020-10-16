@@ -1,7 +1,7 @@
 # 变量注释
 # name:           （必填）机构名称
 # create_genesis: 是否生成创世区块，同组必须有且只有 1 个创世区块机构。（不设置则默认为 false）
-# nodes:          （必填）机构各节点连接信息
+# nodes:          （必填）机构各节点连接信息。格式 <ip>:<p2p_port>:<channel_port>:<rpc_port>。如果只填写 IP，则使用默认端口。同 IP 多节点的需要指定各端口并确保没有冲突。參考 https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/enterprise_tools/tutorial_detail_operation.html#id5。生产环境中请确保各机构不共用服务器，避免私钥证书的泄漏。
 # group_id:       （必填）群组编号
 # group_join_to:  （可选）额外要加入的目标群组编号
 
@@ -10,6 +10,7 @@ agencies:
     create_genesis: true
     nodes:
       - 172.17.8.101
+      - 172.17.8.101:30301:20201:8546
       - 172.17.8.102
     group_id: 1
     group_join_to:
@@ -24,4 +25,5 @@ agencies:
     nodes:
       - 172.17.8.105
       - 172.17.8.106
+      - 172.17.8.106:30301:20201:8546
     group_id: 2

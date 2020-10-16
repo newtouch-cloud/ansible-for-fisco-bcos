@@ -1,0 +1,9 @@
+- name: 生成 console 控制台
+  command: ./generator --download_console ./ --cdn
+  args:
+    chdir: "{{ fisco_workdir }}/agency_{{ item.name }}"
+  loop: "{{ agencies }}"
+  loop_control:
+    label: "{{ item.name }}"
+  changed_when: false
+  when: console_enabled | default(false)

@@ -3,11 +3,11 @@ group_id={{ agency.group_id }}
 
 {% for node in agency.nodes %}
 [node{{ loop.index0 }}]
-p2p_ip={{ node }}
-rpc_ip={{ node }}
+p2p_ip={{ node.split(':')[0] }}
+rpc_ip={{ node.split(':')[0] }}
 channel_ip=0.0.0.0
-p2p_listen_port=30300
-channel_listen_port=20200
-jsonrpc_listen_port=8545
+p2p_listen_port={{ node.split(':')[1] | default('30300') }}
+channel_listen_port={{ node.split(':')[2] | default('20200') }}
+jsonrpc_listen_port={{ node.split(':')[3] | default('8545') }}
 
 {% endfor %}

@@ -35,6 +35,8 @@
     loop_var: agency
     label: "{{ agency.name }}"
 
+- include_tasks: enterprise/post_job.yml
+
 # - name: 打包部署文件
 #   archive:
 #     path: "{{ fisco_workdir }}/agency_{{ agency.name }}/fisco_deploy_agency_{{ agency.name }}"
