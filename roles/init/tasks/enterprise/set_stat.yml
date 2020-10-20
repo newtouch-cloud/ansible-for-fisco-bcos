@@ -6,18 +6,28 @@
     get_mime: false
   register: __generator_dir
 
-- name: "机构列表整理排序"
-  set_fact:
-    agencies: "{{ agencies | sort(attribute='group_id,name') }}"
+- name: "生成节点清单 {{ inventory_dir }}/deploy/node_list.yml"
+  template:
+    src: roles/init/templates/node_list.j2
+    dest: "{{ inventory_dir }}/deploy/node_list.yml"
+    backup: true
 
-# - name: "检查创世区块是否已生成"
-#   stat:
-#     path: "{{ fisco_workdir }}/agency_{{ item.name }}/group/group.{{ item.group_id }}.genesis"
-#     get_attributes: false
-#     get_checksum: false
-#     get_mime: false
-#   register: __group_genesis_block_st
-#   when: item.create_genesis | default(false)
-#   loop: "{{ agencies }}"
-#   loop_control:
-#     label: "机构 {{ item.name }}"
+- name: 加载当前节点清单
+  include_vars: "{{ inventory_dir }}/deploy/node_list.yml"
+
+- name: 设置动态变量
+  set_fact:
+    node_list: "{{ node_list | sort }}"
+    pre_node_list_path: "{{ lookup('pipe', 'ls -1tr inventories/sample/deploy/node_list.yml.*~ | tail -n1') }}"
+
+- name: 创建新增节点清单
+  group_by:
+    key: new_node_list
+  loop: "{{ node_list }}"
+  when:
+    - pre_node_list_path != ''
+    - item not in lookup('file', pre_node_list_path)
+
+- debug:
+    msg: "{{ new_node_list }}"
+  when: new_node_list is defined

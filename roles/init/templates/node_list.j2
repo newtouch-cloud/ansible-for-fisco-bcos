@@ -1,0 +1,34 @@
+# 机构名称:群组编号:节点IP:P2P端口:Channel端口:RPC端口
+
+node_list:
+{% for node in agencies|subelements('nodes') %}
+{# 单 IP 多节点 #}
+{% if node.1.split(':')[1] is defined %}
+{% for i in range(0, node.1.split(':')[1]|int)|list %}
+  - {{ node.0.name }}:{{ node.0.group_id }}:{{ node.1.split(':')[0] }}:{{ 30300 + i }}:{{ 20200 + i }}:{{ 8545 + i }}
+{% endfor %}
+{% else %}
+{# 单 IP 单节点 #}
+  - {{ node.0.name }}:{{ node.0.group_id }}:{{ node.1.split(':')[0] }}:30300:20200:8545
+{% endif %}
+{% endfor %}
+
+agency_list:
+{% for agency in agencies|unique(attribute='name')|map(attribute='name') %}
+  - {{ agency }}
+{% endfor %}
+
+group_id_list:
+{% for group_id in agencies|unique(attribute='group_id')|map(attribute='group_id') %}
+  - {{ group_id }}
+{% endfor %}
+
+# 检查机构是否已经完成初始化。
+agency_initialed:
+{% for item in agencies|map(attribute='name') %}
+{% if lookup('file', fisco_workdir + '/agency_' + item + '/fisco_deploy_agency_' + item + '/start_all.sh', errors='ignore') %}
+  - {{ item }}
+{% else %}
+  - "Agency {{ item }} not initialed"
+{% endif %}
+{% endfor %}

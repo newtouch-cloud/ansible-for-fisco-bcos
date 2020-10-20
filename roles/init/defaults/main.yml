@@ -8,7 +8,7 @@ fisco_national_cryptography_enabled: false
 
 # Refere https://fisco-bcos-documentation.readthedocs.io/en/latest/docs/installation.html
 # General
-fisco_version: 2.5.0
+fisco_version: 2.6.0
 fisco_build_chain_url: "https://github.com/FISCO-BCOS/FISCO-BCOS/releases/download/v{{ fisco_version }}/build_chain.sh"
 fisco_download_console_url: https://github.com/FISCO-BCOS/console/releases/download/v1.0.10/download_console.sh
 fisco_bind_address: 0.0.0.0

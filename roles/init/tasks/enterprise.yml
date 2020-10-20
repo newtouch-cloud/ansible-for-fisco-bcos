@@ -10,30 +10,35 @@
   loop_control:
     loop_var: agency
     label: "{{ agency.name }}"
+  when: agency.name not in agency_initialed
 
 - include_tasks: enterprise/generate_agency_config.yml
   loop: "{{ agencies }}"
   loop_control:
     loop_var: agency
     label: "{{ agency.name }}"
+  when: agency.name not in agency_initialed
 
 - include_tasks: enterprise/generate_peers_file.yml
   loop: "{{ agencies }}"
   loop_control:
     loop_var: agency
     label: "{{ agency.name }}"
+  when: agency.name not in agency_initialed
 
 - include_tasks: enterprise/generate_genesis.yml
   loop: "{{ agencies }}"
   loop_control:
     loop_var: agency
     label: "{{ agency.name }}"
+  when: agency.name not in agency_initialed
 
 - include_tasks: enterprise/build_install_package.yml
   loop: "{{ agencies }}"
   loop_control:
     loop_var: agency
     label: "{{ agency.name }}"
+  when: agency.name not in agency_initialed
 
 - include_tasks: enterprise/post_job.yml
 

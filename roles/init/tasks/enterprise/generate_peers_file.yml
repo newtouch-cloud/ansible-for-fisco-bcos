@@ -33,3 +33,4 @@
   - name: "拷贝其它机构节点证书"
     shell: "cp {{ fisco_workdir }}/agency_{{ item }}/agency_{{ item }}_node_info/cert*.crt {{ fisco_workdir }}/agency_{{ agency.name }}/meta/"
     loop: "{{ __other_agency_names }}"
+    changed_when: false

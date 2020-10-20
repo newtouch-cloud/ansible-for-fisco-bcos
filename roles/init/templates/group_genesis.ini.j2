@@ -2,6 +2,6 @@
 group_id={{ agency.group_id }}
 
 [nodes]
-{% for node in (__same_group_nodes + __other_agency_nodes) %}
-node{{ loop.index0 }}={{ node.split(':')[0] }}:{{ node.split(':')[1] | default('30300') }}
+{% for node in node_list if (node.split(':')[1] | int) == agency.group_id %}
+node{{ loop.index0 }}={{ node.split(':')[2] }}:{{ node.split(':')[3] | default('30300') }}
 {% endfor %}

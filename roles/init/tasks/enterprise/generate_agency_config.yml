@@ -17,25 +17,3 @@
   args:
     chdir: "{{ fisco_workdir }}/agency_{{ agency.name }}"
   changed_when: false
-
-
-  # with_fileglob:
-  #   - "{{ fisco_workdir }}/agency_{{ agency.name }}/agency_{{ agency.name }}_node_info/cert*.crt"
-  # when: agency.name != __same_group_leader
-
-# - name: “创世区块机构 {{ __group_leader }} 发送节点信息到机构 {{ agency.name }}”
-#   copy:
-#     src: "{{ fisco_workdir }}/agency_{{ __group_leader }}/agency_{{ __group_leader }}_node_info/peers.txt"
-#     dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/peers_{{ __group_leader }}.txt"
-#
-# - name: "机构 {{ agency.name }} 发送节点信息到创世区块机构 {{ __group_leader }}"
-#   copy:
-#     src: "{{ fisco_workdir }}/agency_{{ agency.name }}/agency_{{ agency.name }}_node_info/peers.txt"
-#     dest: "{{ fisco_workdir }}/agency_{{ __group_leader }}/meta/peers_{{ agency.name }}.txt"
-#
-# - name: "发送机构 {{ agency.name }} 证书到创世区块机构 {{ __group_leader }}"
-#   copy:
-#     src: "{{ item }}"
-#     dest: "{{ fisco_workdir }}/agency_{{ __group_leader }}/meta/{{ item | basename }}"
-#   with_fileglob:
-#     - "{{ fisco_workdir }}/agency_{{ agency.name }}/agency_{{ agency.name }}_node_info/*.crt"
