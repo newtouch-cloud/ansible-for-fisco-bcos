@@ -19,3 +19,6 @@ fisco_generator_git: https://github.com/FISCO-BCOS/generator.git
 
 fisco_config:
   log_level: info
+
+# 不要改动这个变量，用于创建临时列表。
+new_node_list: []

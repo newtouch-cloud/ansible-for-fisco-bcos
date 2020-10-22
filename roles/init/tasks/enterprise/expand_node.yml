@@ -1,0 +1,49 @@
+- name: "更新新增节点配置文件"
+  template:
+    src: "expand_node_deployment.ini.j2"
+    dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/conf/node_deployment.ini"
+    mode: 0600
+    backup: true
+
+- name: "生成机构新增节点信息"
+  command: "./generator --generate_all_certificates ./agency_{{ agency.name }}_node_info_expand_{{ new_node_list | hash('md5') }}"
+  args:
+    chdir: "{{ fisco_workdir }}/agency_{{ agency.name }}"
+  changed_when: false
+
+- name: "检查是否有其它节点连接信息"
+  stat:
+    path: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/peers_{{ item }}.txt"
+    get_attributes: false
+    get_checksum: false
+    get_mime: false
+  loop: "{{ agency_initialed }}"
+  loop_control:
+    label: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/peers_{{ item }}.txt"
+  register: __peer_file
+
+- name: 获取其它节点连接信息的文件路径
+  set_fact:
+    peer_file_path: >-
+      {{ __peer_file.results
+        | selectattr('invocation.module_args.path', 'defined')
+        | selectattr('stat.exists')
+        | map(attribute='invocation.module_args.path')
+        | unique
+        | first
+      }}
+
+- name: "添加新增节点到 {{ peer_file_path }}"
+  lineinfile:
+    path: "{{ peer_file_path }}"
+    line: "{{ item.split(':')[2] }}:{{ item.split(':')[3] }}"
+  loop: "{{ node_list }}"
+  when:
+    - (item.split(':')[0] | int) == agency.name
+    - (item.split(':')[1] | int) == agency.group_id
+
+- name: "生成新增节点配置在 {{ fisco_workdir }}/agency_{{ agency.name }}/fisco_deploy_agency_{{ agency.name }}_expand_{{ new_node_list | hash('md5') }}"
+  command: "./generator --build_install_package {{ peer_file_path }} ./fisco_deploy_agency_{{ agency.name }}_expand_{{ new_node_list | hash('md5') }}"
+  args:
+    chdir: "{{ fisco_workdir }}/agency_{{ agency.name }}/"
+  changed_when: false

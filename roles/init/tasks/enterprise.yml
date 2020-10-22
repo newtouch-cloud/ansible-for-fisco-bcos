@@ -1,10 +1,6 @@
 - block:
     - include_tasks: enterprise/set_stat.yml
 
-- block:
-    - include_tasks: enterprise/install_generator.yml
-  when: not __generator_dir.stat.exists
-
 - include_tasks: enterprise/generate_agency_certificate.yml
   loop: "{{ agencies }}"
   loop_control:
@@ -39,6 +35,16 @@
     loop_var: agency
     label: "{{ agency.name }}"
   when: agency.name not in agency_initialed
+
+- include_tasks: enterprise/expand_node.yml
+  loop: "{{ agencies }}"
+  loop_control:
+    loop_var: agency
+    label: "{{ agency.name }}"
+  when:
+    - new_node_list != []
+    - agency.name in agency_initialed
+    - new_node_list | regex_search(agency.name + ':', multiline=True, ignorecase=True)
 
 - include_tasks: enterprise/post_job.yml
 

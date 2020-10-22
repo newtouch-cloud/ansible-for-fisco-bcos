@@ -1,0 +1,13 @@
+[group]
+group_id={{ agency.group_id }}
+
+{% for node in new_node_list if (node.split(':')[1] | int) == agency.group_id %}
+[node{{ loop.index0 }}]
+p2p_ip={{ node.split(':')[2] }}
+rpc_ip={{ node.split(':')[2] }}
+channel_ip=0.0.0.0
+p2p_listen_port={{ node.split(':')[3] | default('30300') }}
+channel_listen_port={{ node.split(':')[4] | default('20200') }}
+jsonrpc_listen_port={{ node.split(':')[5] | default('8545') }}
+
+{% endfor %}

@@ -6,6 +6,10 @@
     get_mime: false
   register: __generator_dir
 
+- block:
+    - include_tasks: enterprise/install_generator.yml
+  when: not __generator_dir.stat.exists
+
 - name: "生成节点清单 {{ inventory_dir }}/deploy/node_list.yml"
   template:
     src: roles/init/templates/node_list.j2
@@ -20,14 +24,10 @@
     node_list: "{{ node_list | sort }}"
     pre_node_list_path: "{{ lookup('pipe', 'ls -1tr inventories/sample/deploy/node_list.yml.*~ | tail -n1') }}"
 
-- name: 创建新增节点清单
-  group_by:
-    key: new_node_list
+- name: 创建新增节点清单 'new_node_list'
+  set_fact:
+    new_node_list: "{{ new_node_list }} + [ '{{ item }}' ]"
   loop: "{{ node_list }}"
   when:
     - pre_node_list_path != ''
     - item not in lookup('file', pre_node_list_path)
-
-- debug:
-    msg: "{{ new_node_list }}"
-  when: new_node_list is defined
