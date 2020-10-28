@@ -1,4 +1,4 @@
 - hosts: localhost
   become: no
   roles:
-    - init
+    - fisco_bcos

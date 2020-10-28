@@ -1,7 +1,7 @@
 [group]
 group_id={{ agency.group_id }}
 
-{% for node in node_list if (node.split(':')[1] | int) == agency.group_id %}
+{% for node in node_list if (node.split(':')[1] | int) == agency.group_id and node.split(':')[0] == agency.name %}
 [node{{ loop.index0 }}]
 p2p_ip={{ node.split(':')[2] }}
 rpc_ip={{ node.split(':')[2] }}

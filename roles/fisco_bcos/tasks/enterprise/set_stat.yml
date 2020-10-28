@@ -12,7 +12,7 @@
 
 - name: "生成节点清单 {{ inventory_dir }}/deploy/node_list.yml"
   template:
-    src: roles/init/templates/node_list.j2
+    src: "{{ role_path }}/templates/node_list.j2"
     dest: "{{ inventory_dir }}/deploy/node_list.yml"
     backup: true
 

@@ -1,15 +1,15 @@
-# 机构名称:群组编号:节点IP:P2P端口:Channel端口:RPC端口
+# 机构名称:群组编号:节点IP:P2P端口:Channel端口:RPC端口:额外目标群组编号
 
 node_list:
 {% for node in agencies|subelements('nodes') %}
 {# 单 IP 多节点 #}
 {% if node.1.split(':')[1] is defined %}
 {% for i in range(0, node.1.split(':')[1]|int)|list %}
-  - {{ node.0.name }}:{{ node.0.group_id }}:{{ node.1.split(':')[0] }}:{{ 30300 + i }}:{{ 20200 + i }}:{{ 8545 + i }}
+  - {{ node.0.name }}:{{ node.0.group_id }}:{{ node.1.split(':')[0] }}:{{ 30300 + i }}:{{ 20200 + i }}:{{ 8545 + i }}:[{{ node.0.group_join_to | default('0') | join(',') }}]
 {% endfor %}
 {% else %}
 {# 单 IP 单节点 #}
-  - {{ node.0.name }}:{{ node.0.group_id }}:{{ node.1.split(':')[0] }}:30300:20200:8545
+  - {{ node.0.name }}:{{ node.0.group_id }}:{{ node.1.split(':')[0] }}:30300:20200:8545:[{{ node.0.group_join_to | default('0') | join(',') }}]
 {% endif %}
 {% endfor %}
 
@@ -29,6 +29,6 @@ agency_initialed:
 {% if lookup('file', fisco_workdir + '/agency_' + item + '/fisco_deploy_agency_' + item + '/start_all.sh', errors='ignore') %}
   - {{ item }}
 {% else %}
-  - "Agency {{ item }} not initialed"
+  - "Agency {{ item }} has not been initialed"
 {% endif %}
 {% endfor %}

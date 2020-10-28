@@ -1,42 +1,81 @@
 # 注意：本剧本只用于测试场景，生产环境请手动传送对应的压缩包，并解压执行。
 - hosts: test
-  serial: 1
+  # serial: 1
   become: true
   vars_files:
-    - roles/init/defaults/main.yml
+    - roles/fisco_bcos/defaults/main.yml
+    - inventories/sample/deploy/node_list.yml
   tasks:
-    - name: 同步
+    - name: 查找节点配置文件夹路径
+      find:
+        paths: "{{ fisco_workdir }}"
+        patterns: "node_*"
+        file_type: directory
+        recurse: true
+        use_regex: true
+      register: node_paths
+      delegate_to: localhost
+
+    - name: 同步节点文件
       synchronize:
-        src: "{{ fisco_workdir }}/agency_{{ item.0.name }}/fisco_deploy_agency_{{ item.0.name }}/node_{{ item.1.split(':')[0] }}_{{ item.1.split(':')[1] | default('30300') }}"
+        src: "{{ item.0 }}"
         dest: /opt/
         use_ssh_args: true
-        delete: true
-      with_subelements:
-        - "{{ agencies }}"
-        - nodes
-      when: ansible_host == item.1.split(':')[0]
+        rsync_opts:
+          - "--chown=vagrant:vagrant"
+        # delete: true
+      with_nested:
+        - "{{ node_paths.files | map(attribute='path') | reject('search', 'meta') | sort }}"
+        - "{{ node_list | sort }}"
+      loop_control:
+        label: "{{ item.0 }}"
+      when:
+        - ansible_host == item.1.split(':')[2]
+        - ('node_' + item.1.split(':')[2] + '_' + item.1.split(':')[3]) == (item.0 | basename)
       register: __sync_st
 
-    # - block:
-    #     - name: 停止
-    #       shell: ./stop.sh
-    #       args:
-    #         chdir: "/opt/node_{{ ansible_host }}_30300"
-    #       changed_when: false
-    #       ignore_errors: true
-    #
-    #     - name: 等待
-    #       wait_for:
-    #         port: 30300
-    #         state: stopped
-    #
-    #     - name: 启动
-    #       shell: ./start.sh
-    #       args:
-    #         chdir: "/opt/node_{{ ansible_host }}_30300"
-    #       changed_when: false
-    #
-    #     - name: 等待
-    #       wait_for:
-    #         port: 30300
-    #   when: __sync_st is changed
+    - block:
+        - name: 停止
+          # become_user: vagrant
+          shell: "find /opt/node_{{ ansible_host }}_* -type f -name stop.sh -exec {} \\; || exit 0"
+          changed_when: false
+
+        - pause:
+            seconds: 3
+      when: __sync_st is changed
+
+    - name: 启动
+      become_user: vagrant
+      raw: "find /opt/node_{{ ansible_host }}_* -type f -name start.sh -exec {} \\;"
+      changed_when: false
+
+    - name: 查找控制台文件夹路径
+      find:
+        paths: "{{ fisco_workdir }}"
+        patterns: "console"
+        file_type: directory
+        recurse: true
+        use_regex: true
+      register: console_paths
+      delegate_to: localhost
+
+    - name: 同步控制台文件
+      synchronize:
+        src: "{{ item.0 }}"
+        dest: /opt/
+        use_ssh_args: true
+        # delete: true
+      with_nested:
+        - "{{ console_paths.files | map(attribute='path') | reject('search', 'contract') | sort }}"
+        - "{{ agencies }}"
+      loop_control:
+        label: "{{ item.0 }}"
+      when:
+        - item.0 | regex_search('agency_' + item.1.name)
+        - item.1 | regex_search(ansible_host)
+      register: __console_sync
+
+    - name: 安装 jdk
+      apt:
+        name: default-jre
+      when: __console_sync is changed

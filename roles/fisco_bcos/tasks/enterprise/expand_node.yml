@@ -37,9 +37,11 @@
   lineinfile:
     path: "{{ peer_file_path }}"
     line: "{{ item.split(':')[2] }}:{{ item.split(':')[3] }}"
-  loop: "{{ node_list }}"
+  loop: "{{ new_node_list }}"
+  loop_control:
+    label: "{{ item.split(':')[2] }}:{{ item.split(':')[3] }}"
   when:
-    - (item.split(':')[0] | int) == agency.name
+    - item.split(':')[0] == agency.name
     - (item.split(':')[1] | int) == agency.group_id
 
 - name: "生成新增节点配置在 {{ fisco_workdir }}/agency_{{ agency.name }}/fisco_deploy_agency_{{ agency.name }}_expand_{{ new_node_list | hash('md5') }}"

@@ -1,52 +1,62 @@
-- block:
-    - include_tasks: enterprise/set_stat.yml
+- import_tasks: enterprise/set_stat.yml
+  tags: always
 
-- include_tasks: enterprise/generate_agency_certificate.yml
+- name: 生成机构证书
+  include_tasks: enterprise/generate_agency_certificate.yml
   loop: "{{ agencies }}"
   loop_control:
     loop_var: agency
     label: "{{ agency.name }}"
   when: agency.name not in agency_initialed
 
-- include_tasks: enterprise/generate_agency_config.yml
+- name: 生成机构配置
+  include_tasks: enterprise/generate_agency_config.yml
   loop: "{{ agencies }}"
   loop_control:
     loop_var: agency
     label: "{{ agency.name }}"
   when: agency.name not in agency_initialed
 
-- include_tasks: enterprise/generate_peers_file.yml
+- name: 生成节点连接信息文件
+  include_tasks: enterprise/generate_peers_file.yml
   loop: "{{ agencies }}"
   loop_control:
     loop_var: agency
     label: "{{ agency.name }}"
   when: agency.name not in agency_initialed
 
-- include_tasks: enterprise/generate_genesis.yml
+- name: 创建创世区块
+  include_tasks: enterprise/generate_genesis.yml
   loop: "{{ agencies }}"
   loop_control:
     loop_var: agency
     label: "{{ agency.name }}"
   when: agency.name not in agency_initialed
 
-- include_tasks: enterprise/build_install_package.yml
+- name: 生成部署文件
+  include_tasks: enterprise/build_install_package.yml
   loop: "{{ agencies }}"
   loop_control:
     loop_var: agency
     label: "{{ agency.name }}"
   when: agency.name not in agency_initialed
 
-- include_tasks: enterprise/expand_node.yml
+- name: 节点扩展
+  include_tasks:
+    file: enterprise/expand_node.yml
+    apply:
+      tags: expand
   loop: "{{ agencies }}"
   loop_control:
     loop_var: agency
     label: "{{ agency.name }}"
+  tags: expand
   when:
     - new_node_list != []
     - agency.name in agency_initialed
     - new_node_list | regex_search(agency.name + ':', multiline=True, ignorecase=True)
 
-- include_tasks: enterprise/post_job.yml
+- import_tasks: enterprise/post_job.yml
 
 # - name: 打包部署文件
 #   archive:
