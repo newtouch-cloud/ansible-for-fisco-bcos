@@ -1,3 +1,6 @@
+# true 表示使用国密模式
+fisco_gm_enabled: true
+
 # 变量注释
 # name:           （必填）机构名称
 # create_genesis: 是否生成创世区块，同组必须有且只有 1 个创世区块机构。（不设置则默认为 false）
@@ -9,20 +12,20 @@ agencies:
   - name: A
     create_genesis: true
     nodes:
-      - 172.17.8.101
-      - 172.17.8.102
+      - 172.17.8.101:3
+      - 172.17.8.102:3
     group_id: 1
     group_join_to:
       - 2
   - name: B
     nodes:
-      - 172.17.8.103
-      - 172.17.8.104
+      - 172.17.8.103:3
+      - 172.17.8.104:3
     group_id: 1
   - name: C
     create_genesis: true
     nodes:
-      - 172.17.8.105
-      - 172.17.8.106
-      - 172.17.8.107
+      - 172.17.8.105:3
+      - 172.17.8.106:3
+      - 172.17.8.107:3
     group_id: 2

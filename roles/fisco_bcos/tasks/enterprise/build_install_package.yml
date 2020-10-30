@@ -1,7 +1,7 @@
 - include_tasks: enterprise/check_list.yml
 
-- name: "同组生成机构 {{ agency.name }} 部署文件"
-  command: ./generator --build_install_package ./meta/peers_{{ item }}.txt ./fisco_deploy_agency_{{ agency.name }}/
+- name: "同组 | 生成机构 {{ agency.name }} 部署文件"
+  command: "./generator --build_install_package ./meta/peers_{{ item }}.txt ./fisco_deploy_agency_{{ agency.name }}/ {{ fisco_gm_enabled | ternary('-g', '') }}"
   args:
     chdir: "{{ fisco_workdir }}/agency_{{ agency.name }}"
   changed_when: false
@@ -11,8 +11,8 @@
   when: item != agency.name
 
 - block:
-    - name: "跨组生成机构 {{ agency.name }} 部署文件"
-      command: ./generator --build_install_package ./meta/peers_{{ item }}.txt ./fisco_deploy_agency_{{ agency.name }}/
+    - name: "跨组 | 生成机构 {{ agency.name }} 部署文件"
+      command: "./generator --build_install_package ./meta/peers_{{ item }}.txt ./fisco_deploy_agency_{{ agency.name }}/ {{ fisco_gm_enabled | ternary('-g', '') }}"
       args:
         chdir: "{{ fisco_workdir }}/agency_{{ agency.name }}"
       changed_when: false
@@ -20,7 +20,7 @@
       loop_control:
         label: "机构 {{ agency.name }} 使用 ./meta/peers_{{ item }}.txt 生产部署文件。"
 
-    - name: "添加组 {{ agency.group_id }} 的创世区块到其它组"
+    - name: "跨组 | 添加组 {{ agency.group_id }} 的创世区块到其它组"
       command: ./generator --add_group ./meta/group.{{ agency.group_id }}.genesis ./fisco_deploy_agency_{{ item }}/
       args:
         chdir: "{{ fisco_workdir }}/agency_{{ item }}"
@@ -29,7 +29,7 @@
       loop_control:
         label: "机构 {{ item }} 添加了 ./meta/group.{{ agency.group_id }}.genesis。"
 
-    - name: "添加机构 {{ agency.name }} 的节点信息到其它组"
+    - name: "跨组 | 添加机构 {{ agency.name }} 的节点信息到其它组"
       command: ./generator --add_peers ./meta/peers_{{ agency.name }}.txt ./fisco_deploy_agency_{{ item }}/
       args:
         chdir: "{{ fisco_workdir }}/agency_{{ item }}"

@@ -1,6 +1,6 @@
 - name: "检查机构证书是否已生成"
   stat:
-    path: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/agency.crt"
+    path: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/{{ fisco_gm_enabled | ternary('gm', '') }}agency.crt"
     get_attributes: false
     get_checksum: false
     get_mime: false
@@ -15,16 +15,38 @@
         warn: false
       changed_when: false
 
-    - name: "生成机构证书"
+    - name: "普通版 | 生成机构证书"
       command: "./generator --generate_agency_certificate ./dir_agency_ca ./dir_chain_ca agency_{{ agency.name }}"
       args:
         chdir: "{{ fisco_workdir }}/generator/"
       changed_when: false
+      when: not fisco_gm_enabled
 
-    - name: "拷贝机构证书"
+    - name: "普通版 | 拷贝机构证书"
       copy:
         src: "{{ item }}"
         dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/{{ item | basename }}"
       with_fileglob:
         - "{{ fisco_workdir + '/generator/dir_agency_ca/agency_' + agency.name + '/*' }}"
+      when: not fisco_gm_enabled
+
+    - name: "国密版 | 生成机构证书"
+      command: "{{ item }}"
+      with_items:
+        - "./generator --generate_agency_certificate ./dir_agency_ca ./dir_chain_ca agency_{{ agency.name }} -g"
+        - "./generator --generate_agency_certificate ./dir_agency_ca ./dir_chain_ca_normal agency_{{ agency.name }}_normal"
+      args:
+        chdir: "{{ fisco_workdir }}/generator/"
+      changed_when: false
+      when: fisco_gm_enabled
+
+    - name: "国密版 | 拷贝机构证书"
+      copy:
+        src: "{{ item }}"
+        dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/{{ item | basename }}"
+      with_fileglob:
+        - "{{ fisco_workdir + '/generator/dir_agency_ca/agency_' + agency.name + '/*' }}"
+        - "{{ fisco_workdir + '/generator/dir_agency_ca/agency_' + agency.name + '_normal/*' }}"
+      when: fisco_gm_enabled
+
   when: not __agency_ca_st.stat.exists

@@ -13,7 +13,7 @@
     src: "{{ item }}"
     dest: "{{ fisco_workdir }}/agency_{{ __same_group_leader }}/meta/{{ item | basename }}"
   with_fileglob:
-    - "{{ fisco_workdir }}/agency_{{ agency.name }}/agency_{{ agency.name }}_node_info/cert*.crt"
+    - "{{ fisco_workdir }}/agency_{{ agency.name }}/agency_{{ agency.name }}_node_info/{{ fisco_gm_enabled | ternary('gm', '') }}cert*.crt"
   when: agency.name != __same_group_leader
 
 # 其它组
@@ -31,6 +31,6 @@
     loop: "{{ __other_agency_names }}"
 
   - name: "拷贝其它机构节点证书"
-    shell: "cp {{ fisco_workdir }}/agency_{{ item }}/agency_{{ item }}_node_info/cert*.crt {{ fisco_workdir }}/agency_{{ agency.name }}/meta/"
+    shell: "cp {{ fisco_workdir }}/agency_{{ item }}/agency_{{ item }}_node_info/{{ fisco_gm_enabled | ternary('gm', '') }}cert*.crt {{ fisco_workdir }}/agency_{{ agency.name }}/meta/"
     loop: "{{ __other_agency_names }}"
     changed_when: false

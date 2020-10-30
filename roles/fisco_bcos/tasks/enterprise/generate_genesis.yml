@@ -1,23 +1,23 @@
 - include_tasks: enterprise/check_list.yml
 
 - name: "在机构 {{ __same_group_leader }} 生成群组 {{ agency.group_id }} 创世区块"
-  command: ./generator --create_group_genesis ./group
+  command: "./generator --create_group_genesis ./group {{ fisco_gm_enabled | ternary('-g', '') }}"
   args:
     chdir: "{{ fisco_workdir }}/agency_{{ __same_group_leader }}"
   changed_when: false
-
-- name: "拷贝创世区块 'group.{{ agency.group_id }}.genesis' 到其它机构"
-  copy:
-    src: "{{ fisco_workdir }}/agency_{{ agency.name }}/group/group.{{ agency.group_id }}.genesis"
-    dest: "{{ fisco_workdir }}/agency_{{ item }}/meta/group.{{ agency.group_id }}.genesis"
-  loop: "{{ __other_agency_names }}"
-  when: agency.name == __same_group_leader
 
 - name: "同组 | 拷贝创世区块 'group.{{ agency.group_id }}.genesis' 到 {{ fisco_workdir }}/agency_{{ agency.name }}/meta/"
   copy:
     src: "{{ fisco_workdir }}/agency_{{ __same_group_leader }}/group/group.{{ agency.group_id }}.genesis"
     dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/group.{{ agency.group_id }}.genesis"
   when: agency.name != __same_group_leader
+
+- name: "跨组 | 拷贝创世区块 'group.{{ agency.group_id }}.genesis' 到其它机构"
+  copy:
+    src: "{{ fisco_workdir }}/agency_{{ agency.name }}/group/group.{{ agency.group_id }}.genesis"
+    dest: "{{ fisco_workdir }}/agency_{{ item }}/meta/group.{{ agency.group_id }}.genesis"
+  loop: "{{ __other_agency_names }}"
+  when: agency.name == __same_group_leader
 
 - name: "生成控制台 {{ fisco_workdir }}/agency_{{ agency.name }}/console"
   command: ./generator --download_console ./ --cdn

@@ -6,7 +6,7 @@
     backup: true
 
 - name: "生成机构新增节点信息"
-  command: "./generator --generate_all_certificates ./agency_{{ agency.name }}_node_info_expand_{{ new_node_list | hash('md5') }}"
+  command: "./generator --generate_all_certificates ./agency_{{ agency.name }}_node_info_expand_{{ new_node_list | hash('md5') }} {{ fisco_gm_enabled | ternary('-g', '') }}"
   args:
     chdir: "{{ fisco_workdir }}/agency_{{ agency.name }}"
   changed_when: false
@@ -45,7 +45,7 @@
     - (item.split(':')[1] | int) == agency.group_id
 
 - name: "生成新增节点配置在 {{ fisco_workdir }}/agency_{{ agency.name }}/fisco_deploy_agency_{{ agency.name }}_expand_{{ new_node_list | hash('md5') }}"
-  command: "./generator --build_install_package {{ peer_file_path }} ./fisco_deploy_agency_{{ agency.name }}_expand_{{ new_node_list | hash('md5') }}"
+  command: "./generator --build_install_package {{ peer_file_path }} ./fisco_deploy_agency_{{ agency.name }}_expand_{{ new_node_list | hash('md5') }} {{ fisco_gm_enabled | ternary('-g', '') }}"
   args:
     chdir: "{{ fisco_workdir }}/agency_{{ agency.name }}/"
   changed_when: false

@@ -13,7 +13,7 @@
     mode: 0600
 
 - name: "生成机构节点信息"
-  command: "./generator --generate_all_certificates ./agency_{{ agency.name }}_node_info"
+  command: "./generator --generate_all_certificates ./agency_{{ agency.name }}_node_info {{ fisco_gm_enabled | ternary('-g', '') }}"
   args:
     chdir: "{{ fisco_workdir }}/agency_{{ agency.name }}"
   changed_when: false

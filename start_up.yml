@@ -15,6 +15,13 @@
       register: node_paths
       delegate_to: localhost
 
+    - name: 停止
+      shell: "find /opt/node_{{ ansible_host }}_* -type f -name stop.sh -exec {} \\; || exit 0"
+      changed_when: false
+
+    - pause:
+        seconds: 3
+
     - name: 同步节点文件
       become: true
       synchronize:
@@ -23,7 +30,7 @@
         use_ssh_args: true
         rsync_opts:
           - "--chown=vagrant:vagrant"
-        # delete: true
+        delete: true
       with_nested:
         - "{{ node_paths.files | map(attribute='path') | reject('search', 'meta') | sort }}"
         - "{{ node_list | sort }}"
@@ -33,15 +40,6 @@
         - ansible_host == item.1.split(':')[2]
         - ('node_' + item.1.split(':')[2] + '_' + item.1.split(':')[3]) == (item.0 | basename)
       register: __sync_st
-
-    - block:
-        - name: 停止
-          shell: "find /opt/node_{{ ansible_host }}_* -type f -name stop.sh -exec {} \\; || exit 0"
-          changed_when: false
-
-        - pause:
-            seconds: 3
-      when: __sync_st is changed
 
     - name: 启动
       raw: "find /opt/node_{{ ansible_host }}_* -type f -name start.sh -exec {} \\;"
@@ -65,7 +63,7 @@
         use_ssh_args: true
         rsync_opts:
           - "--chown=vagrant:vagrant"
-        # delete: true
+        delete: true
       with_nested:
         - "{{ console_paths.files | map(attribute='path') | reject('search', 'contract') | sort }}"
         - "{{ agencies }}"
@@ -83,4 +81,4 @@
         update_cache: true
         autoclean: true
         autoremove: true
-      # when: __console_sync is changed
+      when: __console_sync is changed

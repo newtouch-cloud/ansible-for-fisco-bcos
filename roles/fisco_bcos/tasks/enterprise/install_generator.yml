@@ -26,9 +26,21 @@
     chdir: "{{ fisco_workdir }}/generator"
   changed_when: false
 
-- name: 初始化联盟链证书
+- name: "普通版 | 生成证书"
   command: "./generator --generate_chain_certificate ./dir_chain_ca"
   args:
     chdir: "{{ fisco_workdir }}/generator/"
     warn: false
   changed_when: false
+  when: not fisco_gm_enabled
+
+- name: 国密版 | 生成证书
+  command: "{{ item }}"
+  with_items:
+    - "./generator --generate_chain_certificate ./dir_chain_ca -g"
+    - "./generator --generate_chain_certificate ./dir_chain_ca_normal"
+  args:
+    chdir: "{{ fisco_workdir }}/generator/"
+    warn: false
+  changed_when: false
+  when: fisco_gm_enabled

@@ -15,6 +15,7 @@
     src: "{{ role_path }}/templates/node_list.j2"
     dest: "{{ inventory_dir }}/deploy/node_list.yml"
     backup: true
+  register: __node_list_update
 
 - name: 加载当前节点清单
   include_vars: "{{ inventory_dir }}/deploy/node_list.yml"
