@@ -3,8 +3,8 @@ fisco_deploy_mode: single
 
 fisco_workdir: "{{ inventory_dir }}/deploy"
 
-# TODO 启用国密版本
-fisco_national_cryptography_enabled: false
+# TODO 启用国密版本 true 表示节点使用国密模式
+fisco_gm_enabled: false
 
 # Refere https://fisco-bcos-documentation.readthedocs.io/en/latest/docs/installation.html
 # General
@@ -22,3 +22,14 @@ fisco_config:
 
 # 不要改动这个变量，用于创建临时列表。
 new_node_list: []
+
+# TODO
+#------------ config.ini 配置开始 ------------#
+fisco_config_ini:
+  enable_compress: false      # 是否启用 P2P 网络压缩。
+  log_flush: true             # 默认开启日志自动刷新，若需提升系统性能，建议将该值设置为 false。
+  log_enable_statistic: false # 统计日志开关。配置成 true，开启网络流量和 Gas 统计功能。
+  group_data_path: "data/"    # 群组数据存储路径。
+  stat_flush_interval: 60     # 配置网络统计日志输出间隔，单位是秒，默认为60。
+
+#------------ config.ini 配置结束 ------------#

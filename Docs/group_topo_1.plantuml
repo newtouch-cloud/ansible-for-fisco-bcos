@@ -1,0 +1,23 @@
+@startuml
+!include <tupadr3/common>
+!include <tupadr3/font-awesome/server>
+
+left to right direction
+
+title 星形拓扑
+
+caption 中心服务器节点 A 同时属于多个群组，运行多家服务器应用，其他每家服务器属于不同群组，运行各自应用。
+
+FA_SERVER("A","服务器 A")
+
+FA_SERVER("B","服务器 B")
+
+FA_SERVER("C","服务器 C")
+
+FA_SERVER("D","服务器 D")
+
+B <--> A: "群组 1"
+A <--> C: "群组 2"
+A <--> D: "群组 3"
+
+@enduml

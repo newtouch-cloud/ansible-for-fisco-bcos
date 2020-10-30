@@ -1,7 +1,6 @@
 # 注意：本剧本只用于测试场景，生产环境请手动传送对应的压缩包，并解压执行。
 - hosts: test
   # serial: 1
-  become: true
   vars_files:
     - roles/fisco_bcos/defaults/main.yml
     - inventories/sample/deploy/node_list.yml
@@ -17,6 +16,7 @@
       delegate_to: localhost
 
     - name: 同步节点文件
+      become: true
       synchronize:
         src: "{{ item.0 }}"
         dest: /opt/
@@ -36,7 +36,6 @@
 
     - block:
         - name: 停止
-          # become_user: vagrant
           shell: "find /opt/node_{{ ansible_host }}_* -type f -name stop.sh -exec {} \\; || exit 0"
           changed_when: false
 
@@ -45,7 +44,6 @@
       when: __sync_st is changed
 
     - name: 启动
-      become_user: vagrant
       raw: "find /opt/node_{{ ansible_host }}_* -type f -name start.sh -exec {} \\;"
       changed_when: false
 
@@ -60,10 +58,13 @@
       delegate_to: localhost
 
     - name: 同步控制台文件
+      become: true
       synchronize:
         src: "{{ item.0 }}"
         dest: /opt/
         use_ssh_args: true
+        rsync_opts:
+          - "--chown=vagrant:vagrant"
         # delete: true
       with_nested:
         - "{{ console_paths.files | map(attribute='path') | reject('search', 'contract') | sort }}"
@@ -76,6 +77,10 @@
       register: __console_sync
 
     - name: 安装 jdk
+      become: true
       apt:
         name: default-jre
-      when: __console_sync is changed
+        update_cache: true
+        autoclean: true
+        autoremove: true
+      # when: __console_sync is changed

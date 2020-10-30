@@ -6,35 +6,47 @@
   loop_control:
     label: "{{ item.name }}"
   changed_when: false
-  when: console_enabled | default(false)
+  when: not lookup('fileglob', fisco_workdir + '/agency_' + item.name + '/console/start.sh')
 
-- name: "清空控制台的已有节点连接信息"
-  xml:
-    path: "{{ fisco_workdir }}/agency_{{ item.name }}/console/conf/applicationContext.xml"
-    xpath: "/x:beans/x:bean[@id='groupChannelConnectionsConfig']/x:property[@name='allChannelConnections']/x:list/x:bean[@id='group{{ item.group_id }}']/x:property[@name='connectionsStr']/x:list/*"
-    namespaces:
-      x: http://www.springframework.org/schema/beans
-    state: absent
-  loop: "{{ agencies }}"
-  loop_control:
-    label: "{{ fisco_workdir }}/agency_{{ item.name }}/console/conf/applicationContext.xml"
-  changed_when: false
+- block:
+    - name: "清空控制台的已有节点连接信息"
+      xml:
+        path: "{{ fisco_workdir }}/agency_{{ item.name }}/console/conf/applicationContext.xml"
+        xpath: "/x:beans/x:bean[@id='groupChannelConnectionsConfig']/x:property[@name='allChannelConnections']/x:list/x:bean[@id='group{{ item.group_id }}']/x:property[@name='connectionsStr']/x:list/*"
+        namespaces:
+          x: http://www.springframework.org/schema/beans
+        state: absent
+      loop: "{{ agencies }}"
+      loop_control:
+        label: "{{ fisco_workdir }}/agency_{{ item.name }}/console/conf/applicationContext.xml"
+      changed_when: false
 
-- name: "重新添加节点连接信息到控制台配置"
-  xml:
-    path: "{{ fisco_workdir }}/agency_{{ item.0.split(':')[0] }}/console/conf/applicationContext.xml"
-    xpath: "/x:beans/x:bean[@id='groupChannelConnectionsConfig']/x:property[@name='allChannelConnections']/x:list/x:bean[@id='group{{ item.0.split(':')[1] }}']/x:property[@name='connectionsStr']/x:list"
-    namespaces:
-      x: http://www.springframework.org/schema/beans
-    add_children:
-      - value: "{{ item.0.split(':')[2] }}:{{ item.0.split(':')[4] }}"
-    pretty_print: true
-  with_nested:
-    - "{{ node_list }}"
-    - "{{ agencies }}"
-  loop_control:
-    label: "{{ item.0.split(':')[2] }}:{{ item.0.split(':')[4] }} 添加到 {{ fisco_workdir }}/agency_{{ item.0.split(':')[0] }}/console/conf/applicationContext.xml"
-  when:
-    # - item.0.split(':')[0] == item.1.name
-    - (item.0.split(':')[1] | int) == item.1.group_id
-  changed_when: false
+    - name: "重新添加节点连接信息到控制台配置"
+      xml:
+        path: "{{ fisco_workdir }}/agency_{{ item.0.split(':')[0] }}/console/conf/applicationContext.xml"
+        xpath: "/x:beans/x:bean[@id='groupChannelConnectionsConfig']/x:property[@name='allChannelConnections']/x:list/x:bean[@id='group{{ item.0.split(':')[1] }}']/x:property[@name='connectionsStr']/x:list"
+        namespaces:
+          x: http://www.springframework.org/schema/beans
+        add_children:
+          - value: "{{ item.0.split(':')[2] }}:{{ item.0.split(':')[4] }}"
+        pretty_print: true
+      with_nested:
+        - "{{ node_list }}"
+        - "{{ agencies }}"
+      loop_control:
+        label: "{{ item.0.split(':')[2] }}:{{ item.0.split(':')[4] }} 添加到 {{ fisco_workdir }}/agency_{{ item.0.split(':')[0] }}/console/conf/applicationContext.xml"
+      when: (item.0.split(':')[1] | int) == item.1.group_id
+      changed_when: false
+
+    - name: 备份当前 node_list.yml
+      copy:
+        src: "{{ fisco_workdir }}/node_list.yml"
+        dest: "{{ fisco_workdir }}/node_list.yml.backup~"
+
+  when: new_node_list != []
+
+- name: 生成部署报告
+  template:
+    src: summary.j2
+    dest: "{{ fisco_workdir }}/summary.txt"
+    # backup: true

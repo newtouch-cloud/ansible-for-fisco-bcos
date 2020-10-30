@@ -1,0 +1,29 @@
+@startuml
+!include <tupadr3/common>
+!include <tupadr3/font-awesome/server>
+!include <archimate/Archimate>
+
+title 并行多组
+
+caption 区块链中每个节点均属于多个群组，可用于多方不同业务的横向扩展，或者同一业务的纵向扩展。
+
+' Elements
+package "机构 A" as A
+
+package "机构 B" as B
+
+package "机构 C" as C
+
+package "机构 D" as D
+
+A <-[#red]-> B: Group 1
+B <-[#red]-> C: Group 1
+C <-[#red]-> D: Group 1
+D <-[#red]-> A: Group 1
+
+A <-[#blue]-> B: Group 2
+B <-[#blue]-> C: Group 2
+C <-[#blue]-> D: Group 2
+D <-[#blue]-> A: Group 2
+
+@enduml

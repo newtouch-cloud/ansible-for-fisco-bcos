@@ -1,0 +1,3 @@
+[Generator]
+执行文件路径： {{ fisco_workdir }}/generator/generator
+版本号：      {{ lookup('pipe', 'cd ' + fisco_workdir + '/generator && ./generator -v' ) | replace('INFO | ', '') }}

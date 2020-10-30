@@ -1,4 +1,5 @@
 - hosts: localhost
   become: no
+  any_errors_fatal: true
   roles:
     - fisco_bcos
