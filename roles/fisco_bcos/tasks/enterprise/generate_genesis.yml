@@ -17,6 +17,8 @@
     src: "{{ fisco_workdir }}/agency_{{ agency.name }}/group/group.{{ agency.group_id }}.genesis"
     dest: "{{ fisco_workdir }}/agency_{{ item }}/meta/group.{{ agency.group_id }}.genesis"
   loop: "{{ __other_agency_names }}"
+  loop_control:
+    label: "{{ fisco_workdir }}/agency_{{ item }}/meta/group.{{ agency.group_id }}.genesis"
   when: agency.name == __same_group_leader
 
 - name: "生成控制台 {{ fisco_workdir }}/agency_{{ agency.name }}/console"

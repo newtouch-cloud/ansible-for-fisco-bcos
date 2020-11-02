@@ -1,12 +1,20 @@
+- name: 检查 console 控制台
+  stat:
+    path: "{{ fisco_workdir }}/agency_{{ item.name }}/console/"
+  loop: "{{ agencies }}"
+  loop_control:
+    label: "{{ fisco_workdir }}/agency_{{ item.name }}/console/"
+  register: __console_st
+
 - name: 生成 console 控制台
   command: ./generator --download_console ./ --cdn
   args:
-    chdir: "{{ fisco_workdir }}/agency_{{ item.name }}"
-  loop: "{{ agencies }}"
+    chdir: "{{ fisco_workdir }}/agency_{{ item.item.name }}"
+  loop: "{{ __console_st.results }}"
   loop_control:
-    label: "{{ item.name }}"
+    label: "{{ item.invocation.module_args.path }}"
   changed_when: false
-  when: not lookup('fileglob', fisco_workdir + '/agency_' + item.name + '/console/start.sh')
+  when: not item.stat.exists
 
 - block:
     - name: "清空控制台的已有节点连接信息"

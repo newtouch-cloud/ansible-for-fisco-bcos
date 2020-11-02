@@ -55,7 +55,7 @@
       }}
 
 - debug:
-    msg: "机构 {{ __other_agency_names }} 加入组 {{ agency.group_id }}"
+    msg: "机构 {{ __other_agency_names }} 加入群组 {{ agency.group_id }}"
   when:
     - __other_agency_names != []
     - __other_agency_nodes != []
