@@ -26,7 +26,7 @@ group_id_list:
 # 检查机构是否已经完成初始化。
 agency_initialed:
 {% for item in agencies|map(attribute='name') %}
-{% if lookup('file', fisco_workdir + '/agency_' + item + '/fisco_deploy_agency_' + item + '/start_all.sh', errors='ignore') %}
+{% if lookup('fileglob', fisco_workdir + '/agency_' + item + '/fisco_deploy_agency_' + item, errors='ignore') %}
   - {{ item }}
 {% else %}
   - "Agency {{ item }} has not been initialed"

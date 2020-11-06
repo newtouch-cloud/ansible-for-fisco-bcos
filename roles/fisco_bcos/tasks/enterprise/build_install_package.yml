@@ -21,21 +21,21 @@
         label: "机构 {{ agency.name }} 使用 ./meta/peers_{{ item }}.txt 生产部署文件。"
 
     - name: "跨组 | 添加组 {{ agency.group_id }} 的创世区块到其它组"
-      command: ./generator --add_group ./meta/group.{{ agency.group_id }}.genesis ./fisco_deploy_agency_{{ item }}/
+      command: "./generator --add_group ./meta/group.{{ agency.group_id }}.genesis ./fisco_deploy_agency_{{ item }}/"
       args:
         chdir: "{{ fisco_workdir }}/agency_{{ item }}"
       changed_when: false
       loop: "{{ __other_agency_names }}"
       loop_control:
-        label: "机构 {{ item }} 添加了 ./meta/group.{{ agency.group_id }}.genesis。"
+        label: "./generator --add_group ./meta/group.{{ agency.group_id }}.genesis ./fisco_deploy_agency_{{ item }}/"
 
     - name: "跨组 | 添加机构 {{ agency.name }} 的节点信息到其它组"
-      command: ./generator --add_peers ./meta/peers_{{ agency.name }}.txt ./fisco_deploy_agency_{{ item }}/
+      command: "./generator --add_peers ./meta/peers_{{ agency.name }}.txt ./fisco_deploy_agency_{{ item }}/"
       args:
         chdir: "{{ fisco_workdir }}/agency_{{ item }}"
       changed_when: false
       loop: "{{ __other_agency_names }}"
       loop_control:
-        label: "机构 {{ item }} 添加了 ./meta/peers_{{ agency.name }}.txt。"
+        label: "./generator --add_peers ./meta/peers_{{ agency.name }}.txt ./fisco_deploy_agency_{{ item }}/"
 
   when: __other_agency_names != []

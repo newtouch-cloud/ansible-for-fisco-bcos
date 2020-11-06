@@ -1,0 +1,36 @@
+@startuml
+
+title ansible 自动化步骤
+
+:安装 generator;
+:generator 初始化联盟链证书;
+:基于 generator 目录复制出各个机构的目录;
+:generator 生成并发送各机构证书到机构部署目录下;
+:配置各个机构;
+split
+  :更新区块配置文件;
+split again
+  :更新节点配置文件;
+end split
+:生成各个机构节点信息;
+:生成各个机构 P2P 地址连接信息文件;
+split
+  :同组发送;
+split again
+  :跨组发送;
+end split
+:每个群组指定的机构生成群组创世区块;
+split
+  :同组发送;
+split again
+  :跨组发送;
+end split
+:生成各个机构的部署文件;
+split
+  :同组生成;
+split again
+  :跨组生成（已有群组的机构加入其它群组）;
+end split
+:2 群组 3 机构 6 节点;
+
+@enduml

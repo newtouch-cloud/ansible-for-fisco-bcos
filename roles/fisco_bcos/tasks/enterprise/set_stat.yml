@@ -10,20 +10,20 @@
     - include_tasks: enterprise/install_generator.yml
   when: not __generator_dir.stat.exists
 
-- name: "生成节点清单 {{ inventory_dir }}/deploy/node_list.yml"
+- name: "生成节点清单 {{ fisco_workdir }}/node_list.yml"
   template:
-    src: "{{ role_path }}/templates/node_list.j2"
-    dest: "{{ inventory_dir }}/deploy/node_list.yml"
+    src: "node_list.j2"
+    dest: "{{ fisco_workdir }}/node_list.yml"
     backup: true
   register: __node_list_update
 
 - name: 加载当前节点清单
-  include_vars: "{{ inventory_dir }}/deploy/node_list.yml"
+  include_vars: "{{ fisco_workdir }}/node_list.yml"
 
 - name: 设置动态变量
   set_fact:
     node_list: "{{ node_list | sort }}"
-    pre_node_list_path: "{{ lookup('pipe', 'ls -1tr inventories/sample/deploy/node_list.yml.*~ | tail -n1') }}"
+    pre_node_list_path: "{{ lookup('pipe', 'ls -1tr ' + fisco_workdir + '/node_list.yml.*~ || exit 0 | tail -n1') }}"
 
 - name: 创建新增节点清单 'new_node_list'
   set_fact:

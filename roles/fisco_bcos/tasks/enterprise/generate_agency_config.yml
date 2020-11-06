@@ -1,18 +1,18 @@
 - include_tasks: enterprise/check_list.yml
 
-- name: "更新区块配置文件"
+- name: "更新机构 {{ agency.name }} 区块配置文件"
   template:
     src: "group_genesis.ini.j2"
     dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/conf/group_genesis.ini"
     mode: 0600
 
-- name: "更新节点配置文件"
+- name: "更新机构 {{ agency.name }} 节点配置文件"
   template:
     src: "node_deployment.ini.j2"
     dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/conf/node_deployment.ini"
     mode: 0600
 
-- name: "生成机构节点信息"
+- name: "生成机构 {{ agency.name }} 节点信息"
   command: "./generator --generate_all_certificates ./agency_{{ agency.name }}_node_info {{ fisco_gm_enabled | ternary('-g', '') }}"
   args:
     chdir: "{{ fisco_workdir }}/agency_{{ agency.name }}"

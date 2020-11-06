@@ -11,11 +11,13 @@
   when: item != agency.name
 
 - name: "发送机构 {{ agency.name }} 证书到同组创世区块机构 {{ __same_group_leader }}"
-  copy:
-    src: "{{ item }}"
-    dest: "{{ fisco_workdir }}/agency_{{ __same_group_leader }}/meta/{{ item | basename }}"
-  with_fileglob:
-    - "{{ fisco_workdir }}/agency_{{ agency.name }}/agency_{{ agency.name }}_node_info/{{ fisco_gm_enabled | ternary('gm', '') }}cert*.crt"
+  shell: "cp {{ fisco_workdir }}/agency_{{ agency.name }}/agency_{{ agency.name }}_node_info/{{ fisco_gm_enabled | ternary('gm', '') }}cert*.crt {{ fisco_workdir }}/agency_{{ __same_group_leader }}/meta/"
+  changed_when: false
+  # copy:
+  #   src: "{{ item }}"
+  #   dest: "{{ fisco_workdir }}/agency_{{ __same_group_leader }}/meta/{{ item | basename }}"
+  # with_fileglob:
+  #   - "{{ fisco_workdir }}/agency_{{ agency.name }}/agency_{{ agency.name }}_node_info/{{ fisco_gm_enabled | ternary('gm', '') }}cert*.crt"
   when: agency.name != __same_group_leader
 
 # 其它组

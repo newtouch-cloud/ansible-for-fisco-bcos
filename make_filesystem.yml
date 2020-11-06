@@ -1,0 +1,44 @@
+# 注意：本剧本只用于测试场景，生产环境请手动传送对应的压缩包，并解压执行。
+- hosts: test
+  # serial: 1
+  gather_facts: false
+  become: true
+  tasks:
+    - name: 創建分區
+      parted:
+        device: "{{ item }}"
+        number: 1
+        flags: [lvm]
+        state: present
+      with_items:
+        - /dev/sdc
+        - /dev/sdd
+
+    - name: 創建 LVM GROUP
+      lvg:
+        vg: vg.fisco
+        pvs: /dev/sdc1,/dev/sdd1
+
+    - name: 創建 LVM VOLUME
+      lvol:
+        vg: vg.fisco
+        lv: fisco
+        size: 100%FREE
+        shrink: no
+
+    - name: 創建文件系統
+      filesystem:
+        dev: /dev/mapper/vg.fisco-fisco
+        fstype: ext4
+
+    - name: 掛載 LVM 卷
+      mount:
+        path: /opt
+        src: /dev/mapper/vg.fisco-fisco
+        fstype: ext4
+        opts: noatime
+        state: mounted
+      register: __mount_st
+
+    # - reboot:
+    #   when: __mount_st is changed

@@ -1,4 +1,4 @@
-- name: "检查机构证书是否已生成"
+- name: "检查机构 {{ agency.name }} 证书是否已生成"
   stat:
     path: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/{{ fisco_gm_enabled | ternary('gm', '') }}agency.crt"
     get_attributes: false
@@ -7,7 +7,7 @@
   register: __agency_ca_st
 
 - block:
-    - name: "初始化机构目录"
+    - name: "初始化机构 {{ agency.name }} 目录"
       command: >-
         rsync -a --exclude-from '{{ role_path }}/files/rsync-exclude-list.txt' \
           {{ fisco_workdir }}/generator/ {{ fisco_workdir }}/agency_{{ agency.name }}
@@ -15,14 +15,20 @@
         warn: false
       changed_when: false
 
-    - name: "普通版 | 生成机构证书"
+    - name: "修改单机构最大节点配置数。"
+      replace:
+        path: "{{ fisco_workdir }}/agency_{{ agency.name }}/pys/conf/mconf.py"
+        regexp: "for idx in range\\(0, .*:"
+        replace: "for idx in range(0, {{ node_list | select('search', '^' + agency.name + ':') | count }}):"
+
+    - name: "普通版 | 生成机构 {{ agency.name }} 证书"
       command: "./generator --generate_agency_certificate ./dir_agency_ca ./dir_chain_ca agency_{{ agency.name }}"
       args:
         chdir: "{{ fisco_workdir }}/generator/"
       changed_when: false
       when: not fisco_gm_enabled
 
-    - name: "普通版 | 拷贝机构证书"
+    - name: "普通版 | 拷贝机构 {{ agency.name }} 证书"
       copy:
         src: "{{ item }}"
         dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/{{ item | basename }}"
@@ -30,7 +36,7 @@
         - "{{ fisco_workdir + '/generator/dir_agency_ca/agency_' + agency.name + '/*' }}"
       when: not fisco_gm_enabled
 
-    - name: "国密版 | 生成机构证书"
+    - name: "国密版 | 生成机构 {{ agency.name }} 证书"
       command: "{{ item }}"
       with_items:
         - "./generator --generate_agency_certificate ./dir_agency_ca ./dir_chain_ca agency_{{ agency.name }} -g"
@@ -40,7 +46,7 @@
       changed_when: false
       when: fisco_gm_enabled
 
-    - name: "国密版 | 拷贝机构证书"
+    - name: "国密版 | 拷贝机构 {{ agency.name }} 证书"
       copy:
         src: "{{ item }}"
         dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/{{ item | basename }}"

@@ -10,7 +10,7 @@
   copy:
     src: "{{ fisco_workdir }}/agency_{{ __same_group_leader }}/group/group.{{ agency.group_id }}.genesis"
     dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/group.{{ agency.group_id }}.genesis"
-  when: agency.name != __same_group_leader
+  when: agency.name in __same_group_agencies
 
 - name: "跨组 | 拷贝创世区块 'group.{{ agency.group_id }}.genesis' 到其它机构"
   copy:
