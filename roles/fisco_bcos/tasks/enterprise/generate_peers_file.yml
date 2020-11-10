@@ -1,44 +1,71 @@
 - include_tasks: enterprise/check_list.yml
 
-# 同组
-- name: "拷贝同组机构节点 P2P 连接地址文件"
-  copy:
-    src: "{{ fisco_workdir }}/agency_{{ item }}/agency_{{ item }}_node_info/peers.txt"
-    dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/peers_{{ item }}.txt"
-  loop: "{{ __same_group_agencies }}"
+- name: "创建组 {{ agency.main_group_id }} 的节点 P2P 连接地址文件"
+  template:
+    src: main_group_peers.txt.j2
+    dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/peers_{{ agency.main_group_id }}.txt"
+    backup: true
+
+- name: "创建组 {{ agency.extra_group_id }} 的节点 P2P 连接地址文件"
+  template:
+    src: extra_group_peers.txt.j2
+    dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/peers_{{ extra_group_id }}.txt"
+    backup: true
+  loop: "{{ agency.extra_group_id }}"
   loop_control:
-    label: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/peers_{{ item }}.txt"
-  when: item != agency.name
+    loop_var: extra_group_id
+    label: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/peers_{{ extra_group_id }}.txt"
+  when:
+    - agency.extra_group_id is defined
+    - agency.extra_group_id != ''
 
-- name: "发送机构 {{ agency.name }} 证书到同组创世区块机构 {{ __same_group_leader }}"
-  shell: "cp {{ fisco_workdir }}/agency_{{ agency.name }}/agency_{{ agency.name }}_node_info/{{ fisco_gm_enabled | ternary('gm', '') }}cert*.crt {{ fisco_workdir }}/agency_{{ __same_group_leader }}/meta/"
+- name: "发送机构证书到同组创世区块机构 {{ agency.name }}"
+  shell: "cp {{ fisco_workdir }}/agency_{{ item }}/agency_{{ item }}_node_info/{{ fisco_gm_enabled | ternary('gm', '') }}cert*.crt {{ fisco_workdir }}/agency_{{ agency.name }}/meta/"
   changed_when: false
-  # copy:
-  #   src: "{{ item }}"
-  #   dest: "{{ fisco_workdir }}/agency_{{ __same_group_leader }}/meta/{{ item | basename }}"
-  # with_fileglob:
-  #   - "{{ fisco_workdir }}/agency_{{ agency.name }}/agency_{{ agency.name }}_node_info/{{ fisco_gm_enabled | ternary('gm', '') }}cert*.crt"
-  when: agency.name != __same_group_leader
+  loop: "{{ groups['fisco_agency_group_' + agency.main_group_id|quote ] }}"
+  when:
+    - agency.create_genesis | default(false)
+    - item != agency.name
 
-# 其它组
-- block:
-  - name: "拷贝其它机构节点 P2P 连接地址文件"
-    copy:
-      src: "{{ fisco_workdir }}/agency_{{ item }}/agency_{{ item }}_node_info/peers.txt"
-      dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/peers_{{ item }}.txt"
-    loop: "{{ __other_agency_names }}"
-    loop_control:
-      label: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/peers_{{ item }}.txt"
-
-  - name: "发送节点 P2P 连接地址文件到其它机构"
-    copy:
-      src: "{{ fisco_workdir }}/agency_{{ agency.name }}/agency_{{ agency.name }}_node_info/peers.txt"
-      dest: "{{ fisco_workdir }}/agency_{{ item }}/meta/peers_{{ agency.name }}.txt"
-    loop: "{{ __other_agency_names }}"
-    loop_control:
-      label: "{{ fisco_workdir }}/agency_{{ item }}/meta/peers_{{ agency.name }}.txt"
-
-  - name: "拷贝其它机构节点证书"
-    shell: "cp {{ fisco_workdir }}/agency_{{ item }}/agency_{{ item }}_node_info/{{ fisco_gm_enabled | ternary('gm', '') }}cert*.crt {{ fisco_workdir }}/agency_{{ agency.name }}/meta/"
-    loop: "{{ __other_agency_names }}"
-    changed_when: false
+# # 同组
+# - name: "拷贝同组机构节点 P2P 连接地址文件"
+#   copy:
+#     src: "{{ fisco_workdir }}/agency_{{ item }}/agency_{{ item }}_node_info/peers.txt"
+#     dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/peers_{{ item }}.txt"
+#   loop: "{{ __same_group_agencies }}"
+#   loop_control:
+#     label: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/peers_{{ item }}.txt"
+#   when: item != agency.name
+#
+# - name: "发送机构 {{ agency.name }} 证书到同组创世区块机构 {{ __same_group_leader }}"
+#   shell: "cp {{ fisco_workdir }}/agency_{{ agency.name }}/agency_{{ agency.name }}_node_info/{{ fisco_gm_enabled | ternary('gm', '') }}cert*.crt {{ fisco_workdir }}/agency_{{ __same_group_leader }}/meta/"
+#   changed_when: false
+#   # copy:
+#   #   src: "{{ item }}"
+#   #   dest: "{{ fisco_workdir }}/agency_{{ __same_group_leader }}/meta/{{ item | basename }}"
+#   # with_fileglob:
+#   #   - "{{ fisco_workdir }}/agency_{{ agency.name }}/agency_{{ agency.name }}_node_info/{{ fisco_gm_enabled | ternary('gm', '') }}cert*.crt"
+#   when: agency.name != __same_group_leader
+#
+# # 其它组
+# - block:
+#   - name: "拷贝其它机构节点 P2P 连接地址文件"
+#     copy:
+#       src: "{{ fisco_workdir }}/agency_{{ item }}/agency_{{ item }}_node_info/peers.txt"
+#       dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/peers_{{ item }}.txt"
+#     loop: "{{ __other_agency_names }}"
+#     loop_control:
+#       label: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/peers_{{ item }}.txt"
+#
+#   - name: "发送节点 P2P 连接地址文件到其它机构"
+#     copy:
+#       src: "{{ fisco_workdir }}/agency_{{ agency.name }}/agency_{{ agency.name }}_node_info/peers.txt"
+#       dest: "{{ fisco_workdir }}/agency_{{ item }}/meta/peers_{{ agency.name }}.txt"
+#     loop: "{{ __other_agency_names }}"
+#     loop_control:
+#       label: "{{ fisco_workdir }}/agency_{{ item }}/meta/peers_{{ agency.name }}.txt"
+#
+#   - name: "拷贝其它机构节点证书"
+#     shell: "cp {{ fisco_workdir }}/agency_{{ item }}/agency_{{ item }}_node_info/{{ fisco_gm_enabled | ternary('gm', '') }}cert*.crt {{ fisco_workdir }}/agency_{{ agency.name }}/meta/"
+#     loop: "{{ __other_agency_names }}"
+#     changed_when: false

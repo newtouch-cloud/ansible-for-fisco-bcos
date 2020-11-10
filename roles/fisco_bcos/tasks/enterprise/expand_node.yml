@@ -42,7 +42,7 @@
     label: "{{ item.split(':')[2] }}:{{ item.split(':')[3] }}"
   when:
     - item.split(':')[0] == agency.name
-    - (item.split(':')[1] | int) == agency.group_id
+    - (item.split(':')[1] | int) == agency.main_group_id
 
 - name: "生成新增节点配置在 {{ fisco_workdir }}/agency_{{ agency.name }}/fisco_deploy_agency_{{ agency.name }}_expand_{{ new_node_list | hash('md5') }}"
   command: "./generator --build_install_package {{ peer_file_path }} ./fisco_deploy_agency_{{ agency.name }}_expand_{{ new_node_list | hash('md5') }} {{ fisco_gm_enabled | ternary('-g', '') }}"

@@ -1,34 +1,14 @@
-# 机构名称:群组编号:节点IP:P2P端口:Channel端口:RPC端口:额外目标群组编号
+# 机构名称:主群组编号:节点IP:P2P端口:Channel端口:RPC端口:额外群组编号
 
 node_list:
 {% for node in agencies|subelements('nodes') %}
 {# 单 IP 多节点 #}
 {% if node.1.split(':')[1] is defined %}
 {% for i in range(0, node.1.split(':')[1]|int)|list %}
-  - {{ node.0.name }}:{{ node.0.group_id }}:{{ node.1.split(':')[0] }}:{{ 30300 + i }}:{{ 20200 + i }}:{{ 8545 + i }}:[{{ node.0.group_join_to | default('0') | join(',') }}]
+  - {{ node.0.name }}:{{ node.0.main_group_id }}:{{ node.1.split(':')[0] }}:{{ 30300 + i }}:{{ 20200 + i }}:{{ 8545 + i }}:[{{ node.0.extra_group_id | default('0') | join(',') }}]
 {% endfor %}
 {% else %}
 {# 单 IP 单节点 #}
-  - {{ node.0.name }}:{{ node.0.group_id }}:{{ node.1.split(':')[0] }}:30300:20200:8545:[{{ node.0.group_join_to | default('0') | join(',') }}]
-{% endif %}
-{% endfor %}
-
-agency_list:
-{% for agency in agencies|unique(attribute='name')|map(attribute='name') %}
-  - {{ agency }}
-{% endfor %}
-
-group_id_list:
-{% for group_id in agencies|unique(attribute='group_id')|map(attribute='group_id') %}
-  - {{ group_id }}
-{% endfor %}
-
-# 检查机构是否已经完成初始化。
-agency_initialed:
-{% for item in agencies|map(attribute='name') %}
-{% if lookup('fileglob', fisco_workdir + '/agency_' + item + '/fisco_deploy_agency_' + item, errors='ignore') %}
-  - {{ item }}
-{% else %}
-  - "Agency {{ item }} has not been initialed"
+  - {{ node.0.name }}:{{ node.0.main_group_id }}:{{ node.1.split(':')[0] }}:30300:20200:8545:[{{ node.0.extra_group_id | default('0') | join(',') }}]
 {% endif %}
 {% endfor %}

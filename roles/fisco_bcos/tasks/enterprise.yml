@@ -27,7 +27,7 @@
 
 - name: 创建创世区块
   include_tasks: enterprise/generate_genesis.yml
-  loop: "{{ agencies }}"
+  loop: "{{ agencies | selectattr('create_genesis', 'defined') | selectattr('create_genesis') }}"
   loop_control:
     loop_var: agency
     label: "{{ agency.name }}"
@@ -56,7 +56,7 @@
     - agency.name in agency_initialed
     - new_node_list | regex_search(agency.name + ':', multiline=True, ignorecase=True)
 
-- import_tasks: enterprise/post_job.yml
+# - import_tasks: enterprise/post_job.yml
 
 # - name: 打包部署文件
 #   archive:

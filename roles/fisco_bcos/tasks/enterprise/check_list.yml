@@ -1,9 +1,9 @@
 - name: 检查同组内是否有且只有 1 个创世区块机构
   fail:
-    msg: "群组 {{ agency.group_id }} 没有指定或存在多个创世区块机构。请排查 {{ inventory_dir }}/group_vars/all/init.yml 文件并确定同组内，有且只有 1 个创世区块机构（拥有 create_genesis: true 属性）。"
+    msg: "群组 {{ agency.main_group_id }} 没有指定或存在多个创世区块机构。请排查 {{ inventory_dir }}/group_vars/all/init.yml 文件并确定同组内，有且只有 1 个创世区块机构（拥有 create_genesis: true 属性）。"
   when: >-
     ( agencies
-        | selectattr('group_id', '==', agency.group_id)
+        | selectattr('main_group_id', '==', agency.main_group_id)
         | selectattr('create_genesis', 'defined')
         | selectattr('create_genesis')
         | map(attribute='name')
@@ -11,51 +11,51 @@
         | count
     ) != 1
 
-- name: 获取同组机构信息
-  set_fact:
-    __same_group_agencies: >-
-      {{ agencies
-        | selectattr('group_id', '==', agency.group_id)
-        | map(attribute='name')
-        | list
-      }}
-    __same_group_nodes: >-
-      {{ agencies
-        | selectattr('group_id', '==', agency.group_id)
-        | sum(attribute='nodes', start=[])
-        | list
-      }}
-    __same_group_leader: >-
-      {{ agencies
-        | selectattr('group_id', '==', agency.group_id)
-        | selectattr('create_genesis', 'defined')
-        | selectattr('create_genesis')
-        | map(attribute='name')
-        | list
-        | first
-      }}
-- debug:
-    msg: "组 {{ agency.group_id }} 同组节点有 {{ __same_group_nodes }}"
-
-- name: 获取其它机构信息
-  set_fact:
-    __other_agency_names: >-
-      {{ agencies
-        | selectattr('group_join_to', 'defined')
-        | selectattr('group_join_to', 'search', (agency.group_id|quote))
-        | map(attribute='name')
-        | list
-      }}
-    __other_agency_nodes: >-
-      {{ agencies
-        | selectattr('group_join_to', 'defined')
-        | selectattr('group_join_to', 'search', (agency.group_id|quote))
-        | sum(attribute='nodes', start=[])
-        | list
-      }}
-
-- debug:
-    msg: "机构 {{ __other_agency_names }} 加入群组 {{ agency.group_id }}"
-  when:
-    - __other_agency_names != []
-    - __other_agency_nodes != []
+# - name: 获取同组机构信息
+#   set_fact:
+#     __same_group_agencies: >-
+#       {{ agencies
+#         | selectattr('main_group_id', '==', agency.main_group_id)
+#         | map(attribute='name')
+#         | list
+#       }}
+#     __same_group_nodes: >-
+#       {{ agencies
+#         | selectattr('main_group_id', '==', agency.main_group_id)
+#         | sum(attribute='nodes', start=[])
+#         | list
+#       }}
+#     __same_group_leader: >-
+#       {{ agencies
+#         | selectattr('main_group_id', '==', agency.main_group_id)
+#         | selectattr('create_genesis', 'defined')
+#         | selectattr('create_genesis')
+#         | map(attribute='name')
+#         | list
+#         | first
+#       }}
+# - debug:
+#     msg: "组 {{ agency.main_group_id }} 同组节点有 {{ __same_group_nodes }}"
+#
+# - name: 获取其它机构信息
+#   set_fact:
+#     __other_agency_names: >-
+#       {{ agencies
+#         | selectattr('extra_group_id', 'defined')
+#         | selectattr('extra_group_id', 'search', (agency.main_group_id|quote))
+#         | map(attribute='name')
+#         | list
+#       }}
+#     __other_agency_nodes: >-
+#       {{ agencies
+#         | selectattr('extra_group_id', 'defined')
+#         | selectattr('extra_group_id', 'search', (agency.main_group_id|quote))
+#         | sum(attribute='nodes', start=[])
+#         | list
+#       }}
+#
+# - debug:
+#     msg: "机构 {{ __other_agency_names }} 加入群组 {{ agency.main_group_id }}"
+#   when:
+#     - __other_agency_names != []
+#     - __other_agency_nodes != []

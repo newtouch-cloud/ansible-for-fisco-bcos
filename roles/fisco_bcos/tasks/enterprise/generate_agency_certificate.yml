@@ -15,11 +15,12 @@
         warn: false
       changed_when: false
 
-    - name: "修改单机构最大节点配置数。"
+    - name: "机构 {{ agency.name }} 节点总数超过 128，需要修改 pys/conf/mconf.py。"
       replace:
         path: "{{ fisco_workdir }}/agency_{{ agency.name }}/pys/conf/mconf.py"
         regexp: "for idx in range\\(0, .*:"
-        replace: "for idx in range(0, {{ node_list | select('search', '^' + agency.name + ':') | count }}):"
+        replace: "for idx in range(0, {{ groups['fisco_agency_' + agency.name] | count }}):"
+      when: "(groups['fisco_agency_' + agency.name] | count) > 128"
 
     - name: "普通版 | 生成机构 {{ agency.name }} 证书"
       command: "./generator --generate_agency_certificate ./dir_agency_ca ./dir_chain_ca agency_{{ agency.name }}"

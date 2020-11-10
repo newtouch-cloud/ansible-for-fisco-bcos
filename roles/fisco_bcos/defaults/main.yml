@@ -3,7 +3,7 @@ fisco_deploy_mode: enterprise
 
 fisco_workdir: "{{ inventory_dir }}/deploy"
 
-# TODO 启用国密版本 true 表示节点使用国密模式
+# 启用国密版本 true 表示节点使用国密模式
 fisco_gm_enabled: false
 
 # # Refere https://fisco-bcos-documentation.readthedocs.io/en/latest/docs/installation.html
@@ -19,6 +19,7 @@ fisco_generator_git: https://github.com/FISCO-BCOS/generator.git
 
 # 不要改动这个变量，用于创建临时列表。
 new_node_list: []
+agency_initialed: []
 
 # TODO
 #------------ config.ini 配置开始 ------------#

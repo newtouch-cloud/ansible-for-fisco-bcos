@@ -1,11 +1,7 @@
 [group]
-group_id={{ agency.group_id }}
+group_id={{ agency.main_group_id }}
 
 [nodes]
-{% for node in node_list %}
-{% if (node.split(':')[1] | int) == agency.group_id %}
+{% for node in groups['fisco_node_group_' + agency.main_group_id|string] %}
 node{{ loop.index0 }}={{ node.split(':')[2] }}:{{ node.split(':')[3] | default('30300') }}
-{% elif node.split(':')[6] | regex_search(agency.group_id|quote) %}
-node{{ loop.index0 }}={{ node.split(':')[2] }}:{{ node.split(':')[3] | default('30300') }}
-{% endif %}
 {% endfor %}
