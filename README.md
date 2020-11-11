@@ -1,12 +1,12 @@
 # 一键生成 FISCO-BCOS 企业级架构部署
 本项目由[上海新致软件技术有限公司](http://www.newtouch.com) NS1 部门研发，为区块链开源项目 [FISCO-BCOS](http://www.fisco-bcos.org/) 提供了自动化生成企业级配置文件的 ansible-playbook。2 群组 3 机构 6 节点的环境，可以在 30 秒内（除下载时间）生成配置，极大简化了部署难度，避免了手工配置容易发生的错误。
 
-# 功能实现
+# 已实现的功能
 1. 多群组多机构多节点的联盟链初始化配置。目前测试生成 3 群组 5 机构 50 节点的部署文件是没问题的。
 1. 已初始化的机构，新增节点。
 1. 支持国密版。
 
-# TODO
+# 计划实现的功能
 1. 支持对节点配置文件 config.ini 的定制。
 1. 支持使用机构私有证书来签发链证书。
 1. 支持在已初始化的联盟链中增加机构。
@@ -25,7 +25,7 @@
 * 启动文件应部署在外挂数据盘，建议采用分布式存储。
 * 各机构服务器之间可以访问相关的 IP 和监听端口（具体可以查看生成的 deploy 目录内容，后面有详述）。
 
-## 初始化
+## 联盟链初始化
 1. 复制一份 inventory 配置。假设新环境是 'my_inventory'。
 
    ```
@@ -39,29 +39,39 @@
    ```
 
    例如
-
-   ```
-   agencies:
-     - name: A
-       create_genesis: true
-       nodes:
-         - 172.17.8.101:5
-         - 172.17.8.102:5
-       main_group_id: 1
-       extra_group_id:
-         - 2
-     - name: B
-       nodes:
-         - 172.17.8.103:5
-         - 172.17.8.104:5
-       main_group_id: 1
-     - name: C
-       create_genesis: true
-       nodes:
-         - 172.17.8.105:5
-         - 172.17.8.106:5
-       main_group_id: 2
-   ```
+	
+	```
+	# true 表示使用国密模式
+	fisco_gm_enabled: true
+	
+	# 变量注释
+	# name:           （必填）机构名称
+	# create_genesis: 是否生成创世区块，同组必须有且只有 1 个创世区块机构。（不设置则默认为 false）
+	# nodes:          （必填）机构各节点连接信息。格式 <ip>:<节点数>。如果只填写 IP，则默认为 1 个节点。同 IP 多节点会自动递增对应端口。參考 https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/enterprise_tools/tutorial_detail_operation.html#id5。生产环境中请确保各机构不共用服务器，避免私钥证书的泄漏。由于节点多群组共享网络带宽、CPU和内存资源，因此为了保证服务的稳定性，一台机器上不推荐配置过多节点。
+	# main_group_id:  （必填）群组编号
+	# extra_group_id: （可选）额外要加入的目标群组编号
+	
+	agencies:
+	 - name: A
+	   create_genesis: true
+	   nodes:
+	     - 172.17.8.101:5
+	     - 172.17.8.102:5
+	   main_group_id: 1
+	   extra_group_id:
+	     - 2
+	 - name: B
+	   nodes:
+	     - 172.17.8.103:5
+	     - 172.17.8.104:5
+	   main_group_id: 1
+	 - name: C
+	   create_genesis: true
+	   nodes:
+	     - 172.17.8.105:5
+	     - 172.17.8.106:5
+	   main_group_id: 2
+	```
 
    请根据文件头部的变量注释，编排好目标配置的信息。
 
@@ -87,7 +97,7 @@
 1. 查看 `inventories/my_inventory/deploy/node_list.yml` 文件，内容类似于：
 
 	```
-	# 机构名称:群组编号:节点IP:P2P端口:Channel端口:RPC端口:额外目标群组编号
+	# 机构名称:群组编号:节点IP:P2P端口:Channel端口:RPC端口:额外目标群组编号（没有则为 0）
 
 	node_list:
 	  - A:1:172.17.8.101:30300:20200:8545:[2]
@@ -109,48 +119,48 @@
 假设第一次初始化的配置是 
 
 
-```
-agencies:
- - name: A
-   create_genesis: true
-   nodes:
-     - 172.17.8.101
-     - 172.17.8.102
-   main_group_id: 1
-   extra_group_id:
-     - 2
- - name: B
-   nodes:
-     - 172.17.8.103
-     - 172.17.8.104
-   main_group_id: 1
- - name: C
-   create_genesis: true
-   nodes:
-     - 172.17.8.105
-     - 172.17.8.106
-   main_group_id: 2
-```
+	```
+	agencies:
+	 - name: A
+	   create_genesis: true
+	   nodes:
+	     - 172.17.8.101
+	     - 172.17.8.102
+	   main_group_id: 1
+	   extra_group_id:
+	     - 2
+	 - name: B
+	   nodes:
+	     - 172.17.8.103
+	     - 172.17.8.104
+	   main_group_id: 1
+	 - name: C
+	   create_genesis: true
+	   nodes:
+	     - 172.17.8.105
+	     - 172.17.8.106
+	   main_group_id: 2
+	```
    
 要给机构 B 的 172.17.8.103 服务器增加 3 个节点，就把 `172.17.8.103` 改成 `172.17.8.103:4`(因为默认是 1 个节点，所以增加 3 个就是 4)。也可以增加 IP 和节点，例如：
    
-```
-agencies:
- - name: A
-   create_genesis: true
-   nodes:
-     - 172.17.8.101:5
-     - 172.17.8.102:5
-     - 172.17.8.110:5
-   main_group_id: 1
-   extra_group_id:
-     - 2
-```
+	```
+	agencies:
+	 - name: A
+	   create_genesis: true
+	   nodes:
+	     - 172.17.8.101:5
+	     - 172.17.8.102:5
+	     - 172.17.8.110:5
+	   main_group_id: 1
+	   extra_group_id:
+	     - 2
+	```
    
 然后再次执行
 
-```
-> ansible-playbook -i inventories/my_inventory/hosts.ini fisco_bcos.yml
-```
+	```
+	> ansible-playbook -i inventories/my_inventory/hosts.ini fisco_bcos.yml
+	```
 
 执行完成后，在对应的机构目录下，你可以看到类似 `fisco_deploy_agency_A_expand_1917645e6744e1360fba72fa4cf8cc47` 这样的目录，就是新增的节点配置了。
