@@ -16,7 +16,7 @@
       delegate_to: localhost
 
     - name: 停止
-      shell: "find /opt/node_{{ ansible_host }}_* -type f -name stop.sh -exec {} \\; || exit 0"
+      shell: "find /opt/fisco_nodes/node_{{ ansible_host }}_* -type f -name stop.sh -exec {} \\; || exit 0"
       changed_when: false
 
     - pause:
@@ -26,7 +26,7 @@
       become: true
       synchronize:
         src: "{{ item.0 }}"
-        dest: /opt/
+        dest: /opt/fisco_nodes
         use_ssh_args: true
         rsync_opts:
           - "--chown=vagrant:vagrant"
@@ -42,7 +42,7 @@
       register: __sync_st
 
     - name: 启动
-      raw: "find /opt/node_{{ ansible_host }}_* -type f -name start.sh -exec {} \\;"
+      raw: "find /opt/fisco_nodes/node_{{ ansible_host }}_* -type f -name start.sh -exec {} \\;"
       changed_when: false
 
     - name: 查找控制台文件夹路径
@@ -59,7 +59,7 @@
       become: true
       synchronize:
         src: "{{ item.0 }}"
-        dest: /opt/
+        dest: /opt/fisco_nodes
         use_ssh_args: true
         rsync_opts:
           - "--chown=vagrant:vagrant"

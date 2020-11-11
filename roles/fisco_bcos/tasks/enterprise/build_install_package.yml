@@ -1,5 +1,3 @@
-- include_tasks: enterprise/check_list.yml
-
 - name: "生成机构 {{ agency.name }} 部署文件"
   command: "./generator --build_install_package ./meta/peers_{{ agency.main_group_id }}.txt ./fisco_deploy_agency_{{ agency.name }}/ {{ fisco_gm_enabled | ternary('-g', '') }}"
   args:
@@ -27,43 +25,3 @@
   when:
     - agency.extra_group_id is defined
     - agency.extra_group_id != ''
-
-# - name: "同组 | 生成机构 {{ agency.name }} 部署文件"
-#   command: "./generator --build_install_package ./meta/peers_{{ item }}.txt ./fisco_deploy_agency_{{ agency.name }}/ {{ fisco_gm_enabled | ternary('-g', '') }}"
-#   args:
-#     chdir: "{{ fisco_workdir }}/agency_{{ agency.name }}"
-#   changed_when: false
-#   loop: "{{ __same_group_agencies }}"
-#   loop_control:
-#     label: "机构 {{ agency.name }} 使用 ./meta/peers_{{ item }}.txt 生产部署文件。"
-#   when: item != agency.name
-#
-# - block:
-#     - name: "跨组 | 生成机构 {{ agency.name }} 部署文件"
-#       command: "./generator --build_install_package ./meta/peers_{{ item }}.txt ./fisco_deploy_agency_{{ agency.name }}/ {{ fisco_gm_enabled | ternary('-g', '') }}"
-#       args:
-#         chdir: "{{ fisco_workdir }}/agency_{{ agency.name }}"
-#       changed_when: false
-#       loop: "{{ __other_agency_names }}"
-#       loop_control:
-#         label: "机构 {{ agency.name }} 使用 ./meta/peers_{{ item }}.txt 生产部署文件。"
-#
-#     - name: "跨组 | 添加组 {{ agency.main_group_id }} 的创世区块到其它组"
-#       command: "./generator --add_group ./meta/group.{{ agency.main_group_id }}.genesis ./fisco_deploy_agency_{{ item }}/"
-#       args:
-#         chdir: "{{ fisco_workdir }}/agency_{{ item }}"
-#       changed_when: false
-#       loop: "{{ __other_agency_names }}"
-#       loop_control:
-#         label: "./generator --add_group ./meta/group.{{ agency.main_group_id }}.genesis ./fisco_deploy_agency_{{ item }}/"
-#
-#     - name: "跨组 | 添加机构 {{ agency.name }} 的节点信息到其它组"
-#       command: "./generator --add_peers ./meta/peers_{{ agency.name }}.txt ./fisco_deploy_agency_{{ item }}/"
-#       args:
-#         chdir: "{{ fisco_workdir }}/agency_{{ item }}"
-#       changed_when: false
-#       loop: "{{ __other_agency_names }}"
-#       loop_control:
-#         label: "./generator --add_peers ./meta/peers_{{ agency.name }}.txt ./fisco_deploy_agency_{{ item }}/"
-#
-#   when: __other_agency_names != []

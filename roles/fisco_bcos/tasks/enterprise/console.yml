@@ -75,15 +75,4 @@
       loop_control:
         label: "{{ fisco_workdir }}/agency_{{ item.name }}/console/conf/applicationContext.xml"
 
-    - name: 备份当前 node_list.yml
-      copy:
-        src: "{{ fisco_workdir }}/node_list.yml"
-        dest: "{{ fisco_workdir }}/node_list.yml.backup~"
-
   when: __node_list_update is changed
-
-- name: 生成部署报告
-  template:
-    src: summary.j2
-    dest: "{{ fisco_workdir }}/summary.txt"
-    # backup: true

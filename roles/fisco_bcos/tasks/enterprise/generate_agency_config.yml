@@ -1,5 +1,3 @@
-- include_tasks: enterprise/check_list.yml
-
 - name: "更新机构 {{ agency.name }} 区块配置文件"
   template:
     src: "group_genesis.ini.j2"

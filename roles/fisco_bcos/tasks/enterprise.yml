@@ -1,4 +1,4 @@
-- import_tasks: enterprise/set_stat.yml
+- import_tasks: enterprise/pre_tasks.yml
   tags: always
 
 - name: 生成机构证书
@@ -25,7 +25,7 @@
     label: "{{ agency.name }}"
   when: agency.name not in agency_initialed
 
-- name: 创建创世区块
+- name: 生成创世区块
   include_tasks: enterprise/generate_genesis.yml
   loop: "{{ agencies | selectattr('create_genesis', 'defined') | selectattr('create_genesis') }}"
   loop_control:
@@ -42,21 +42,19 @@
   when: agency.name not in agency_initialed
 
 - name: 节点扩展
-  include_tasks:
-    file: enterprise/expand_node.yml
-    apply:
-      tags: expand
+  include_tasks: enterprise/expand_node.yml
   loop: "{{ agencies }}"
   loop_control:
     loop_var: agency
     label: "{{ agency.name }}"
-  tags: expand
   when:
-    - new_node_list != []
-    - agency.name in agency_initialed
-    - new_node_list | regex_search(agency.name + ':', multiline=True, ignorecase=True)
+    - "'fisco_expand_nodes' in groups"
+    - groups['fisco_expand_nodes'] | regex_search(agency.name)
 
-# - import_tasks: enterprise/post_job.yml
+- include_tasks: enterprise/console.yml
+  when: fisco_console_enabled
+
+# - import_tasks: enterprise/post_tasks.yml
 
 # - name: 打包部署文件
 #   archive:

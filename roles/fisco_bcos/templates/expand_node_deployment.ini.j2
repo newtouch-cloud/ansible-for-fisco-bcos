@@ -1,9 +1,9 @@
 [group]
-group_id={{ agency.group_id }}
+group_id={{ agency.main_group_id }}
 
-{% for node in new_node_list
+{% for node in groups['fisco_expand_nodes']
   if node.split(':')[0] == agency.name
-  and (node.split(':')[1] | int) == agency.group_id
+  and (node.split(':')[1] | int) == agency.main_group_id
 %}
 [node{{ loop.index0 }}]
 p2p_ip={{ node.split(':')[2] }}

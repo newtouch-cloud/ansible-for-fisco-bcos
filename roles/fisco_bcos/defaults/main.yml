@@ -6,6 +6,9 @@ fisco_workdir: "{{ inventory_dir }}/deploy"
 # 启用国密版本 true 表示节点使用国密模式
 fisco_gm_enabled: false
 
+# 是否生成控制台
+fisco_console_enabled: false
+
 # # Refere https://fisco-bcos-documentation.readthedocs.io/en/latest/docs/installation.html
 # # General
 # fisco_version: 2.6.0
@@ -17,9 +20,7 @@ fisco_gm_enabled: false
 # Enterprise
 fisco_generator_git: https://github.com/FISCO-BCOS/generator.git
 
-# 不要改动这个变量，用于创建临时列表。
-new_node_list: []
-agency_initialed: []
+
 
 # TODO
 #------------ config.ini 配置开始 ------------#

@@ -1,4 +1,4 @@
-# 机构名称:主群组编号:节点IP:P2P端口:Channel端口:RPC端口:额外群组编号
+# 机构名称:主群组编号:节点IP:P2P端口:Channel端口:RPC端口:额外群组编号('0'表示没有)
 
 node_list:
 {% for node in agencies|subelements('nodes') %}
@@ -10,5 +10,15 @@ node_list:
 {% else %}
 {# 单 IP 单节点 #}
   - {{ node.0.name }}:{{ node.0.main_group_id }}:{{ node.1.split(':')[0] }}:30300:20200:8545:[{{ node.0.extra_group_id | default('0') | join(',') }}]
+{% endif %}
+{% endfor %}
+
+# 检查机构是否已经完成初始化。
+agency_initialed:
+{% for item in agencies|map(attribute='name') %}
+{% if lookup('file', fisco_workdir + '/agency_' + item + '/fisco_deploy_agency_' + item + '/start_all.sh', errors='ignore') %}
+  - {{ item }}
+{% else %}
+  - "Agency {{ item }} has not been initialed"
 {% endif %}
 {% endfor %}

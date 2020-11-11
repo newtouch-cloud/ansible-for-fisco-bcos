@@ -20,11 +20,11 @@ SUPPORTED_OS = {
 }
 
 # Defaults for config options defined in CONFIG
-$num_instances = 6
+$num_instances = 10
 $instance_name_prefix = "node"
 $vm_gui = false
-$vm_memory = 16384
-$vm_cpus = 8
+$vm_memory = 8192
+$vm_cpus = 4
 $shared_folders = {}
 $forwarded_ports = {}
 $subnet = "172.17.8"

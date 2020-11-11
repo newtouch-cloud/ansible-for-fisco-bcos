@@ -15,7 +15,7 @@
     src: "node_list.j2"
     dest: "{{ fisco_workdir }}/node_list.yml"
     backup: true
-  register: __node_list_update
+  notify: "备份当前 node_list.yml"
 
 - name: 加载当前节点清单
   include_vars: "{{ fisco_workdir }}/node_list.yml"
@@ -23,8 +23,24 @@
 - name: 设置动态变量
   set_fact:
     node_list: "{{ node_list | sort }}"
-    pre_node_list_path: "{{ lookup('pipe', 'ls -1tr ' + fisco_workdir + '/node_list.yml.*~ || exit 0 | tail -n1') }}"
+    pre_node_list_path: "{{ lookup('pipe', 'ls -1tr ' + fisco_workdir + '/node_list.yml.*~ | tail -n1') }}"
     fisco_group_id_list: "{{ agencies | map(attribute='main_group_id') | unique }}"
+
+- name: 检查每个群组是否有且只有 1 个创世区块机构
+  fail:
+    msg: "群组 {{ item }} 没有指定或存在多个创世区块机构。请排查 {{ inventory_dir }}/group_vars/all/init.yml 文件并确定同组内，有且只有 1 个创世区块机构（拥有 create_genesis: true 属性）。"
+  loop: "{{ fisco_group_id_list }}"
+  loop_control:
+    label: "检查群组 {{ item }}"
+  when: >-
+    ( agencies
+        | selectattr('main_group_id', '==', item)
+        | selectattr('create_genesis', 'defined')
+        | selectattr('create_genesis')
+        | map(attribute='name')
+        | list
+        | count
+    ) != 1
 
 - name: 节点分组 | 根据机构名称
   add_host:
@@ -32,7 +48,7 @@
     group: "fisco_agency_{{ item.split(':')[0] }}"
   loop: "{{ node_list }}"
   loop_control:
-    label: "节点 {{ item.split(':')[2:4] }} 添加到 fisco_agency_{{ item.split(':')[0] }} 组"
+    label: "节点 {{ item.split(':')[2:4] | join(':') }} 添加到 fisco_agency_{{ item.split(':')[0] }} 组"
 
 - name: 节点分组 | 根据 GROUP ID
   add_host:
@@ -42,8 +58,8 @@
     - "{{ fisco_group_id_list }}"
     - "{{ node_list }}"
   loop_control:
-    label: "节点 {{ item.1.split(':')[2:4] }} 添加到 fisco_group_{{ item.0 }} 组"
-  when: item.0|string == item.1.split(':')[1] or item.0|string in item.1.split(':')[6]
+    label: "节点 {{ item.1.split(':')[2:4] | join(':') }} 添加到 fisco_group_{{ item.0 }} 组"
+  when: item.0|quote == item.1.split(':')[1] or item.0|quote in item.1.split(':')[6]
 
 - name: 机构分组 | 根据 main_group_id
   add_host:
@@ -67,7 +83,7 @@
     group: "fisco_expand_nodes"
   loop: "{{ node_list }}"
   loop_control:
-    label: "{{ item.split(':')[2:4] }} 添加到 fisco_expand_nodes 组"
+    label: "{{ item.split(':')[0:4] | join(':') }} 添加到 fisco_expand_nodes 组"
   when:
     - pre_node_list_path != ''
     - item not in lookup('file', pre_node_list_path)

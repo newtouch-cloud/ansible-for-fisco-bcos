@@ -1,0 +1,4 @@
+- name: 备份当前 node_list.yml
+  copy:
+    src: "{{ fisco_workdir }}/node_list.yml"
+    dest: "{{ fisco_workdir }}/node_list.yml.backup~"
