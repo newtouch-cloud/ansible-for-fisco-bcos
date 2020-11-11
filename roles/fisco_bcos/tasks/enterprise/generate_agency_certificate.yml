@@ -1,3 +1,12 @@
+# @Author: Haibin Lee <haibin>
+# @Date:   2020-10-30T21:15:43+08:00
+# @Email:  haibin.li@newtouch.com
+# @Last modified by:   haibin
+# @Last modified time: 2020-11-11T16:25:07+08:00
+# @Copyright: www.newtouch.com
+
+
+
 - name: "检查机构 {{ agency.name }} 证书是否已生成"
   stat:
     path: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/{{ fisco_gm_enabled | ternary('gm', '') }}agency.crt"

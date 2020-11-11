@@ -1,3 +1,12 @@
+# @Author: Haibin Lee <haibin>
+# @Date:   2020-10-30T21:15:43+08:00
+# @Email:  haibin.li@newtouch.com
+# @Last modified by:   haibin
+# @Last modified time: 2020-11-11T16:25:00+08:00
+# @Copyright: www.newtouch.com
+
+
+
 - name: "更新新增节点配置文件"
   template:
     src: "expand_node_deployment.ini.j2"

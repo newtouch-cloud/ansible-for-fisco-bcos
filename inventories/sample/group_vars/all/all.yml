@@ -1,3 +1,12 @@
+# @Author: Haibin Lee <haibin>
+# @Date:   2020-08-31T17:41:24+08:00
+# @Email:  haibin.li@newtouch.com
+# @Last modified by:   haibin
+# @Last modified time: 2020-11-11T16:31:16+08:00
+# @Copyright: www.newtouch.com
+
+
+
 ansible_python_interpreter: python3
 
 fisco_deploy_mode: enterprise

@@ -1,3 +1,12 @@
+# @Author: Haibin Lee <haibin>
+# @Date:   2020-11-10T16:13:20+08:00
+# @Email:  haibin.li@newtouch.com
+# @Last modified by:   haibin
+# @Last modified time: 2020-11-11T16:24:41+08:00
+# @Copyright: www.newtouch.com
+
+
+
 - name: 检查 console 控制台
   stat:
     path: "{{ fisco_workdir }}/agency_{{ item.name }}/console/"

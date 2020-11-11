@@ -1,3 +1,12 @@
+# @Author: Haibin Lee <haibin>
+# @Date:   2020-10-30T21:14:30+08:00
+# @Email:  haibin.li@newtouch.com
+# @Last modified by:   haibin
+# @Last modified time: 2020-11-11T16:28:53+08:00
+# @Copyright: www.newtouch.com
+
+
+
 - block:
     - name: "Create {{ ansible_user_dir }}/fisco"
       file:

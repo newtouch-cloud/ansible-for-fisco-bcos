@@ -1,3 +1,12 @@
+# @Author: Haibin Lee <haibin>
+# @Date:   2020-10-30T21:15:43+08:00
+# @Email:  haibin.li@newtouch.com
+# @Last modified by:   haibin
+# @Last modified time: 2020-11-11T16:25:22+08:00
+# @Copyright: www.newtouch.com
+
+
+
 - name: "生成创世区块"
   command: "./generator --create_group_genesis ./group {{ fisco_gm_enabled | ternary('-g', '') }}"
   args:

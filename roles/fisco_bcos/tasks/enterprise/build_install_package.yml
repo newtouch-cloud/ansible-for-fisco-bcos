@@ -1,3 +1,12 @@
+# @Author: Haibin Lee <haibin>
+# @Date:   2020-10-30T21:15:43+08:00
+# @Email:  haibin.li@newtouch.com
+# @Last modified by:   haibin
+# @Last modified time: 2020-11-11T16:23:34+08:00
+# @Copyright: www.newtouch.com
+
+
+
 - name: "生成机构 {{ agency.name }} 部署文件"
   command: "./generator --build_install_package ./meta/peers_{{ agency.main_group_id }}.txt ./fisco_deploy_agency_{{ agency.name }}/ {{ fisco_gm_enabled | ternary('-g', '') }}"
   args:

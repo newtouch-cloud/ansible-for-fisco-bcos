@@ -1,3 +1,12 @@
+# @Author: Haibin Lee <haibin>
+# @Date:   2020-10-30T21:15:43+08:00
+# @Email:  haibin.li@newtouch.com
+# @Last modified by:   haibin
+# @Last modified time: 2020-11-11T16:44:20+08:00
+# @Copyright: www.newtouch.com
+
+
+
 # true 表示使用国密模式
 fisco_gm_enabled: true
 
@@ -26,7 +35,7 @@ agencies:
     create_genesis: true
     nodes:
       - 172.17.8.105:5
-      - 172.17.8.106:5
+      - 172.17.8.106:15
     main_group_id: 2
   - name: D
     nodes:

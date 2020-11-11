@@ -1,3 +1,12 @@
+# @Author: Haibin Lee <haibin>
+# @Date:   2020-11-10T18:42:50+08:00
+# @Email:  haibin.li@newtouch.com
+# @Last modified by:   haibin
+# @Last modified time: 2020-11-11T16:27:47+08:00
+# @Copyright: www.newtouch.com
+
+
+
 - name: 备份当前 node_list.yml
   copy:
     src: "{{ fisco_workdir }}/node_list.yml"

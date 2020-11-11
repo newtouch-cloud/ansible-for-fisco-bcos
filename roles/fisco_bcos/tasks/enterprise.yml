@@ -1,3 +1,12 @@
+# @Author: Haibin Lee <haibin>
+# @Date:   2020-10-30T21:14:30+08:00
+# @Email:  haibin.li@newtouch.com
+# @Last modified by:   haibin
+# @Last modified time: 2020-11-11T16:26:00+08:00
+# @Copyright: www.newtouch.com
+
+
+
 - import_tasks: enterprise/pre_tasks.yml
   tags: always
 
