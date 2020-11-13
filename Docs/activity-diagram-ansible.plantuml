@@ -1,36 +1,93 @@
 @startuml
 
-title ansible 自动化步骤
+scale 1920 width
 
-:安装 generator;
-:generator 初始化联盟链证书;
-:基于 generator 目录复制出各个机构的目录;
-:generator 生成并发送各机构证书到机构部署目录下;
+title 使用 ansible 自动初始化节点部署文件
+
+start
+
+if (检查 generator 目录) then (不存在)
+  :下载安装;
+  :初始化联盟链证书;
+else (存在)
+endif
+:根据 init.yml 配置，生成 node_list 清单;
+note right
+  // 配置 //
+  agencies:
+    - name: A
+      create_genesis: true
+      nodes:
+        - 172.17.8.101:3
+      main_group_id: 1
+      extra_group_id:
+        - 2
+    - name: B
+      nodes:
+        - 172.17.8.103:3
+      main_group_id: 1
+    - name: C
+      create_genesis: true
+      nodes:
+        - 172.17.8.105:3
+      main_group_id: 2
+  ====
+  // 输出结果 //
+  node_list:
+    - A:1:172.17.8.101:30300:20200:8545:[2]
+    - A:1:172.17.8.101:30301:20201:8546:[2]
+    - A:1:172.17.8.101:30302:20202:8547:[2]
+    - B:1:172.17.8.103:30300:20200:8545:[0]
+    - B:1:172.17.8.103:30301:20201:8546:[0]
+    - B:1:172.17.8.103:30302:20202:8547:[0]
+    - C:2:172.17.8.105:30300:20200:8545:[0]
+    - C:2:172.17.8.105:30301:20201:8546:[0]
+    - C:2:172.17.8.105:30302:20202:8547:[0]
+end note
+
+:动态分组;
+split
+  :节点分组 | 根据机构名称;
+split again
+  :节点分组 | 根据机构的 main_group_id;
+split again
+  :机构分组 | 根据 main_group_id;
+split again
+  :机构分组 | 根据 extra_group_id;
+end split
+
+:基于 generator 目录复制出各个机构的部署目录;
+
+:generator 生成各机构证书，并发送到机构部署目录下;
+
 :配置各个机构;
 split
   :更新区块配置文件;
 split again
   :更新节点配置文件;
 end split
+
 :生成各个机构节点信息;
-:生成各个机构 P2P 地址连接信息文件;
-split
-  :同组发送;
-split again
-  :跨组发送;
-end split
-:每个群组指定的机构生成群组创世区块;
-split
-  :同组发送;
-split again
-  :跨组发送;
-end split
+
+:根据组 ID 生成 P2P 地址连接信息文件;
+note left
+  官方手册是按机构名称命名该文件的，例如 peers_A.txt。
+  经过分析后，我们认为根据群组 ID 命名更合适，因为它的实
+  际内容就是**同组但不同机构**的节点列表。所以经过自定义
+  模板文件，例如 peers_1.txt。我们可以实现联盟初始化阶
+  段，每个机构可以同时加入到多个群组中。包括联盟链中可以
+  产生一个仲裁机构。
+end note
+
+:每个群组指定的机构生成群组创世区块，发送到同群组的其它机构;
+
 :生成各个机构的部署文件;
-split
-  :同组生成;
-split again
-  :跨组生成（已有群组的机构加入其它群组）;
-end split
-:2 群组 3 机构 6 节点;
+if (是否定义了 extra_group_id) then (是)
+  :为现有节点初始化额外的群组;
+  :添加其它组的节点信息到;
+else (否)
+endif
+
+stop
 
 @enduml

@@ -3,7 +3,7 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: start_up.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-11-11T17:33:53+08:00
+# @Last modified time: 2020-11-13T15:07:14+08:00
 # @License: GNU General Public License v3.0
 
 
@@ -92,3 +92,8 @@
         autoclean: true
         autoremove: true
       when: __console_sync is changed
+
+    - name: 安装 multitail
+      package:
+        name: multitail
+        update_cache: true

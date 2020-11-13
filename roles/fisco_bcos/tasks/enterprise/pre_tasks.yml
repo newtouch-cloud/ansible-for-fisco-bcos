@@ -3,7 +3,7 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: pre_tasks.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-11-11T17:36:38+08:00
+# @Last modified time: 2020-11-13T11:23:12+08:00
 # @License: GNU General Public License v3.0
 
 
@@ -38,7 +38,7 @@
 
 - name: 检查每个群组是否有且只有 1 个创世区块机构
   fail:
-    msg: "群组 {{ item }} 没有指定或存在多个创世区块机构。请排查 {{ inventory_dir }}/group_vars/all/init.yml 文件并确定同组内，有且只有 1 个创世区块机构（拥有 create_genesis: true 属性）。"
+    msg: "群组 {{ item }} 没有指定或存在多个创世区块机构。请排查 {{ inventory_dir }}/group_vars/all/init.yml 文件并确定组内，有且只有 1 个创世区块机构（拥有 create_genesis: true 属性）。"
   loop: "{{ fisco_group_id_list }}"
   loop_control:
     label: "检查群组 {{ item }}"
@@ -47,7 +47,6 @@
         | selectattr('main_group_id', '==', item)
         | selectattr('create_genesis', 'defined')
         | selectattr('create_genesis')
-        | map(attribute='name')
         | list
         | count
     ) != 1
@@ -95,5 +94,5 @@
   loop_control:
     label: "{{ item.split(':')[0:4] | join(':') }} 添加到 fisco_expand_nodes 组"
   when:
-    - pre_node_list_path != ''
+    - pre_node_list_path is truthy
     - item not in lookup('file', pre_node_list_path)
