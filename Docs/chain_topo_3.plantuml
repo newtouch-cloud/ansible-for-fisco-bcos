@@ -1,0 +1,34 @@
+@startuml
+!include <tupadr3/common>
+!include <tupadr3/font-awesome/server>
+!include <archimate/Archimate>
+
+title 3 群组 5 机构 N 节点
+
+' Elements
+node "联盟链" as LML
+
+collections "群组 1" as Group1
+collections "群组 2" as Group2
+collections "群组 3" as Group3
+
+node "机构 A" as A
+node "机构 B" as B
+node "机构 C" as C
+node "机构 D" as D
+node "机构 E" as E
+
+Group1 -up-> LML
+Group2 -up-> LML
+Group3 -up-> LML
+
+A -up-> Group1
+A -up-> Group2
+A -up-> Group3
+B -up-> Group1
+C -up-> Group2
+D -up-> Group2
+D -up-> Group3
+E -up-> Group3
+
+@enduml

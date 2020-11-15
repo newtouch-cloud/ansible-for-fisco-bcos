@@ -12,8 +12,8 @@
 - hosts: test
   # serial: 1
   vars_files:
-    - roles/fisco_bcos/defaults/main.yml
-    - inventories/sample/deploy/node_list.yml
+    - ../roles/fisco_bcos/defaults/main.yml
+    - ../inventories/sample/deploy/node_list.yml
   tasks:
     - name: 查找节点配置文件夹路径
       find:
@@ -94,6 +94,7 @@
       when: __console_sync is changed
 
     - name: 安装 multitail
+      become: true
       package:
         name: multitail
         update_cache: true
