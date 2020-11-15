@@ -17,13 +17,11 @@
 
 ## 相关版本信息
 * [FISCO](https://github.com/FISCO-BCOS/FISCO-BCOS/blob/master/docs/README_CN.md): v2.6.0
-* [Ansible](https://www.ansible.com/): 2.10.1
+* [Ansible](https://www.ansible.com/): 2.10.1 或以上版本
 
-## 部署环境要求
-* Linux。目前在 Ubuntu 16.04 上启动通过。
-* 系统建议安装有时间同步服务，例如 chrony。如果是离线环境，请参照官方文档做好内网时间同步。
-* 启动文件应部署在外挂数据盘，建议采用分布式存储。
-* 各机构服务器之间可以访问相关的 IP 和监听端口（具体可以查看生成的 deploy 目录内容，后面有详述）。
+## 执行环境要求
+* 任意主流发行版 Linux。
+* ansible。可通过 pip install -i https://pypi.doubanio.com/simple ansible
 
 ## 联盟链初始化
 1. 复制一份 inventory 配置。假设新环境是 'my_inventory'。
@@ -39,18 +37,18 @@
    ```
 
    例如
-	
+
 	```
 	# true 表示使用国密模式
 	fisco_gm_enabled: true
-	
+
 	# 变量注释
 	# name:           （必填）机构名称
 	# create_genesis: 是否生成创世区块，同组必须有且只有 1 个创世区块机构。（不设置则默认为 false）
 	# nodes:          （必填）机构各节点连接信息。格式 <ip>:<节点数>。如果只填写 IP，则默认为 1 个节点。同 IP 多节点会自动递增对应端口。參考 https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/enterprise_tools/tutorial_detail_operation.html#id5。生产环境中请确保各机构不共用服务器，避免私钥证书的泄漏。由于节点多群组共享网络带宽、CPU和内存资源，因此为了保证服务的稳定性，一台机器上不推荐配置过多节点。
 	# main_group_id:  （必填）群组编号
 	# extra_group_id: （可选）额外要加入的目标群组编号
-	
+
 	agencies:
 	 - name: A
 	   create_genesis: true
@@ -116,7 +114,7 @@
 
 目前仅支持在 ini.yml 配置中，给已有的机构增加节点，不支持 agencies 里增加机构。
 
-假设第一次初始化的配置是 
+假设第一次初始化的配置是
 
 
 	```
@@ -141,9 +139,9 @@
 	     - 172.17.8.106
 	   main_group_id: 2
 	```
-   
-要给机构 B 的 172.17.8.103 服务器增加 3 个节点，就把 `172.17.8.103` 改成 `172.17.8.103:4`(因为默认是 1 个节点，所以增加 3 个就是 4)。也可以增加 IP 和节点，例如：
-   
+
+要给机构 A 已有的 172.17.8.101 和 172.17.8.102 服务器增加至 5 个节点，就分别改为 `172.17.8.101:5` 和 `172.17.8.102:5`。同时再增加一个 `172.17.8.110:5`，修改如下：
+
 	```
 	agencies:
 	 - name: A
@@ -156,7 +154,7 @@
 	   extra_group_id:
 	     - 2
 	```
-   
+
 然后再次执行
 
 	```
@@ -164,3 +162,5 @@
 	```
 
 执行完成后，在对应的机构目录下，你可以看到类似 `fisco_deploy_agency_A_expand_1917645e6744e1360fba72fa4cf8cc47` 这样的目录，就是新增的节点配置了。
+
+把新生成的文件目录传到对应 IP 的服务器上，启动，并通过控制台或其它管理平台，把新增节点设置为共识节点即可。具体设置操作请参看[控制台](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/manual/console.html) 或 [WeBASE 管理平台](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/webase/webase.html)
