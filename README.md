@@ -21,7 +21,12 @@
 
 ## 执行环境要求
 * 任意主流发行版 Linux。
-* ansible。可通过 pip install -i https://pypi.doubanio.com/simple ansible
+* ansible。可通过以下命令进行安装（以 ubuntu 16.04 为例）
+
+```
+apt-get install python3-pip
+pip install -i https://pypi.doubanio.com/simple ansible
+```
 
 ## 联盟链初始化
 1. 复制一份 inventory 配置。假设新环境是 'my_inventory'。
