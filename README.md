@@ -46,7 +46,7 @@
 
 	# 变量注释
 	# name:           （必填）机构名称
-	# create_genesis: 是否生成创世区块，同组必须有且只有 1 个创世区块机构。（不设置则默认为 false）
+	# create_genesis: 是否生成创世区块，同组(根据 main_group_id 判断)必须有且只有 1 个创世区块机构。（不设置则默认为 false）
 	# nodes:          （必填）机构各节点连接信息。格式 <ip>:<节点数>。如果只填写 IP，则默认为 1 个节点。同 IP 多节点会自动递增对应端口。參考 https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/enterprise_tools/tutorial_detail_operation.html#id5。生产环境中请确保各机构不共用服务器，避免私钥证书的泄漏。由于节点多群组共享网络带宽、CPU和内存资源，因此为了保证服务的稳定性，一台机器上不推荐配置过多节点。
 	# main_group_id:  （必填）群组编号
 	# extra_group_id: （可选）额外要加入的目标群组编号
@@ -164,3 +164,5 @@
 	```
 
 执行完成后，在对应的机构目录下，你可以看到类似 `fisco_deploy_agency_A_expand_1917645e6744e1360fba72fa4cf8cc47` 这样的目录，就是新增的节点配置了。
+
+把相关节点文件夹传送到对应 IP 的服务器上，通过 [控制台](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/manual/console_of_java_sdk.html)、[SDK](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/sdk/index.html) 或 [WeBase 管理平台](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/webase/webase.html)

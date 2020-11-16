@@ -1,0 +1,60 @@
+# tmuxp load tmuxp_tail_fisco_log.yaml
+session_name: tail-fisco-logs
+windows:
+  - layout: tiled
+    options:
+      automatic-rename: on
+    options_after:
+      synchronize-panes: on
+    panes:
+      - shell_command:
+          - ssh -i ~/.vagrant.d/insecure_private_key vagrant@172.17.8.101
+          - multitail --mergeall -E 'SEALER' /opt/fisco_nodes/node_*/log/*.log
+
+      - shell_command:
+          - ssh -i ~/.vagrant.d/insecure_private_key vagrant@172.17.8.102
+          - multitail --mergeall -E 'SEALER' /opt/fisco_nodes/node_*/log/*.log
+
+      - shell_command:
+          - ssh -i ~/.vagrant.d/insecure_private_key vagrant@172.17.8.103
+          - multitail --mergeall -E 'SEALER' /opt/fisco_nodes/node_*/log/*.log
+
+      - shell_command:
+          - ssh -i ~/.vagrant.d/insecure_private_key vagrant@172.17.8.104
+          - multitail --mergeall -E 'SEALER' /opt/fisco_nodes/node_*/log/*.log
+
+  - layout: tiled
+    options:
+      automatic-rename: on
+    options_after:
+      synchronize-panes: on
+    panes:
+      - shell_command:
+          - ssh -i ~/.vagrant.d/insecure_private_key vagrant@172.17.8.105
+          - multitail --mergeall -E 'SEALER' /opt/fisco_nodes/node_*/log/*.log
+
+      - shell_command:
+          - ssh -i ~/.vagrant.d/insecure_private_key vagrant@172.17.8.106
+          - multitail --mergeall -E 'SEALER' /opt/fisco_nodes/node_*/log/*.log
+
+      - shell_command:
+          - ssh -i ~/.vagrant.d/insecure_private_key vagrant@172.17.8.107
+          - multitail --mergeall -E 'SEALER' /opt/fisco_nodes/node_*/log/*.log
+
+      - shell_command:
+          - ssh -i ~/.vagrant.d/insecure_private_key vagrant@172.17.8.108
+          - multitail --mergeall -E 'SEALER' /opt/fisco_nodes/node_*/log/*.log
+
+  - layout: tiled
+    options:
+      automatic-rename: on
+    options_after:
+      synchronize-panes: on
+    panes:
+      - shell_command:
+          - ssh -i ~/.vagrant.d/insecure_private_key vagrant@172.17.8.109
+          - multitail --mergeall -E 'SEALER' /opt/fisco_nodes/node_*/log/*.log
+
+      - shell_command:
+          - ssh -i ~/.vagrant.d/insecure_private_key vagrant@172.17.8.110
+          - multitail --mergeall -E 'SEALER' /opt/fisco_nodes/node_*/log/*.log

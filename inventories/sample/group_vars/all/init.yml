@@ -3,13 +3,19 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: init.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-11-16T13:04:42+08:00
+# @Last modified time: 2020-11-16T14:13:54+08:00
 # @License: GNU General Public License v3.0
 
 
 
-# true 表示使用国密模式
+# 是否使用国密版
 fisco_gm_enabled: true
+
+# 是否生成控制台
+fisco_console_enabled: true
+
+# 是否生成 SDK
+fisco_sdk_enabled: true
 
 # 变量注释
 # name:           （必填）机构名称

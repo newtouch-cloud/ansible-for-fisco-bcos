@@ -3,7 +3,7 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: build_install_package.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-11-16T13:28:31+08:00
+# @Last modified time: 2020-11-16T14:17:38+08:00
 # @License: GNU General Public License v3.0
 
 
@@ -46,3 +46,10 @@
   loop_control:
     label: "'listen_ip = {{ item.split(':')[2] }}'"
   when: item.split(':')[0] == agency.name
+
+- name: "生成 SDK 在 {{ fisco_workdir }}/agency_{{ agency.name }}/sdk_agency_{{ agency.name }}"
+  command: "./generator --get_sdk_file ./sdk_agency_{{ agency.name }}"
+  args:
+    chdir: "{{ fisco_workdir }}/agency_{{ agency.name }}"
+  changed_when: false
+  when: fisco_sdk_enabled
