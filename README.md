@@ -1,5 +1,5 @@
 # 一键生成 FISCO-BCOS 企业级架构部署
-本项目由为区块链开源项目 [FISCO-BCOS](http://www.fisco-bcos.org/) 提供了自动化生成企业级配置文件的 ansible-playbook。2 群组 3 机构 6 节点的环境，可以在 30 秒内（除下载时间）生成配置，极大简化了部署难度，避免了手工配置容易发生的错误。
+本项目由为区块链开源项目 [FISCO-BCOS](https://github.com/FISCO-BCOS/FISCO-BCOS) 提供了自动化生成企业级配置文件的 ansible-playbook。2 群组 3 机构 6 节点的环境，可以在 30 秒内（除下载时间）生成配置，极大简化了部署难度，避免了手工配置容易发生的错误。
 
 # 已实现的功能
 1. 多群组多机构多节点的联盟链初始化配置。目前测试生成 3 群组 5 机构 50 节点的部署文件是没问题的。
@@ -17,7 +17,7 @@
 
 ## 相关版本信息
 * [FISCO](https://github.com/FISCO-BCOS/FISCO-BCOS/blob/master/docs/README_CN.md): v2.6.0
-* [Ansible](https://www.ansible.com/): 2.10.1
+* [Ansible](https://github.com/ansible/ansible): 2.10.1
 
 ## 部署环境要求
 * Linux。目前在 Ubuntu 16.04 上启动通过。
@@ -39,18 +39,18 @@
    ```
 
    例如
-	
+
 	```
 	# true 表示使用国密模式
 	fisco_gm_enabled: true
-	
+
 	# 变量注释
 	# name:           （必填）机构名称
 	# create_genesis: 是否生成创世区块，同组必须有且只有 1 个创世区块机构。（不设置则默认为 false）
 	# nodes:          （必填）机构各节点连接信息。格式 <ip>:<节点数>。如果只填写 IP，则默认为 1 个节点。同 IP 多节点会自动递增对应端口。參考 https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/enterprise_tools/tutorial_detail_operation.html#id5。生产环境中请确保各机构不共用服务器，避免私钥证书的泄漏。由于节点多群组共享网络带宽、CPU和内存资源，因此为了保证服务的稳定性，一台机器上不推荐配置过多节点。
 	# main_group_id:  （必填）群组编号
 	# extra_group_id: （可选）额外要加入的目标群组编号
-	
+
 	agencies:
 	 - name: A
 	   create_genesis: true
@@ -116,7 +116,7 @@
 
 目前仅支持在 ini.yml 配置中，给已有的机构增加节点，不支持 agencies 里增加机构。
 
-假设第一次初始化的配置是 
+假设第一次初始化的配置是
 
 
 	```
@@ -141,9 +141,9 @@
 	     - 172.17.8.106
 	   main_group_id: 2
 	```
-   
+
 要给机构 B 的 172.17.8.103 服务器增加 3 个节点，就把 `172.17.8.103` 改成 `172.17.8.103:4`(因为默认是 1 个节点，所以增加 3 个就是 4)。也可以增加 IP 和节点，例如：
-   
+
 	```
 	agencies:
 	 - name: A
@@ -156,7 +156,7 @@
 	   extra_group_id:
 	     - 2
 	```
-   
+
 然后再次执行
 
 	```

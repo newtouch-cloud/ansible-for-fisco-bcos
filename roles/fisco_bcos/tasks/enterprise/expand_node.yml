@@ -3,7 +3,7 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: expand_node.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-11-13T11:28:44+08:00
+# @Last modified time: 2020-11-16T13:29:54+08:00
 # @License: GNU General Public License v3.0
 
 
@@ -37,3 +37,14 @@
   args:
     chdir: "{{ fisco_workdir }}/agency_{{ agency.name }}/"
   changed_when: false
+
+- name: 更新 listen_ip
+  ini_file:
+    path: "{{ fisco_workdir }}/agency_{{ agency.name }}/fisco_deploy_agency_{{ agency.name }}_expand_{{ groups['fisco_expand_nodes'] | hash('md5') }}/node_{{ item.split(':')[2] }}_{{ item.split(':')[3] }}/config.ini"
+    section: "p2p"
+    option: "listen_ip"
+    value: "{{ item.split(':')[2] }}"
+  loop: "{{ groups['fisco_expand_nodes'] | sort }}"
+  loop_control:
+    label: "'listen_ip = {{ item.split(':')[2] }}'"
+  when: item.split(':')[0] == agency.name

@@ -3,7 +3,7 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: build_install_package.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-11-11T17:37:15+08:00
+# @Last modified time: 2020-11-16T13:28:31+08:00
 # @License: GNU General Public License v3.0
 
 
@@ -34,4 +34,15 @@
       changed_when: false
   when:
     - agency.extra_group_id is defined
-    - agency.extra_group_id != ''
+    - agency.extra_group_id is truthy
+
+- name: 更新 listen_ip
+  ini_file:
+    path: "{{ fisco_workdir }}/agency_{{ agency.name }}/fisco_deploy_agency_{{ agency.name }}/node_{{ item.split(':')[2] }}_{{ item.split(':')[3] }}/config.ini"
+    section: "p2p"
+    option: "listen_ip"
+    value: "{{ item.split(':')[2] }}"
+  loop: "{{ node_list }}"
+  loop_control:
+    label: "'listen_ip = {{ item.split(':')[2] }}'"
+  when: item.split(':')[0] == agency.name
