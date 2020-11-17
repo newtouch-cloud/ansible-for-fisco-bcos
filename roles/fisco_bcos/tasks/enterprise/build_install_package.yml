@@ -3,7 +3,7 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: build_install_package.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-11-16T14:17:38+08:00
+# @Last modified time: 2020-11-17T13:41:11+08:00
 # @License: GNU General Public License v3.0
 
 
@@ -15,7 +15,7 @@
   changed_when: false
 
 - block:
-    - name: "机构 {{ agency.name }} 为现有节点初始化 {{ agency.extra_group_id }} 群组"
+    - name: "群组扩展 | 机构 {{ agency.name }} 为现有节点初始化 {{ agency.extra_group_id }} 群组"
       command: "./generator --add_group ./meta/group.{{ item }}.genesis ./fisco_deploy_agency_{{ agency.name }}/"
       args:
         chdir: "{{ fisco_workdir }}/agency_{{ agency.name }}"
@@ -24,7 +24,7 @@
       loop_control:
         label: "./generator --add_group ./meta/group.{{ item }}.genesis ./fisco_deploy_agency_{{ agency.name }}/"
 
-    - name: "机构 {{ agency.name }} 添加其它组 {{ agency.extra_group_id }} 节点信息"
+    - name: "群组扩展 | 机构 {{ agency.name }} 添加其它组 {{ agency.extra_group_id }} 节点信息"
       command: "./generator --add_peers ./meta/peers_{{ item }}.txt ./fisco_deploy_agency_{{ agency.name }}/"
       args:
         chdir: "{{ fisco_workdir }}/agency_{{ agency.name }}"
@@ -44,7 +44,7 @@
     value: "{{ item.split(':')[2] }}"
   loop: "{{ node_list }}"
   loop_control:
-    label: "'listen_ip = {{ item.split(':')[2] }}'"
+    label: "修改 {{ fisco_workdir }}/agency_{{ agency.name }}/fisco_deploy_agency_{{ agency.name }}/node_{{ item.split(':')[2] }}_{{ item.split(':')[3] }}/config.ini"
   when: item.split(':')[0] == agency.name
 
 - name: "生成 SDK 在 {{ fisco_workdir }}/agency_{{ agency.name }}/sdk_agency_{{ agency.name }}"

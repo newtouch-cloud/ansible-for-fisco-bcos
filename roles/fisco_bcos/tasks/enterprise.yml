@@ -3,7 +3,7 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: enterprise.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-11-13T11:09:51+08:00
+# @Last modified time: 2020-11-17T12:51:10+08:00
 # @License: GNU General Public License v3.0
 
 
@@ -63,8 +63,6 @@
 
 - include_tasks: enterprise/console.yml
   when: fisco_console_enabled
-
-# - import_tasks: enterprise/post_tasks.yml
 
 # - name: 打包部署文件
 #   archive:

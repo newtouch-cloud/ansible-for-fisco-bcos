@@ -3,7 +3,7 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: pre_tasks.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-11-17T10:49:55+08:00
+# @Last modified time: 2020-11-17T13:38:11+08:00
 # @License: GNU General Public License v3.0
 
 
@@ -35,12 +35,12 @@
   set_fact:
     node_list: "{{ node_list | sort }}"
     pre_node_list_path: "{{ lookup('pipe', 'ls -1tr ' + fisco_workdir + '/node_list.yml.*~ | tail -n1') }}"
-    fisco_group_id_list: "{{ agencies | map(attribute='main_group_id') | unique }}"
+    fisco_main_group_id_list: "{{ agencies | map(attribute='main_group_id') | unique }}"
 
 - name: 检查每个群组是否有且只有 1 个创世区块机构
   fail:
     msg: "群组 {{ item }} 没有指定或存在多个创世区块机构。请排查 {{ inventory_dir }}/group_vars/all/init.yml 文件并确定组内，有且只有 1 个创世区块机构（拥有 create_genesis: true 属性）。"
-  loop: "{{ fisco_group_id_list }}"
+  loop: "{{ fisco_main_group_id_list }}"
   loop_control:
     label: "检查群组 {{ item }}"
   when: >-
@@ -65,7 +65,7 @@
     name: "{{ item.1 }}"
     group: "fisco_node_group_{{ item.0 }}"
   with_nested:
-    - "{{ fisco_group_id_list }}"
+    - "{{ fisco_main_group_id_list }}"
     - "{{ node_list }}"
   loop_control:
     label: "节点 {{ item.1.split(':')[2:4] | join(':') }} 添加到 fisco_group_{{ item.0 }} 组"
@@ -97,3 +97,11 @@
   when:
     - pre_node_list_path is truthy
     - item not in lookup('file', pre_node_list_path)
+
+- name: 检查 extra_group_id 里是否有对应的 main_group_id
+  fail:
+    msg: “群组 {{ item }} 不存在，请检查 init.yml 的 agencies[*]['extra_group_id'] 是否有对应的 main_group_id。”
+  loop: "{{ agencies | selectattr('extra_group_id', 'defined') | sum(attribute='extra_group_id', start=[]) | unique }}"
+  loop_control:
+    label: "检查群组 {{ item }} 是否存在。"
+  when: item not in fisco_main_group_id_list
