@@ -142,7 +142,7 @@
 	   main_group_id: 2
 	```
 
-要给机构 B 的 172.17.8.103 服务器增加 3 个节点，就把 `172.17.8.103` 改成 `172.17.8.103:4`(因为默认是 1 个节点，所以增加 3 个就是 4)。也可以增加 IP 和节点，例如：
+假设要给机构 A 的 172.17.8.101 和 172.17.8.102 服务器，分别增加至 5 个节点，就把 `172.17.8.101` 改成 `172.17.8.101:5`，`172.17.8.102` 改成 `172.17.8.102:5`。也可以增加 IP 和节点，例如 `172.17.8.110:5`：
 
 	```
 	agencies:
@@ -166,3 +166,12 @@
 执行完成后，在对应的机构目录下，你可以看到类似 `fisco_deploy_agency_A_expand_1917645e6744e1360fba72fa4cf8cc47` 这样的目录，就是新增的节点配置了。
 
 把相关节点文件夹传送到对应 IP 的服务器上，通过 [控制台](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/manual/console_of_java_sdk.html)、[SDK](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/sdk/index.html) 或 [WeBase 管理平台](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/webase/webase.html)
+
+
+# 如何参与？
+我们欢迎大家在遵循 GPL V3 的前提下，一起来完善代码。请 fork 本项目，提交你的 pull request。
+同时，我们需要定义一些代码规范。
+
+1. 请复制一份 inventory/sample，重命名在同级目录中。避免 sample 目录文件冲突。
+1. 每个 task 必须有 name，用中文注释。
+1. 尽可能的使用 ansible 模块，不鼓励直接使用 shell 命令。
