@@ -3,7 +3,7 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: init.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-11-16T14:13:54+08:00
+# @Last modified time: 2020-11-17T11:17:44+08:00
 # @License: GNU General Public License v3.0
 
 
@@ -76,5 +76,4 @@ agencies:
     nodes:
       - 172.17.8.109:5
       - 172.17.8.110:5
-      - 172.17.8.111:5
     main_group_id: 3
