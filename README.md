@@ -19,11 +19,9 @@
 * [FISCO](https://github.com/FISCO-BCOS/FISCO-BCOS/blob/master/docs/README_CN.md): v2.6.0
 * [Ansible](https://github.com/ansible/ansible): 2.10.1
 
-## 部署环境要求
+## 运行部署要求
 * Linux。目前在 Ubuntu 16.04 上启动通过。
-* 系统建议安装有时间同步服务，例如 chrony。如果是离线环境，请参照官方文档做好内网时间同步。
-* 启动文件应部署在外挂数据盘，建议采用分布式存储。
-* 各机构服务器之间可以访问相关的 IP 和监听端口（具体可以查看生成的 deploy 目录内容，后面有详述）。
+* 安装 ansible。
 
 ## 联盟链初始化
 1. 复制一份 inventory 配置。假设新环境是 'my_inventory'。
@@ -80,6 +78,8 @@
    ```
    > ansible-playbook -i inventories/my_inventory/hosts.ini fisco_bcos.yml
    ```
+
+   执行过程中出现的 [WARNING] 信息可以忽略。
 
 1. 如无意外，你会在 `inventories/my_inventory/deploy` 目录下找到相关的配置内容。例如：
 

@@ -3,7 +3,7 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: build_install_package.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-11-17T13:41:11+08:00
+# @Last modified time: 2020-11-17T14:35:31+08:00
 # @License: GNU General Public License v3.0
 
 
@@ -36,12 +36,13 @@
     - agency.extra_group_id is defined
     - agency.extra_group_id is truthy
 
-- name: 更新 listen_ip
+# https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/manual/configuration.html#config-ini
+- name: 更新 listen_ip。如果是公网 IP，则监听 0.0.0.0。
   ini_file:
     path: "{{ fisco_workdir }}/agency_{{ agency.name }}/fisco_deploy_agency_{{ agency.name }}/node_{{ item.split(':')[2] }}_{{ item.split(':')[3] }}/config.ini"
     section: "p2p"
     option: "listen_ip"
-    value: "{{ item.split(':')[2] }}"
+    value: "{{ item.split(':')[2] | ipaddr('private') | ternary(item.split(':')[2]|quote, '0.0.0.0') }}"
   loop: "{{ node_list }}"
   loop_control:
     label: "修改 {{ fisco_workdir }}/agency_{{ agency.name }}/fisco_deploy_agency_{{ agency.name }}/node_{{ item.split(':')[2] }}_{{ item.split(':')[3] }}/config.ini"
