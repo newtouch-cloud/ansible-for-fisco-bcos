@@ -3,7 +3,7 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: main.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-11-17T11:23:47+08:00
+# @Last modified time: 2020-11-18T15:38:12+08:00
 # @License: GNU General Public License v3.0
 
 
@@ -38,11 +38,15 @@ fisco_generator_git: https://github.com/FISCO-BCOS/generator.git
 # TODO
 #------------ config.ini 配置开始 ------------#
 fisco_config_ini:
-  enable_compress: false      # 是否启用 P2P 网络压缩。如果都是内网节点，建议为 false。公网建链建议为 true。
-  log_level: info             # trace、debug、info、warning、error
-  log_flush: true             # 默认开启日志自动刷新，若需提升系统性能，建议将该值设置为 false。
-  log_enable_statistic: false # 统计日志开关。配置成 true，开启网络流量和 Gas 统计功能。
-  group_data_path: "data/"    # 群组数据存储路径。
-  stat_flush_interval: 60     # 配置网络统计日志输出间隔，单位是秒，默认为60。
+  log:
+    enable_compress: false      # 是否启用 P2P 网络压缩。如果都是内网节点，建议为 false。公网建链建议为 true。
+    log_level: info             # trace、debug、info、warning、error
+    log_flush: true             # 默认开启日志自动刷新，若需提升系统性能，建议将该值设置为 false。
+    log_enable_statistic: false # 统计日志开关。配置成 true，开启网络流量和 Gas 统计功能。
+    stat_flush_interval: 60     # 配置网络统计日志输出间隔，单位是秒，默认为60。
+  group:
+    group_data_path: "data/"    # 群组数据存储路径。
+  network_security:
+    ca_path: ''                 # ca证书文件夹，多ca时需要。
 
 #------------ config.ini 配置结束 ------------#

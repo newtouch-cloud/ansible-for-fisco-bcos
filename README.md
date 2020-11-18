@@ -165,7 +165,7 @@
 
 执行完成后，在对应的机构目录下，你可以看到类似 `fisco_deploy_agency_A_expand_1917645e6744e1360fba72fa4cf8cc47` 这样的目录，就是新增的节点配置了。
 
-把相关节点文件夹传送到对应 IP 的服务器上，通过 [控制台](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/manual/console_of_java_sdk.html)、[SDK](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/sdk/index.html) 或 [WeBase 管理平台](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/webase/webase.html)
+把相关节点文件夹传送到对应 IP 的服务器上，通过 [控制台](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/manual/console_of_java_sdk.html)、[SDK](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/sdk/index.html) 或 [WeBase 管理平台](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/webase/webase.html) 进行管理。
 
 
 # 如何参与？
