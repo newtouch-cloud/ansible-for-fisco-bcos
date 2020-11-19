@@ -3,7 +3,7 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: init.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-11-17T15:10:50+08:00
+# @Last modified time: 2020-11-19T13:22:23+08:00
 # @License: GNU General Public License v3.0
 
 # 变量注释
@@ -13,25 +13,34 @@
 # main_group_id:  （必填）主群组 ID
 # extra_group_id: （可选）额外要加入的目标群组 ID，必须要有对应的 main_group_id。
 
+# 最小部署，1 群组 1 机构 2 节点
 # agencies:
 #   - name: A
 #     create_genesis: true
 #     nodes:
-#       - 172.17.8.101:3
+#       - 172.17.8.101:2
+#     main_group_id: 1
+
+# 官方技术手册演示部署，2 群组 3 机构 6 节点。
+# agencies:
+#   - name: A
+#     create_genesis: true
+#     nodes:
+#       - 172.17.8.101:2
 #     main_group_id: 1
 #     extra_group_id:
 #       - 2
 #   - name: B
 #     nodes:
-#       - 172.17.8.103:3
+#       - 172.17.8.103:2
 #     main_group_id: 1
 #   - name: C
 #     create_genesis: true
 #     nodes:
-#       - 172.17.8.105:3
+#       - 172.17.8.105:2
 #     main_group_id: 2
 
-# 以下示例是 3 群组 5 机构 50 节点，其中机构 A 属于仲裁机构（与所有群组相通）。请根据你的实际部署需求进行调整。
+# 更大的部署， 3 群组 5 机构 50 节点，其中机构 A 属于仲裁机构（与所有群组相通）。请根据你的实际部署需求进行调整。理论上规模大小无限支持。
 agencies:
   - name: A
     create_genesis: true
