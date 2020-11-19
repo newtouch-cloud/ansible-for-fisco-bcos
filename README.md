@@ -39,13 +39,10 @@
    例如
 
 	```
-	# true 表示使用国密模式
-	fisco_gm_enabled: true
-
 	# 变量注释
 	# name:           （必填）机构名称
 	# create_genesis: 是否生成创世区块，同组(根据 main_group_id 判断)必须有且只有 1 个创世区块机构。（不设置则默认为 false）
-	# nodes:          （必填）机构各节点连接信息。格式 <ip>:<节点数>。如果只填写 IP，则默认为 1 个节点。同 IP 多节点会自动递增对应端口。參考 https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/enterprise_tools/tutorial_detail_operation.html#id5。生产环境中请确保各机构不共用服务器，避免私钥证书的泄漏。由于节点多群组共享网络带宽、CPU和内存资源，因此为了保证服务的稳定性，一台机器上不推荐配置过多节点。
+	# nodes:          （必填）机构各节点连接信息。格式 <ip>:<节点数>。如果只填写 IP，则默认为 1 个节点。同 IP 多节点会自动递增对应端口。
 	# main_group_id:  （必填）群组编号
 	# extra_group_id: （可选）额外要加入的目标群组编号
 
@@ -69,6 +66,9 @@
 	     - 172.17.8.105:5
 	     - 172.17.8.106:5
 	   main_group_id: 2
+
+  # true 表示使用国密模式
+  fisco_gm_enabled: true
 	```
 
    请根据文件头部的变量注释，编排好目标配置的信息。
@@ -114,7 +114,7 @@
 
 # 已有机构扩展节点
 
-目前仅支持在 ini.yml 配置中，给已有的机构增加节点，不支持 agencies 里增加机构。
+目前仅支持在 init.yml 配置中，给已有的机构增加节点，不支持 agencies 里增加机构。
 
 假设第一次初始化的配置是
 
