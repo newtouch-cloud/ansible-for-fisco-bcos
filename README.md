@@ -14,6 +14,7 @@
 ## 设计思路
 1. 参考[官方文档](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/enterprise_tools/tutorial_detail_operation.html)，示例架构 2 群组 3 机构 6 节点。
 1. 所有文件在本地目录生成。方便分发给不同的真实机构，由机构的运维人员自行部署启动。
+1. 更详细的内容请看[《Ansible for FISCO BCOS，企业级部署的速度与激情》](https://mp.weixin.qq.com/s/YKwcfCGx_1TAu_hoXnqrMw)
 
 ## 相关版本信息
 * [FISCO](https://github.com/FISCO-BCOS/FISCO-BCOS/blob/master/docs/README_CN.md): v2.6.0
