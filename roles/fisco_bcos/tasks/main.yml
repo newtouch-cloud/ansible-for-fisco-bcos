@@ -3,9 +3,15 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: main.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-11-11T17:36:28+08:00
+# @Last modified time: 2020-11-24T13:37:37+08:00
 # @License: GNU General Public License v3.0
 
+- import_tasks: enterprise/pre_tasks.yml
+  tags: always
 
+- import_tasks: generate_archimate.yml
+  tags:
+    - never
+    - archimate
 
 - include_tasks: "{{ fisco_deploy_mode }}.yml"

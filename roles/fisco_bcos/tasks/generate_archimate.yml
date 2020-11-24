@@ -1,0 +1,43 @@
+# @Author: Haibin Lee <haibin>
+# @Date:   2020-11-24T10:45:09+08:00
+# @Email:  haibin.li@newtouch.com
+# @Filename: generate_archimate.yml
+# @Last modified by:   haibin
+# @Last modified time: 2020-11-24T13:44:24+08:00
+# @Copyright: Copyright 2020 the original author or authors.
+
+
+
+- name: 安装 plantuml
+  become: yes
+  package:
+    name: plantuml
+  when: not lookup('pipe', 'which plantuml')
+
+- name: "创建 {{ fisco_workdir }}/archimate 目录"
+  file:
+    path: "{{ fisco_workdir }}/archimate"
+    state: directory
+  when: not lookup('fileglob', fisco_workdir + '/archimate')
+
+- name: 生成联盟链拓扑 puml 文件
+  template:
+    src: "chain_topo.puml.j2"
+    dest: "{{ fisco_workdir }}/archimate/chain_topo.puml"
+
+- name: 生成机构拓扑 puml 文件
+  template:
+    src: "agency_topo.puml.j2"
+    dest: "{{ fisco_workdir }}/archimate/agency_{{ agency.name }}_topo.puml"
+  loop: "{{ agencies }}"
+  loop_control:
+    loop_var: agency
+    label: "{{ fisco_workdir }}/archimate/agency_{{ agency.name }}_topo.puml"
+
+- name: 生成图片文件
+  command: "plantuml {{ item | basename }}"
+  args:
+    chdir: "{{ fisco_workdir }}/archimate/"
+  changed_when: false
+  with_fileglob:
+    - "{{ fisco_workdir }}/archimate/*.puml"
