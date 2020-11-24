@@ -1,4 +1,14 @@
-# tmuxp load tmuxp_tail_fisco_log.yaml
+# @Author: Haibin Lee <haibin>
+# @Date:   2020-11-16T13:41:55+08:00
+# @Email:  haibin.li@newtouch.com
+# @Filename: tmuxp_tail_fisco_log.yaml
+# @Last modified by:   haibin
+# @Last modified time: 2020-11-23T19:12:12+08:00
+# @Copyright: Copyright 2020 the original author or authors.
+
+
+
+# 需要安装 tmuxp，运行 tmuxp load tmuxp_tail_fisco_log.yaml
 session_name: tail-fisco-logs
 windows:
   - layout: tiled

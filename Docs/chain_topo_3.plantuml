@@ -18,6 +18,12 @@ node "机构 C" as C
 node "机构 D" as D
 node "机构 E" as E
 
+collections "节点" as node1
+collections "节点" as node2
+collections "节点" as node3
+collections "节点" as node4
+collections "节点" as node5
+
 Group1 -up-> LML
 Group2 -up-> LML
 Group3 -up-> LML
@@ -30,5 +36,11 @@ C -up-> Group2
 D -up-> Group2
 D -up-> Group3
 E -up-> Group3
+
+node1 -up-> A
+node2 -up-> B
+node3 -up-> C
+node4 -up-> D
+node5 -up-> E
 
 @enduml

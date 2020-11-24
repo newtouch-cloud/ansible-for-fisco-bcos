@@ -3,7 +3,7 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: pre_tasks.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-11-18T15:47:54+08:00
+# @Last modified time: 2020-11-24T10:07:49+08:00
 # @License: GNU General Public License v3.0
 
 
@@ -33,9 +33,9 @@
 
 - name: 设置动态变量
   set_fact:
-    node_list: "{{ node_list | sort }}"
-    pre_node_list_path: "{{ lookup('pipe', 'ls -1tr ' + fisco_workdir + '/node_list.yml.*~ | tail -n1') }}"
-    fisco_main_group_id_list: "{{ agencies | map(attribute='main_group_id') | unique }}"
+    node_list: "{{ node_list | sort }}" # 节点列表重新升序排列，让输出信息比较美观可读。
+    pre_node_list_path: "{{ lookup('pipe', 'ls -1tr ' + fisco_workdir + '/node_list.yml.*~ | tail -n1') }}" # 检查 node_list.yml 是否有备份文件。如有，获取文件路径，做新旧节点对比。
+    fisco_main_group_id_list: "{{ agencies | map(attribute='main_group_id') | unique }}" # 建立所有群组的 ID 列表。
 
 - name: 检查每个群组是否有且只有 1 个创世区块机构
   fail:
@@ -60,7 +60,7 @@
   loop_control:
     label: "节点 {{ item.split(':')[2:4] | join(':') }} 添加到 fisco_agency_{{ item.split(':')[0] }} 组"
 
-- name: 节点分组 | 根据 GROUP ID
+- name: 节点分组 | 根据 main_group_id 和 extra_group_id
   add_host:
     name: "{{ item.1 }}"
     group: "fisco_node_group_{{ item.0 }}"
@@ -69,7 +69,10 @@
     - "{{ node_list }}"
   loop_control:
     label: "节点 {{ item.1.split(':')[2:4] | join(':') }} 添加到 fisco_group_{{ item.0 }} 组"
-  when: item.0|quote == item.1.split(':')[1] or item.0|quote in item.1.split(':')[6]
+  when: >-
+    item.0|quote == item.1.split(':')[1]
+    or
+    item.0|quote in item.1.split(':')[6]
 
 - name: 机构分组 | 根据 main_group_id
   add_host:
