@@ -18,26 +18,34 @@
 
 ## 相关版本信息
 * [FISCO](https://github.com/FISCO-BCOS/FISCO-BCOS/blob/master/docs/README_CN.md): v2.6.0
-* [Ansible](https://github.com/ansible/ansible): 2.10.1
+* [Ansible](https://github.com/ansible/ansible): 2.10.3
 
-## 运行部署要求
+## 运行依赖
 * Linux。目前在 Ubuntu 16.04 上启动通过。
-* 安装 ansible。
+* 安装 ansible 2.10.3 或以上版本。
+
+```
+curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+python get-pip.py
+pip install -r requirements.txt
+```
+
+如果已经安装了 ansible，但版本低于 2.10 的，请运行 `pip install -U ansible` 升级到最新版。目前确认 2.9 或以下版本，不兼容部分语法。
 
 ## 联盟链初始化
-1. 复制一份 inventory 配置。假设新环境是 'my_inventory'。
+复制一份 inventory 配置。假设新环境是 'my_inventory'。
 
-   ```
-   > cp -R inventories/sample inventories/my_inventory
-   ```
+```
+cp -R inventories/sample inventories/my_inventory
+```
 
-1. 编辑 init.yml 配置文件
+编辑 init.yml 配置文件
 
-   ```
-   > nano inventories/my_inventory/group_vars/init.yml
-   ```
+```
+nano inventories/my_inventory/group_vars/init.yml
+```
 
-   例如
+例如
 
 ```
   	# 变量注释
@@ -72,47 +80,47 @@
     fisco_gm_enabled: true
 ```
 
-   请根据文件头部的变量注释，编排好目标配置的信息。
+请根据文件头部的变量注释，编排好目标配置的信息。
 
-1. 开始生成配置文件。
+开始生成配置文件。
 
-   ```
-   > ansible-playbook -i inventories/my_inventory/hosts.ini fisco_bcos.yml\
-   ```
+```
+ansible-playbook -i inventories/my_inventory/hosts.ini fisco_bcos.yml\
+```
 
-   执行过程中出现的 [WARNING] 信息可以忽略。
+执行过程中出现的 [WARNING] 信息可以忽略。
 
-1. 如无意外，你会在 `inventories/my_inventory/deploy` 目录下找到相关的配置内容。例如：
+如无意外，你会在 `inventories/my_inventory/deploy` 目录下找到相关的配置内容。例如：
 
-	```
-    > find inventories/my_inventory/deploy/agency_*/fisco* -type d -name "node_*" | sort -n
+```
+$ find inventories/my_inventory/deploy/agency_*/fisco* -type d -name "node_*" | sort -n
 
-    inventories/my_inventory/deploy/agency_A/fisco_deploy_agency_A/node_172.17.8.101_30300
-    inventories/my_inventory/deploy/agency_A/fisco_deploy_agency_A/node_172.17.8.102_30300
-    inventories/my_inventory/deploy/agency_B/fisco_deploy_agency_B/node_172.17.8.103_30300
-    inventories/my_inventory/deploy/agency_B/fisco_deploy_agency_B/node_172.17.8.104_30300
-    inventories/my_inventory/deploy/agency_C/fisco_deploy_agency_C/node_172.17.8.105_30300
-    inventories/my_inventory/deploy/agency_C/fisco_deploy_agency_C/node_172.17.8.106_30300
-    ```
+inventories/my_inventory/deploy/agency_A/fisco_deploy_agency_A/node_172.17.8.101_30300
+inventories/my_inventory/deploy/agency_A/fisco_deploy_agency_A/node_172.17.8.102_30300
+inventories/my_inventory/deploy/agency_B/fisco_deploy_agency_B/node_172.17.8.103_30300
+inventories/my_inventory/deploy/agency_B/fisco_deploy_agency_B/node_172.17.8.104_30300
+inventories/my_inventory/deploy/agency_C/fisco_deploy_agency_C/node_172.17.8.105_30300
+inventories/my_inventory/deploy/agency_C/fisco_deploy_agency_C/node_172.17.8.106_30300
+```
 
-1. 查看 `inventories/my_inventory/deploy/node_list.yml` 文件，内容类似于：
+查看 `inventories/my_inventory/deploy/node_list.yml` 文件，内容类似于：
 
-	```
-	# 机构名称:群组编号:节点IP:P2P端口:Channel端口:RPC端口:额外目标群组编号（没有则为 0）
+```
+# 机构名称:群组编号:节点IP:P2P端口:Channel端口:RPC端口:额外目标群组编号（没有则为 0）
 
-	node_list:
-	  - A:1:172.17.8.101:30300:20200:8545:[2]
-	  - A:1:172.17.8.102:30300:20200:8545:[2]
-	  - B:1:172.17.8.103:30300:20200:8545:[0]
-	  - B:1:172.17.8.104:30300:20200:8545:[0]
-	  - C:2:172.17.8.105:30300:20200:8545:[0]
-	  - C:2:172.17.8.106:30300:20200:8545:[0]
-	  - C:2:172.17.8.107:30300:20200:8545:[0]
-	```
+node_list:
+  - A:1:172.17.8.101:30300:20200:8545:[2]
+  - A:1:172.17.8.102:30300:20200:8545:[2]
+  - B:1:172.17.8.103:30300:20200:8545:[0]
+  - B:1:172.17.8.104:30300:20200:8545:[0]
+  - C:2:172.17.8.105:30300:20200:8545:[0]
+  - C:2:172.17.8.106:30300:20200:8545:[0]
+  - C:2:172.17.8.107:30300:20200:8545:[0]
+```
 
 	确保相关的 IP 和端口能访问即可
 
-1. 把相关文件夹上传到对应的服务器上，执行启动命令即可。
+把相关文件夹上传到对应的服务器上，执行启动命令即可。
 
 # 已有机构扩展节点
 
@@ -157,7 +165,9 @@
 
 然后再次执行
 
-	> ansible-playbook -i inventories/my_inventory/hosts.ini fisco_bcos.yml
+```
+ansible-playbook -i inventories/my_inventory/hosts.ini fisco_bcos.yml
+```
 
 执行完成后，在对应的机构目录下，你可以看到类似 `fisco_deploy_agency_A_expand_1917645e6744e1360fba72fa4cf8cc47` 这样的目录，就是新增的节点配置了。
 
