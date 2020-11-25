@@ -1,0 +1,12 @@
+@Author: Haibin Lee <haibin>
+@Date:   2020-11-24T21:51:33+08:00
+@Email:  haibin.li@newtouch.com
+@Filename: requirements.txt
+@Last modified by:   haibin
+@Last modified time: 2020-11-25T10:24:12+08:00
+@Copyright: Copyright 2020 the original author or authors.
+
+
+
+ansible=
+netaddr
