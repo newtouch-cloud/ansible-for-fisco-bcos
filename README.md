@@ -18,11 +18,19 @@
 
 ## 相关版本信息
 * [FISCO](https://github.com/FISCO-BCOS/FISCO-BCOS/blob/master/docs/README_CN.md): v2.6.0
-* [Ansible](https://github.com/ansible/ansible): 2.10.1+
+* [Ansible](https://github.com/ansible/ansible): 2.10.3
 
-## 运行部署要求
+## 运行依赖
 * Linux。目前在 Ubuntu 16.04 上启动通过。
-* 安装 ansible。
+* 安装 ansible 2.10.3 或以上版本。
+
+```
+curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+python get-pip.py
+pip install -r requirements.txt
+```
+
+如果已经安装了 ansible，但版本低于 2.10 的，请运行 `pip install -U ansible` 升级到最新版。目前确认 2.9 或以下版本，不兼容部分语法。
 
 ```
 curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
@@ -83,7 +91,7 @@ fisco_gm_enabled: true
 开始生成配置文件。
 
 ```
-> ansible-playbook -i inventories/my_inventory/hosts.ini fisco_bcos.yml
+ansible-playbook -i inventories/my_inventory/hosts.ini fisco_bcos.yml
 ```
 
 执行过程中出现的 [WARNING] 信息可以忽略。
@@ -91,7 +99,7 @@ fisco_gm_enabled: true
 如无意外，你会在 `inventories/my_inventory/deploy` 目录下找到相关的配置内容。例如：
 
 ```
-> find inventories/my_inventory/deploy/agency_*/fisco* -type d -name "node_*" | sort -n
+find inventories/my_inventory/deploy/agency_*/fisco* -type d -name "node_*" | sort -n
 
 inventories/my_inventory/deploy/agency_A/fisco_deploy_agency_A/node_172.17.8.101_30300
 inventories/my_inventory/deploy/agency_A/fisco_deploy_agency_A/node_172.17.8.102_30300
@@ -167,7 +175,7 @@ node_list:
 然后再次执行
 
 ```
-> ansible-playbook -i inventories/my_inventory/hosts.ini fisco_bcos.yml
+ansible-playbook -i inventories/my_inventory/hosts.ini fisco_bcos.yml
 ```
 
 执行完成后，在对应的机构目录下，你可以看到类似 `fisco_deploy_agency_A_expand_1917645e6744e1360fba72fa4cf8cc47` 这样的目录，就是新增的节点配置了。
