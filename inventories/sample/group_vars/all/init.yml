@@ -3,8 +3,17 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: init.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-11-23T17:10:50+08:00
+# @Last modified time: 2020-11-30T19:33:58+08:00
 # @License: GNU General Public License v3.0
+
+# 是否使用国密版。
+fisco_gm_enabled: false
+
+# 是否生成控制台。目前未支持 2.7.0，将下载 1.1.0 版本。
+fisco_console_enabled: false
+
+# 是否生成 SDK
+fisco_sdk_enabled: false
 
 # 变量注释
 # name:           （必填）机构名称
@@ -13,12 +22,12 @@
 # main_group_id:  （必填）主群组 ID
 # extra_group_id: （可选）额外要加入的目标群组 ID，必须要有对应的 main_group_id。
 
-# 最小部署，1 群组 1 机构 2 节点
+# 单群组 FISCO BCOS 联盟链，适合开发环境。
 # agencies:
 #   - name: A
 #     create_genesis: true
 #     nodes:
-#       - 172.17.8.101:2
+#       - 127.0.0.1:4
 #     main_group_id: 1
 
 # 官方技术手册演示部署，2 群组 3 机构 6 节点。
@@ -75,12 +84,3 @@ agencies:
 #       - 172.17.8.109:5
 #       - 172.17.8.110:5
 #     main_group_id: 3
-
-# 是否使用国密版
-fisco_gm_enabled: false
-
-# 是否生成控制台
-fisco_console_enabled: false
-
-# 是否生成 SDK
-fisco_sdk_enabled: false

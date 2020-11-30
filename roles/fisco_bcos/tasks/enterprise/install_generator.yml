@@ -3,7 +3,7 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: install_generator.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-11-11T17:36:42+08:00
+# @Last modified time: 2020-11-30T18:52:04+08:00
 # @License: GNU General Public License v3.0
 
 
@@ -35,6 +35,11 @@
   args:
     chdir: "{{ fisco_workdir }}/generator"
   changed_when: false
+
+# 如果检查失败，请删除对应的 generator 目录，再重试。或手动执行 ./generator --download_fisco ./meta --cdn
+- name: 确认 fisco-bcos 是否下载成功，以及打印版本号。
+  debug:
+    msg: "{{ lookup('pipe', fisco_workdir + '/generator/meta/fisco-bcos -v | grep -i Version') }}"
 
 - name: "普通版 | 生成联盟链证书"
   command: "./generator --generate_chain_certificate ./dir_chain_ca"

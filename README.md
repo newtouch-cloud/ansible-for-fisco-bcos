@@ -18,101 +18,107 @@
 
 ## 相关版本信息
 * [FISCO](https://github.com/FISCO-BCOS/FISCO-BCOS/blob/master/docs/README_CN.md): v2.6.0
-* [Ansible](https://github.com/ansible/ansible): 2.10.1
+* [Ansible](https://github.com/ansible/ansible): 2.10.1+
 
 ## 运行部署要求
 * Linux。目前在 Ubuntu 16.04 上启动通过。
 * 安装 ansible。
 
+```
+curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+sudo python get-pip.py
+pip install -r requirements.txt
+```
+
 ## 联盟链初始化
-1. 复制一份 inventory 配置。假设新环境是 'my_inventory'。
-
-   ```
-   > cp -R inventories/sample inventories/my_inventory
-   ```
-
-1. 编辑 init.yml 配置文件
-
-   ```
-   > nano inventories/my_inventory/group_vars/init.yml
-   ```
-
-   例如
+复制一份 inventory 配置。假设新环境是 'my_inventory'。
 
 ```
-  	# 变量注释
-  	# name:           （必填）机构名称
-  	# create_genesis: 是否生成创世区块，同组(根据 main_group_id 判断)必须有且只有 1 个创世区块机构。（不设置则默认为 false）
-  	# nodes:          （必填）机构各节点连接信息。格式 <ip>:<节点数>。如果只填写 IP，则默认为 1 个节点。同 IP 多节点会自动递增对应端口。
-  	# main_group_id:  （必填）群组编号
-  	# extra_group_id: （可选）额外要加入的目标群组编号
-
-  	agencies:
-  	 - name: A
-  	   create_genesis: true
-  	   nodes:
-  	     - 172.17.8.101:5
-  	     - 172.17.8.102:5
-  	   main_group_id: 1
-  	   extra_group_id:
-  	     - 2
-  	 - name: B
-  	   nodes:
-  	     - 172.17.8.103:5
-  	     - 172.17.8.104:5
-  	   main_group_id: 1
-  	 - name: C
-  	   create_genesis: true
-  	   nodes:
-  	     - 172.17.8.105:5
-  	     - 172.17.8.106:5
-  	   main_group_id: 2
-
-    # true 表示使用国密模式
-    fisco_gm_enabled: true
+> cp -R inventories/sample inventories/my_inventory
 ```
 
-   请根据文件头部的变量注释，编排好目标配置的信息。
+编辑 init.yml 配置文件
 
-1. 开始生成配置文件。
+```
+> nano inventories/my_inventory/group_vars/init.yml
+```
 
-   ```
-   > ansible-playbook -i inventories/my_inventory/hosts.ini fisco_bcos.yml\
-   ```
+例如
 
-   执行过程中出现的 [WARNING] 信息可以忽略。
+```
+# 变量注释
+# name:           （必填）机构名称
+# create_genesis: 是否生成创世区块，同组(根据 main_group_id 判断)必须有且只有 1 个创世区块机构。（不设置则默认为 false）
+# nodes:          （必填）机构各节点连接信息。格式 <ip>:<节点数>。如果只填写 IP，则默认为 1 个节点。同 IP 多节点会自动递增对应端口。
+# main_group_id:  （必填）群组编号
+# extra_group_id: （可选）额外要加入的目标群组编号
 
-1. 如无意外，你会在 `inventories/my_inventory/deploy` 目录下找到相关的配置内容。例如：
+agencies:
+ - name: A
+   create_genesis: true
+   nodes:
+     - 172.17.8.101:5
+     - 172.17.8.102:5
+   main_group_id: 1
+   extra_group_id:
+     - 2
+ - name: B
+   nodes:
+     - 172.17.8.103:5
+     - 172.17.8.104:5
+   main_group_id: 1
+ - name: C
+   create_genesis: true
+   nodes:
+     - 172.17.8.105:5
+     - 172.17.8.106:5
+   main_group_id: 2
 
-	```
-    > find inventories/my_inventory/deploy/agency_*/fisco* -type d -name "node_*" | sort -n
+# true 表示使用国密模式
+fisco_gm_enabled: true
+```
 
-    inventories/my_inventory/deploy/agency_A/fisco_deploy_agency_A/node_172.17.8.101_30300
-    inventories/my_inventory/deploy/agency_A/fisco_deploy_agency_A/node_172.17.8.102_30300
-    inventories/my_inventory/deploy/agency_B/fisco_deploy_agency_B/node_172.17.8.103_30300
-    inventories/my_inventory/deploy/agency_B/fisco_deploy_agency_B/node_172.17.8.104_30300
-    inventories/my_inventory/deploy/agency_C/fisco_deploy_agency_C/node_172.17.8.105_30300
-    inventories/my_inventory/deploy/agency_C/fisco_deploy_agency_C/node_172.17.8.106_30300
-    ```
+请根据文件头部的变量注释，编排好目标配置的信息。
 
-1. 查看 `inventories/my_inventory/deploy/node_list.yml` 文件，内容类似于：
+开始生成配置文件。
 
-	```
-	# 机构名称:群组编号:节点IP:P2P端口:Channel端口:RPC端口:额外目标群组编号（没有则为 0）
+```
+> ansible-playbook -i inventories/my_inventory/hosts.ini fisco_bcos.yml
+```
 
-	node_list:
-	  - A:1:172.17.8.101:30300:20200:8545:[2]
-	  - A:1:172.17.8.102:30300:20200:8545:[2]
-	  - B:1:172.17.8.103:30300:20200:8545:[0]
-	  - B:1:172.17.8.104:30300:20200:8545:[0]
-	  - C:2:172.17.8.105:30300:20200:8545:[0]
-	  - C:2:172.17.8.106:30300:20200:8545:[0]
-	  - C:2:172.17.8.107:30300:20200:8545:[0]
-	```
+执行过程中出现的 [WARNING] 信息可以忽略。
 
-	确保相关的 IP 和端口能访问即可
+如无意外，你会在 `inventories/my_inventory/deploy` 目录下找到相关的配置内容。例如：
 
-1. 把相关文件夹上传到对应的服务器上，执行启动命令即可。
+```
+> find inventories/my_inventory/deploy/agency_*/fisco* -type d -name "node_*" | sort -n
+
+inventories/my_inventory/deploy/agency_A/fisco_deploy_agency_A/node_172.17.8.101_30300
+inventories/my_inventory/deploy/agency_A/fisco_deploy_agency_A/node_172.17.8.102_30300
+inventories/my_inventory/deploy/agency_B/fisco_deploy_agency_B/node_172.17.8.103_30300
+inventories/my_inventory/deploy/agency_B/fisco_deploy_agency_B/node_172.17.8.104_30300
+inventories/my_inventory/deploy/agency_C/fisco_deploy_agency_C/node_172.17.8.105_30300
+inventories/my_inventory/deploy/agency_C/fisco_deploy_agency_C/node_172.17.8.106_30300
+```
+
+查看 `inventories/my_inventory/deploy/node_list.yml` 文件，内容类似于：
+
+```
+# 机构名称:群组编号:节点IP:P2P端口:Channel端口:RPC端口:额外目标群组编号（没有则为 0）
+
+node_list:
+  - A:1:172.17.8.101:30300:20200:8545:[2]
+  - A:1:172.17.8.102:30300:20200:8545:[2]
+  - B:1:172.17.8.103:30300:20200:8545:[0]
+  - B:1:172.17.8.104:30300:20200:8545:[0]
+  - C:2:172.17.8.105:30300:20200:8545:[0]
+  - C:2:172.17.8.106:30300:20200:8545:[0]
+  - C:2:172.17.8.107:30300:20200:8545:[0]
+```
+
+确保相关的 IP 和端口能访问即可
+
+把相关文件夹上传到对应的服务器上，执行启动命令即可。
 
 # 已有机构扩展节点
 
@@ -120,6 +126,7 @@
 
 假设第一次初始化的配置是
 
+```
 	agencies:
 	 - name: A
 	   create_genesis: true
@@ -140,10 +147,11 @@
 	     - 172.17.8.105
 	     - 172.17.8.106
 	   main_group_id: 2
-
+```
 
 假设要给机构 A 的 172.17.8.101 和 172.17.8.102 服务器，分别增加至 5 个节点，就把 `172.17.8.101` 改成 `172.17.8.101:5`，`172.17.8.102` 改成 `172.17.8.102:5`。也可以增加 IP 和节点，例如 `172.17.8.110:5`：
 
+```
 	agencies:
 	 - name: A
 	   create_genesis: true
@@ -154,10 +162,13 @@
 	   main_group_id: 1
 	   extra_group_id:
 	     - 2
+```
 
 然后再次执行
 
-	> ansible-playbook -i inventories/my_inventory/hosts.ini fisco_bcos.yml
+```
+> ansible-playbook -i inventories/my_inventory/hosts.ini fisco_bcos.yml
+```
 
 执行完成后，在对应的机构目录下，你可以看到类似 `fisco_deploy_agency_A_expand_1917645e6744e1360fba72fa4cf8cc47` 这样的目录，就是新增的节点配置了。
 

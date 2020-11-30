@@ -3,7 +3,7 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: enterprise.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-11-19T14:25:13+08:00
+# @Last modified time: 2020-11-30T19:02:47+08:00
 # @License: GNU General Public License v3.0
 
 
@@ -61,7 +61,12 @@
     - "'fisco_expand_nodes' in groups"
     - groups['fisco_expand_nodes'] | regex_search(agency.name)
 
-- include_tasks: enterprise/console.yml
+- name: 安装/配置控制台
+  include_tasks: enterprise/console.yml
+  loop: "{{ agencies }}"
+  loop_control:
+    loop_var: agency
+    label: "{{ agency.name }}"
   when: fisco_console_enabled
 
 # - name: 打包部署文件
