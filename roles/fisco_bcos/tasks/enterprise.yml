@@ -3,13 +3,11 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: enterprise.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-11-30T19:02:47+08:00
+# @Last modified time: 2020-11-30T20:35:03+08:00
 # @License: GNU General Public License v3.0
 
 
-
 - import_tasks: enterprise/pre_tasks.yml
-  tags: always
 
 - name: 生成机构证书
   include_tasks: enterprise/generate_agency_certificate.yml
@@ -59,7 +57,7 @@
     label: "{{ agency.name }}"
   when:
     - "'fisco_expand_nodes' in groups"
-    - groups['fisco_expand_nodes'] | regex_search(agency.name)
+    - agency.name in agency_existed
 
 - name: 安装/配置控制台
   include_tasks: enterprise/console.yml

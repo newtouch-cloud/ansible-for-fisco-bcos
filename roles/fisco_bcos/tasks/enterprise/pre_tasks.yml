@@ -3,14 +3,14 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: pre_tasks.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-11-30T18:09:11+08:00
+# @Last modified time: 2020-11-30T20:36:38+08:00
 # @License: GNU General Public License v3.0
 
 
 
 - name: "检查 generator 目录"
   stat:
-    path: "{{ fisco_workdir }}/generator"
+    path: "{{ fisco_workdir }}/generator/meta/fisco-bcos"
     get_attributes: false
     get_checksum: false
     get_mime: false

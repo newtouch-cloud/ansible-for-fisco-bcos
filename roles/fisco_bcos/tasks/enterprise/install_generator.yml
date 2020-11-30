@@ -3,7 +3,7 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: install_generator.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-11-30T18:52:04+08:00
+# @Last modified time: 2020-11-30T20:36:58+08:00
 # @License: GNU General Public License v3.0
 
 
@@ -30,11 +30,20 @@
     chdir: "{{ fisco_workdir }}/generator"
   register: __command_result
 
-- name: 获取最新的 fisco-bcos 执行文件
-  command: ./generator --download_fisco ./meta --cdn
-  args:
-    chdir: "{{ fisco_workdir }}/generator"
-  changed_when: false
+- name: 获取 fisco-bcos v{{ fisco_version }} 执行文件
+  unarchive:
+    src: "{{ fisco_dl_url }}"
+    dest: "{{ fisco_workdir }}/generator/meta/"
+    mode: 0755
+    remote_src: yes
+  register: __dl_st
+  until: __dl_st is succeeded
+  retries: 3
+  delay: 5
+  # shell: ./generator --download_fisco ./meta --cdn
+  # args:
+  #   chdir: "{{ fisco_workdir }}/generator"
+  # changed_when: false
 
 # 如果检查失败，请删除对应的 generator 目录，再重试。或手动执行 ./generator --download_fisco ./meta --cdn
 - name: 确认 fisco-bcos 是否下载成功，以及打印版本号。
