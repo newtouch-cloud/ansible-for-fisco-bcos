@@ -32,23 +32,17 @@ pip install -r requirements.txt
 
 如果已经安装了 ansible，但版本低于 2.10 的，请运行 `pip install -U ansible` 升级到最新版。目前确认 2.9 或以下版本，不兼容部分语法。
 
-```
-curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-sudo python get-pip.py
-pip install -r requirements.txt
-```
-
 ## 联盟链初始化
 复制一份 inventory 配置。假设新环境是 'my_inventory'。
 
 ```
-> cp -R inventories/sample inventories/my_inventory
+cp -R inventories/sample inventories/my_inventory
 ```
 
 编辑 init.yml 配置文件
 
 ```
-> nano inventories/my_inventory/group_vars/init.yml
+nano inventories/my_inventory/group_vars/init.yml
 ```
 
 例如
@@ -94,7 +88,7 @@ fisco_gm_enabled: true
 ansible-playbook -i inventories/my_inventory/hosts.ini fisco_bcos.yml
 ```
 
-执行过程中出现的 [WARNING] 信息可以忽略。
+**执行过程中出现的 [WARNING] 信息可以忽略。**
 
 如无意外，你会在 `inventories/my_inventory/deploy` 目录下找到相关的配置内容。例如：
 
