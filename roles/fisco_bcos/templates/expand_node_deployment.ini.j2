@@ -6,9 +6,9 @@ group_id={{ agency.main_group_id }}
   and (node.split(':')[1] | int) == agency.main_group_id
 %}
 [node{{ loop.index0 }}]
-p2p_ip={{ node.split(':')[2] }}
-rpc_ip={{ node.split(':')[2] }}
-channel_ip={{ node.split(':')[2] }}
+p2p_ip={{ node.split(':')[2] | ipaddr('private') | ternary(node.split(':')[2]|quote, '0.0.0.0') }}
+rpc_ip={{ node.split(':')[2] | ipaddr('private') | ternary('127.0.0.1', '0.0.0.0') }}
+channel_ip={{ node.split(':')[2] | ipaddr('private') | ternary(node.split(':')[2]|quote, '0.0.0.0') }}
 p2p_listen_port={{ node.split(':')[3] | default('30300') }}
 channel_listen_port={{ node.split(':')[4] | default('20200') }}
 jsonrpc_listen_port={{ node.split(':')[5] | default('8545') }}

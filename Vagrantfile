@@ -1,3 +1,13 @@
+# @Author: Haibin Lee <haibin>
+# @Date:   2020-11-11T16:56:37+08:00
+# @Email:  haibin.li@newtouch.com
+# @Filename: Vagrantfile
+# @Last modified by:   haibin
+# @Last modified time: 2020-11-30T18:49:04+08:00
+# @Copyright: Copyright 2020 the original author or authors.
+
+
+
 # -*- mode: ruby -*-
 # # vi: set ft=ruby :
 

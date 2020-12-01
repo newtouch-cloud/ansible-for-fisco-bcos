@@ -3,22 +3,35 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: init.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-11-24T14:41:27+08:00
+# @Last modified time: 2020-12-01T14:57:48+08:00
 # @License: GNU General Public License v3.0
 
+# FISCO BCOS 版本
+fisco_version: 2.6.0
+fisco_dl_url: "https://github.com/FISCO-BCOS/FISCO-BCOS/releases/download/v{{ fisco_version }}/fisco-bcos.tar.gz"
+
+# 是否使用国密版。注意，已经部署的集群不可更改此项。
+fisco_gm_enabled: false
+
+# 是否生成控制台。目前未支持 2.7.0，将下载 1.1.0 版本。
+fisco_console_enabled: false
+
+# 是否生成 SDK
+fisco_sdk_enabled: false
+
 # 变量注释
-# name:           （必填）机构名称
+# name:           （必填）机构名称。请勿使用纯数字、特殊字符或中文，避免一些判断条件失效。
 # create_genesis: 是否生成创世区块，同组(根据 main_group_id 判断)必须有且只有 1 个创世区块机构。（不设置则默认为 false）
 # nodes:          （必填）机构各节点连接信息。格式 <ip>:<节点数>。如果只填写 IP，则默认为 1 个节点。同 IP 多节点会自动递增对应端口。暂时不支持绑定域名。
 # main_group_id:  （必填）主群组 ID
 # extra_group_id: （可选）额外要加入的目标群组 ID，必须要有对应的 main_group_id。
 
-# 最小部署，1 群组 1 机构 2 节点
+# 单群组 FISCO BCOS 联盟链，适合开发环境。
 # agencies:
 #   - name: A
 #     create_genesis: true
 #     nodes:
-#       - 172.17.8.101:2
+#       - 127.0.0.1:4
 #     main_group_id: 1
 
 # 官方技术手册演示部署，2 群组 3 机构 6 节点。
@@ -41,46 +54,37 @@ agencies:
     main_group_id: 2
 
 # 更大的部署， 3 群组 5 机构 50 节点，其中机构 A 属于仲裁机构（与所有群组相通）。请根据你的实际部署需求进行调整。理论上规模大小无限支持。
-agencies:
-  - name: A
-    create_genesis: true
-    nodes:
-      - 172.17.8.101:5
-      - 172.17.8.102:5
-    main_group_id: 1
-    extra_group_id:
-      - 2
-      - 3
-  - name: B
-    nodes:
-      - 172.17.8.103:5
-      - 172.17.8.104:5
-    main_group_id: 1
-  - name: C
-    create_genesis: true
-    nodes:
-      - 172.17.8.105:5
-      - 172.17.8.106:5
-    main_group_id: 2
-  - name: D
-    nodes:
-      - 172.17.8.107:5
-      - 172.17.8.108:5
-    main_group_id: 2
-    extra_group_id:
-      - 3
-  - name: E
-    create_genesis: true
-    nodes:
-      - 172.17.8.109:5
-      - 172.17.8.110:5
-    main_group_id: 3
-
-# 是否使用国密版
-fisco_gm_enabled: false
-
-# 是否生成控制台
-fisco_console_enabled: false
-
-# 是否生成 SDK
-fisco_sdk_enabled: false
+# agencies:
+#   - name: A
+#     create_genesis: true
+#     nodes:
+#       - 172.17.8.101:5
+#       - 172.17.8.102:5
+#     main_group_id: 1
+#     extra_group_id:
+#       - 2
+#       - 3
+#   - name: B
+#     nodes:
+#       - 172.17.8.103:5
+#       - 172.17.8.104:5
+#     main_group_id: 1
+#   - name: C
+#     create_genesis: true
+#     nodes:
+#       - 172.17.8.105:5
+#       - 172.17.8.106:5
+#     main_group_id: 2
+#   - name: D
+#     nodes:
+#       - 172.17.8.107:5
+#       - 172.17.8.108:5
+#     main_group_id: 2
+#     extra_group_id:
+#       - 3
+#   - name: E
+#     create_genesis: true
+#     nodes:
+#       - 172.17.8.109:5
+#       - 172.17.8.110:5
+#     main_group_id: 3
