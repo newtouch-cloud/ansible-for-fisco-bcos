@@ -3,7 +3,7 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: expand_node.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-11-17T12:42:48+08:00
+# @Last modified time: 2020-12-01T11:24:29+08:00
 # @License: GNU General Public License v3.0
 
 
@@ -37,6 +37,18 @@
   args:
     chdir: "{{ fisco_workdir }}/agency_{{ agency.name }}/"
   changed_when: false
+
+- name: "为新增节点导入 {{ agency.extra_group_id }} 群组创世区块"
+  command: "./generator --add_group ./meta/group.{{ item }}.genesis ./fisco_deploy_agency_{{ agency.name }}_expand_{{ groups['fisco_expand_nodes'] | hash('md5') }}"
+  args:
+    chdir: "{{ fisco_workdir }}/agency_{{ agency.name }}"
+  changed_when: false
+  loop: "{{ agency.extra_group_id }}"
+  loop_control:
+    label: "./generator --add_group ./meta/group.{{ item }}.genesis ./fisco_deploy_agency_{{ agency.name }}/"
+  when:
+    - agency.extra_group_id is defined
+    - agency.extra_group_id is truthy
 
 - name: 更新 listen_ip
   ini_file:

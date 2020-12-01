@@ -3,14 +3,14 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: init.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-11-30T20:30:58+08:00
+# @Last modified time: 2020-12-01T13:44:40+08:00
 # @License: GNU General Public License v3.0
 
 # FISCO BCOS 版本
 fisco_version: 2.6.0
 fisco_dl_url: "https://github.com/FISCO-BCOS/FISCO-BCOS/releases/download/v{{ fisco_version }}/fisco-bcos.tar.gz"
 
-# 是否使用国密版。
+# 是否使用国密版。注意，已经部署的集群不可更改此项。
 fisco_gm_enabled: false
 
 # 是否生成控制台。目前未支持 2.7.0，将下载 1.1.0 版本。
@@ -20,7 +20,7 @@ fisco_console_enabled: false
 fisco_sdk_enabled: false
 
 # 变量注释
-# name:           （必填）机构名称
+# name:           （必填）机构名称。请勿使用纯数字、特殊字符或中文，避免一些判断条件失效。
 # create_genesis: 是否生成创世区块，同组(根据 main_group_id 判断)必须有且只有 1 个创世区块机构。（不设置则默认为 false）
 # nodes:          （必填）机构各节点连接信息。格式 <ip>:<节点数>。如果只填写 IP，则默认为 1 个节点。同 IP 多节点会自动递增对应端口。暂时不支持绑定域名。
 # main_group_id:  （必填）主群组 ID
