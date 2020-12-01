@@ -26,11 +26,11 @@
 
 ```
 curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-python get-pip.py
-pip install -r requirements.txt
+sudo python get-pip.py
+pip install --user -U -r requirements.txt
 ```
 
-如果已经安装了 ansible，但版本低于 2.10 的，请运行 `pip install -U ansible` 升级到最新版。目前确认 2.9 或以下版本，不兼容部分语法。
+如果已经安装了 ansible，但版本低于 2.10 的，请运行 `pip install --user -U ansible` 升级到最新版。目前确认 2.9 或以下版本，不兼容部分语法。
 
 ## 联盟链初始化
 复制一份 inventory 配置。假设新环境是 'my_inventory'。

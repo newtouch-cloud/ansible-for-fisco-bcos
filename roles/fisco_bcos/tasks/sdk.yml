@@ -1,0 +1,68 @@
+# @Author: Haibin Lee <haibin>
+# @Date:   2020-12-01T12:51:54+08:00
+# @Email:  haibin.li@newtouch.com
+# @Filename: post_tasks.yml
+# @Last modified by:   haibin
+# @Last modified time: 2020-12-01T13:41:15+08:00
+# @Copyright: Copyright 2020 the original author or authors.
+
+- name: 检查机构 {{ agency.name }} 的 SDK
+  stat:
+    path: "{{ fisco_workdir }}/agency_{{ agency.name }}/sdk_agency_{{ agency.name }}"
+  register: __sdk_st
+
+- name: "生成 SDK 在 {{ fisco_workdir }}/agency_{{ agency.name }}/sdk_agency_{{ agency.name }}"
+  command: "./generator --get_sdk_file ./sdk_agency_{{ agency.name }}"
+  args:
+    chdir: "{{ fisco_workdir }}/agency_{{ agency.name }}"
+  changed_when: false
+  when: not __sdk_st.stat.exists
+
+- block:
+    - name: "清空 SDK 的已有节点连接信息"
+      xml:
+        path: "{{ fisco_workdir }}/agency_{{ agency.name }}/sdk_agency_{{ agency.name }}/applicationContext.xml"
+        xpath: "/x:beans/x:bean[@id='groupChannelConnectionsConfig']/x:property[@name='allChannelConnections']/x:list/x:bean[@id='group{{ agency.main_group_id }}']/x:property[@name='connectionsStr']/x:list/*"
+        namespaces:
+          x: http://www.springframework.org/schema/beans
+        state: absent
+      changed_when: false
+
+    - name: "重新添加节点连接信息到 SDK 配置"
+      xml:
+        path: "{{ fisco_workdir }}/agency_{{ agency.name }}/sdk_agency_{{ agency.name }}/applicationContext.xml"
+        xpath: "/x:beans/x:bean[@id='groupChannelConnectionsConfig']/x:property[@name='allChannelConnections']/x:list/x:bean[@id='group{{ agency.main_group_id }}']/x:property[@name='connectionsStr']/x:list"
+        namespaces:
+          x: http://www.springframework.org/schema/beans
+        add_children:
+          - value: "{{ item.split(':')[2] }}:{{ item.split(':')[4] }}"
+        pretty_print: true
+      loop: "{{ node_list }}"
+      loop_control:
+        label: "{{ item.split(':')[2] }}:{{ item.split(':')[4] }} 添加到 {{ fisco_workdir }}/agency_{{ agency.name }}/sdk_agency_{{ agency.name }}/applicationContext.xml"
+      when:
+        - ((item.split(':')[1] | int) == agency.main_group_id) or (agency.main_group_id|quote in item.split(':')[6])
+        - lookup('file', fisco_workdir + '/agency_' + agency.name + '/sdk_agency_' + agency.name + '/applicationContext.xml') | regex_search(item.split(':')[2] + ':' + item.split(':')[4]) == None
+      changed_when: false
+
+    - name: 国密版 | 修改控制台国密配置
+      xml:
+        path: "{{ fisco_workdir }}/agency_{{ agency.name }}/sdk_agency_{{ agency.name }}/applicationContext.xml"
+        xpath: "/x:beans/x:bean[@id='encryptType']/x:constructor-arg"
+        attribute: value
+        value: "1"
+        namespaces:
+          x: http://www.springframework.org/schema/beans
+        pretty_print: true
+      when: fisco_gm_enabled
+
+    - name: 修改控制台机构名称
+      xml:
+        path: "{{ fisco_workdir }}/agency_{{ agency.name }}/sdk_agency_{{ agency.name }}/applicationContext.xml"
+        xpath: "/x:beans/x:bean[@id='channelService']/x:property[@name='agencyName']"
+        attribute: value
+        value: "{{ agency.name }}"
+        namespaces:
+          x: http://www.springframework.org/schema/beans
+        pretty_print: true
+  when: (__node_list_update is changed) or (not __sdk_st.stat.exists)
