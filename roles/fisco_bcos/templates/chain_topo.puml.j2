@@ -1,0 +1,19 @@
+@startuml
+
+title {{ inventory_dir | basename }} 联盟链拓扑图 - {{ fisco_main_group_id_list | count }} 群组 {{ agencies | count }} 机构
+
+{% for group_id in fisco_main_group_id_list %}
+collections "群组 {{ group_id }}" as Group{{ group_id }}
+{% endfor %}
+
+{% for agency in agencies %}
+agent "机构 {{ agency.name }}" as {{ agency.name }}
+{% endfor %}
+
+{% for group_id in fisco_main_group_id_list %}
+{% for agency in groups['fisco_agency_group_' + group_id|quote] %}
+{{ agency }} -up-> Group{{ group_id }}
+{% endfor %}
+{% endfor %}
+
+@enduml

@@ -3,13 +3,10 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: main.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-11-18T15:38:12+08:00
+# @Last modified time: 2020-12-02T22:37:28+08:00
 # @License: GNU General Public License v3.0
 
 
-
-# 'single' for test, 'enterprise' for production.
-fisco_deploy_mode: enterprise
 
 fisco_workdir: "{{ inventory_dir }}/deploy"
 
@@ -30,9 +27,9 @@ fisco_sdk_enabled: false
 # fisco_bind_address: 0.0.0.0
 # fisco_algorithm_type: PBFT # 共识算法 https://fisco-bcos-documentation.readthedocs.io/en/latest/docs/manual/build_chain.html#coption-optional
 
-# Enterprise
+# 一些 URL 变量
 fisco_generator_git: https://github.com/FISCO-BCOS/generator.git
-
+pypi_index_url: https://pypi.doubanio.com/simple
 
 
 # TODO

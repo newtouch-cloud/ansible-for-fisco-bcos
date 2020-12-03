@@ -3,7 +3,7 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: generate_agency_certificate.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-11-11T17:37:27+08:00
+# @Last modified time: 2020-11-24T14:48:05+08:00
 # @License: GNU General Public License v3.0
 
 
@@ -25,7 +25,7 @@
         warn: false
       changed_when: false
 
-    - name: "机构 {{ agency.name }} 节点总数超过 128，需要修改 pys/conf/mconf.py。"
+    - name: "如果机构 {{ agency.name }} 节点总数超过 128，需要修改 pys/conf/mconf.py。"
       replace:
         path: "{{ fisco_workdir }}/agency_{{ agency.name }}/pys/conf/mconf.py"
         regexp: "for idx in range\\(0, .*:"
