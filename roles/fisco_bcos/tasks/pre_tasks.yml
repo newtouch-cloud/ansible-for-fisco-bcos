@@ -3,7 +3,7 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: pre_tasks.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-12-01T16:58:41+08:00
+# @Last modified time: 2020-12-03T20:24:04+08:00
 # @License: GNU General Public License v3.0
 
 
@@ -48,6 +48,7 @@
         | selectattr('main_group_id', '==', item)
         | selectattr('create_genesis', 'defined')
         | selectattr('create_genesis')
+        | list
         | count
     ) != 1
 
@@ -60,6 +61,7 @@
   when: >-
     ( agencies
         | selectattr('name', '==', item.name)
+        | list
         | count
     ) > 1
 
