@@ -3,7 +3,7 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: install_generator.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-11-30T20:47:08+08:00
+# @Last modified time: 2020-12-03T15:54:51+08:00
 # @License: GNU General Public License v3.0
 
 
@@ -15,7 +15,8 @@
       - git
       - openssl
       - curl
-      - python3
+      - "{{ ansible_python_version is version('3', '<') | ternary('python', 'python3') }}-pip"
+      - rsync
 
 - name: “获取 {{ fisco_generator_git }} 代码”
   become: false
@@ -25,7 +26,7 @@
     depth: 1
 
 - name: 安装 generator
-  command: bash ./scripts/install.sh
+  shell: "export PIP_INDEX_URL={{ pypi_index_url }} &&  bash ./scripts/install.sh"
   args:
     chdir: "{{ fisco_workdir }}/generator"
   register: __command_result

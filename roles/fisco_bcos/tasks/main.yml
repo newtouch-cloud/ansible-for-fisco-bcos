@@ -3,9 +3,13 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: enterprise.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-12-01T13:35:22+08:00
 # @License: GNU General Public License v3.0
 
+
+- import_tasks: generate_archimate.yml
+  tags:
+    - never
+    - archimate
 
 - name: 前置检查与变量设置
   import_tasks: pre_tasks.yml
