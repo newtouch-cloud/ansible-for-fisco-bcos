@@ -1,0 +1,51 @@
+@startuml
+
+scale 1920 width
+
+title 使用 ansible 自动初始化节点部署文件
+
+start
+
+if (检查 generator 目录) then (不存在)
+  :下载安装;
+  :初始化联盟链证书;
+else (存在)
+endif
+:根据 init.yml 配置，生成 node_list 清单;
+
+:动态分组;
+split
+  :节点分组 | 根据机构名称;
+split again
+  :节点分组 | 根据机构的 main_group_id 和 extra_group_id;
+split again
+  :机构分组 | 根据 main_group_id 和 extra_group_id;
+end split
+
+:基于 generator 目录复制出各个机构的部署目录;
+
+:generator 生成各机构证书，并发送到机构部署目录下;
+
+:配置各个机构;
+split
+  :更新区块配置文件 conf/group_genesis.ini;
+split again
+  :更新节点配置文件 conf/node_deployment.ini;
+end split
+
+:生成各个机构节点信息 peers.txt;
+
+:根据组 ID 生成 P2P 地址连接信息文件;
+
+:每个群组指定的机构生成群组创世区块，发送到同群组的其它机构;
+
+:生成各个机构的部署文件;
+if (是否定义了 extra_group_id) then (是)
+  :为机构内现有节点初始化额外的群组;
+  :为机构内现有节点添加其它组的节点信息;
+else (否)
+endif
+
+stop
+
+@enduml

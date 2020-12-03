@@ -3,7 +3,7 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: pre_tasks.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-12-01T14:43:24+08:00
+# @Last modified time: 2020-12-01T16:58:41+08:00
 # @License: GNU General Public License v3.0
 
 
@@ -50,6 +50,18 @@
         | selectattr('create_genesis')
         | count
     ) != 1
+
+- name: 检查机构是否有重名
+  fail:
+    msg: "机构 {{ item.name }} 有重名，请检查 init.yml 配置。"
+  loop: "{{ agencies }}"
+  loop_control:
+    label: "{{ item.name }}"
+  when: >-
+    ( agencies
+        | selectattr('name', '==', item.name)
+        | count
+    ) > 1
 
 - name: 节点分组 | 根据机构名称
   add_host:
