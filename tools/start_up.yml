@@ -3,18 +3,24 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: start_up.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-11-23T19:09:14+08:00
+# @Last modified time: 2020-12-04T17:50:36+08:00
 # @License: GNU General Public License v3.0
 
 
+# ××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××
+# 注意：本剧本只用于测试场景，生产环境请手动传送对应的压缩包，并解压执行。×
+# ××××××××××××××××××××××××××××××××××××××××××××××××××××××××××××
 
-# 注意：本剧本只用于测试场景，生产环境请手动传送对应的压缩包，并解压执行。
 - hosts: test
   # serial: 1
   vars_files:
     - ../roles/fisco_bcos/defaults/main.yml
-    - ../inventories/sample/deploy/node_list.yml
+    - "{{ inventory_dir }}/group_vars/all/init.yml"
+    - "{{ inventory_dir }}/deploy/node_list.yml"
   tasks:
+    - pause:
+        prompt: "这是测试用脚本，请勿在任何需要保留数据的环境中使用！请按 Ctrl+C 中断操作。"
+
     - name: 查找节点配置文件夹路径
       find:
         paths: "{{ fisco_workdir }}"

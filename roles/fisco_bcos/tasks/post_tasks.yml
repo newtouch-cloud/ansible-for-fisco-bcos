@@ -1,0 +1,14 @@
+# @Author: Haibin Lee <haibin>
+# @Date:   2020-12-04T17:20:32+08:00
+# @Email:  haibin.li@newtouch.com
+# @Filename: post_tasks.yml
+# @Last modified by:   haibin
+# @Last modified time: 2020-12-04T17:32:06+08:00
+# @Copyright: Copyright 2020 the original author or authors.
+
+ 
+# - name: 更新 node 节点配置文件 config.ini
+#   include_tasks: config/node_config_ini.yml
+#   loop: "{{ fisco_node_config_ini }}"
+#   loop_control:
+#     loop_var: config

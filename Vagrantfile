@@ -3,7 +3,7 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: Vagrantfile
 # @Last modified by:   haibin
-# @Last modified time: 2020-12-03T15:42:02+08:00
+# @Last modified time: 2020-12-04T13:28:18+08:00
 # @Copyright: Copyright 2020 the original author or authors.
 
 
@@ -39,7 +39,7 @@ $vm_cpus = 4
 $shared_folders = {}
 $forwarded_ports = {}
 $subnet = "172.17.8"
-$os = "centos8"
+$os = "official-ubuntu1604"
 $override_disk_size = false
 $disk_size = "20GB"
 
