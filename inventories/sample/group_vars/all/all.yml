@@ -3,11 +3,9 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: all.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-11-17T12:25:46+08:00
+# @Last modified time: 2020-12-04T14:36:26+08:00
 # @License: GNU General Public License v3.0
 
 
-
+# 如果安装 generator 报错提示应该用 python3，请打开以下注释。
 # ansible_python_interpreter: python3
-
-fisco_deploy_mode: enterprise

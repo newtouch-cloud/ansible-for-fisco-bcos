@@ -3,7 +3,7 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: main.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-12-02T22:37:28+08:00
+# @Last modified time: 2020-12-04T17:23:07+08:00
 # @License: GNU General Public License v3.0
 
 
@@ -19,9 +19,20 @@ fisco_console_enabled: false
 # 是否生成 SDK
 fisco_sdk_enabled: false
 
-# # Refere https://fisco-bcos-documentation.readthedocs.io/en/latest/docs/installation.html
-# # General
-# fisco_version: 2.6.0
+# Refere https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/change_log/index.html
+fisco_version: 2.6.0
+generator_version: >-
+  {%- if fisco_version is version('2.7', '<') -%}
+    v1.6.0
+  {%- else -%}
+    v1.7.0
+  {%- endif %}
+console_version: >-
+  {%- if fisco_version is version('2.7', '<') -%}
+    1.1.0
+  {%- else -%}
+    2.7.0
+  {%- endif %}
 # fisco_build_chain_url: "https://github.com/FISCO-BCOS/FISCO-BCOS/releases/download/v{{ fisco_version }}/build_chain.sh"
 # fisco_download_console_url: https://github.com/FISCO-BCOS/console/releases/download/v1.0.10/download_console.sh
 # fisco_bind_address: 0.0.0.0
@@ -32,9 +43,11 @@ fisco_generator_git: https://github.com/FISCO-BCOS/generator.git
 pypi_index_url: https://pypi.doubanio.com/simple
 
 
-# TODO
+# 生成后的 node 节点 config.ini 配置
 #------------ config.ini 配置开始 ------------#
-fisco_config_ini:
+fisco_node_config_ini:
+  compatibility:
+    supported_version: "{{ fisco_version }}"
   log:
     enable_compress: false      # 是否启用 P2P 网络压缩。如果都是内网节点，建议为 false。公网建链建议为 true。
     log_level: info             # trace、debug、info、warning、error

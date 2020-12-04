@@ -1,0 +1,23 @@
+# @Author: Haibin Lee <haibin>
+# @Date:   2020-11-11T16:56:37+08:00
+# @Email:  haibin.li@newtouch.com
+# @Filename: console.yml
+# @Last modified by:   haibin
+# @Last modified time: 2020-12-04T15:45:43+08:00
+# @License: GNU General Public License v3.0
+
+
+- name: 检查机构 {{ agency.name }} 的 console 控制台
+  stat:
+    path: "{{ fisco_workdir }}/agency_{{ agency.name }}/console/"
+  register: __console_st
+
+- name: "安装机构 {{ agency.name }} 的 console 控制台"
+  command: ./generator --download_console ./ --cdn
+  args:
+    chdir: "{{ fisco_workdir }}/agency_{{ agency.name }}"
+  changed_when: false
+  when: not __console_st.stat.exists
+
+- name: 根据 console 版本导入不同的配置方式
+  import_tasks: "{{ console_version }}.yml"
