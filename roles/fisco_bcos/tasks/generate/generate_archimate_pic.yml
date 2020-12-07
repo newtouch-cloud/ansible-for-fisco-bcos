@@ -3,7 +3,7 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: generate_archimate.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-11-24T13:44:24+08:00
+# @Last modified time: 2020-12-07T22:16:57+08:00
 # @Copyright: Copyright 2020 the original author or authors.
 
 
@@ -11,7 +11,9 @@
 - name: 安装 plantuml
   become: yes
   package:
-    name: plantuml
+    name:
+      - plantuml
+      - graphviz
   when: not lookup('pipe', 'which plantuml')
 
 - name: "创建 {{ fisco_workdir }}/archimate 目录"
@@ -41,3 +43,5 @@
   changed_when: false
   with_fileglob:
     - "{{ fisco_workdir }}/archimate/*.puml"
+  loop_control:
+    label: "{{ item | regex_replace('.puml', '.png') }}"

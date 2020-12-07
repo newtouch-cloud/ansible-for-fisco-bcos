@@ -6,13 +6,16 @@
 # @License: GNU General Public License v3.0
 
 
-- import_tasks: generate/generate_archimate.yml
+- name: 前置检查与变量设置
+  import_tasks: pre_tasks.yml
+  tags:
+    - always
+
+- name: "生成架构图在 {{ fisco_workdir }}/archimate/ 目录下"
+  import_tasks: generate/generate_archimate_pic.yml
   tags:
     - never
     - archimate
-
-- name: 前置检查与变量设置
-  import_tasks: pre_tasks.yml
 
 - name: 生成机构证书
   include_tasks: generate/generate_agency_certificate.yml
@@ -47,7 +50,7 @@
   when: agency.name not in agency_existed
 
 - name: 生成部署文件
-  include_tasks: install/build_install_package.yml
+  include_tasks: install/install_package.yml
   loop: "{{ agencies }}"
   loop_control:
     loop_var: agency
@@ -55,7 +58,7 @@
   when: agency.name not in agency_existed
 
 - name: 节点扩展
-  include_tasks: expand_node.yml
+  include_tasks: expand/expand_node.yml
   loop: "{{ agencies }}"
   loop_control:
     loop_var: agency
@@ -66,7 +69,7 @@
     - groups['fisco_expand_nodes'] | regex_search(agency.name)
 
 - name: 安装/配置控制台
-  include_tasks: console/main.yml
+  include_tasks: install/install_console.yml
   loop: "{{ agencies }}"
   loop_control:
     loop_var: agency
@@ -74,7 +77,7 @@
   when: fisco_console_enabled
 
 - name: 安装/配置 SDK
-  include_tasks: sdk.yml
+  include_tasks: install/install_sdk.yml
   loop: "{{ agencies }}"
   loop_control:
     loop_var: agency
