@@ -3,14 +3,14 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: init.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-12-04T17:32:42+08:00
+# @Last modified time: 2020-12-04T19:49:29+08:00
 # @License: GNU General Public License v3.0
 
 # FISCO BCOS 版本
 fisco_version: 2.6.0
 fisco_dl_url: "https://github.com/FISCO-BCOS/FISCO-BCOS/releases/download/v{{ fisco_version }}/fisco-bcos.tar.gz"
 
-# 是否使用国密版。注意，已经部署的集群不可更改此项。
+# 是否使用国密版。注意，已经生成的集群不可更改此项。
 fisco_gm_enabled: false
 
 # 是否生成控制台。

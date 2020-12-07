@@ -3,22 +3,48 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: pre_tasks.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-12-04T17:15:57+08:00
+# @Last modified time: 2020-12-07T15:37:44+08:00
 # @License: GNU General Public License v3.0
 
 
 
-- name: "检查 generator 目录"
+- name: "非国密版 | 检查 generator 目录"
   stat:
-    path: "{{ fisco_workdir }}/generator/meta/fisco-bcos"
+    path: "{{ item }}"
     get_attributes: false
     get_checksum: false
     get_mime: false
   register: __generator_dir
+  with_items:
+    - "{{ fisco_workdir }}/generator/meta/fisco-bcos"
+    - "{{ fisco_workdir }}/generator/dir_agency_ca"
+    - "{{ fisco_workdir }}/generator/dir_chain_ca"
+  when: not fisco_gm_enabled
+
+- name: "国密版 | 检查 generator 目录"
+  stat:
+    path: "{{ item }}"
+    get_attributes: false
+    get_checksum: false
+    get_mime: false
+  register: __generator_dir
+  with_items:
+    - "{{ fisco_workdir }}/generator/meta/fisco-bcos"
+    - "{{ fisco_workdir }}/generator/dir_agency_ca"
+    - "{{ fisco_workdir }}/generator/dir_chain_ca"
+    - "{{ fisco_workdir }}/generator/dir_chain_ca_normal"
+  when: fisco_gm_enabled
+
+- name: 中止执行
+  fail:
+    msg: "{{ fisco_workdir }}/generator/ 目录初始化不完整，只有 {{ __generator_dir.results | selectattr('stat.exists') | map(attribute='stat.path') | join(', ') }} 存在。某些情况下，generator 目录可能不完整，并且 generator 命令不一定能重新生成。如果不是已经部署的，可以安全删除 {{ fisco_workdir }} 目录，重新执行。如果已经部署了，请到社区里寻求帮助。"
+  when:
+    - true in __generator_dir.results | map(attribute='stat.exists')
+    - false in __generator_dir.results | map(attribute='stat.exists')
 
 - block:
     - include_tasks: install/install_generator.yml
-  when: not __generator_dir.stat.exists
+  when: false in __generator_dir.results | map(attribute='stat.exists')
 
 - name: "生成节点清单 {{ fisco_workdir }}/node_list.yml"
   template:
