@@ -3,7 +3,7 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: install_generator.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-12-04T17:18:21+08:00
+# @Last modified time: 2020-12-08T16:50:44+08:00
 # @License: GNU General Public License v3.0
 
 
@@ -15,33 +15,40 @@
       - git
       - openssl
       - curl
-      # - "{{ ansible_python_version is version('3', '<') | ternary('python', 'python3') }}-pip"
       - rsync
 
-- name: "获取 {{ fisco_generator_git }} 代码（版本 {{ generator_version }}）"
-  become: false
+- name: "获取 {{ fisco_generator_git }} 代码（版本 {{ fisco_generator_version }}）"
   git:
     repo: "{{ fisco_generator_git }}"
     dest: "{{ fisco_workdir }}/generator"
-    version: "{{ generator_version }}"
+    version: "v{{ fisco_generator_version }}"
     depth: 1
+  register: __git_st
+  until: __git_st is succeeded
+  retries: 10
+  delay: 3
 
-- name: "安装 generator {{ generator_version }}"
+- name: "安装 generator {{ fisco_generator_version }}"
   shell: "export PIP_INDEX_URL={{ pypi_index_url }} &&  bash ./scripts/install.sh"
   args:
     chdir: "{{ fisco_workdir }}/generator"
   register: __command_result
 
-- name: "获取 fisco-bcos v{{ fisco_version }} 执行文件"
-  unarchive:
-    src: "{{ fisco_dl_url }}"
-    dest: "{{ fisco_workdir }}/generator/meta/"
-    mode: 0755
-    remote_src: yes
+- name: "下载 {{ fisco_dl_url | random }}"
+  get_url:
+    url: "{{ fisco_dl_url | random }}"
+    dest: "/tmp/{{ fisco_dl_url | random | basename }}"
+    timeout: 120
   register: __dl_st
   until: __dl_st is succeeded
   retries: 10
   delay: 5
+
+- name: "解压 /tmp/{{ fisco_dl_url | random | basename }}"
+  unarchive:
+    src: "/tmp/{{ fisco_dl_url | random | basename }}"
+    dest: "{{ fisco_workdir }}/generator/meta/"
+    mode: 0755
 
 - name: 检查 fisco-bcos 版本号是否匹配。
   fail:

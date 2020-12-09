@@ -9,7 +9,7 @@ node_list:
 {% endfor %}
 {% else %}
 {# 单 IP 单节点 #}
-  - {{ node.0.name }}:{{ node.0.main_group_id }}:{{ node.1.split(':')[0] }}:30300:20200:8545:[{{ node.0.extra_group_id | default('0') | join(',') }}]
+  - {{ node.0.name }}:{{ node.0.main_group_id }}:{{ node.1.split(':')[0] }}:30300:20200:8545:[{{ node.0.extra_group_id | default('0') | list | join(',') }}]
 {% endif %}
 {% endfor %}
 

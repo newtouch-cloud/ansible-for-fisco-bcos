@@ -1,11 +1,13 @@
 @startuml
 
-title 机构 {{ agency.name }} 拓扑图 - {{ groups['fisco_agency_' + agency.name] | count }} 节点
+title 机构 {{ agency.name }} 节点列表 - {{ groups['fisco_agency_' + agency.name] | count }} 节点
 
 package "机构 {{ agency.name }}" {
 {% for node in groups['fisco_agency_' + agency.name] %}
   node "IP: {{ node.split(':')[2] }}\nP2P: {{ node.split(':')[3] }}\nChannel: {{ node.split(':')[4] }}\nRPC: {{ node.split(':')[5] }}"
 {% endfor %}
 }
+
+caption FISCO BCOS 版本 {{ inventory_dir | basename }}
 
 @enduml

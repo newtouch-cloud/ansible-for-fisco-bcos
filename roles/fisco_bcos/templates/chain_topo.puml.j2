@@ -1,6 +1,6 @@
 @startuml
 
-title {{ inventory_dir | basename }} 联盟链拓扑图 - {{ fisco_main_group_id_list | count }} 群组 {{ agencies | count }} 机构
+title 联盟链拓扑图 - {{ fisco_main_group_id_list | count }} 群组 {{ agencies | count }} 机构
 
 {% for group_id in fisco_main_group_id_list %}
 collections "群组 {{ group_id }}" as Group{{ group_id }}
@@ -15,5 +15,7 @@ agent "机构 {{ agency.name }}" as {{ agency.name }}
 {{ agency }} -up-> Group{{ group_id }}
 {% endfor %}
 {% endfor %}
+
+caption FISCO BCOS 版本 {{ inventory_dir | basename }}
 
 @enduml

@@ -3,7 +3,7 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: main.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-12-04T17:23:07+08:00
+# @Last modified time: 2020-12-07T22:00:04+08:00
 # @License: GNU General Public License v3.0
 
 
@@ -19,20 +19,24 @@ fisco_console_enabled: false
 # 是否生成 SDK
 fisco_sdk_enabled: false
 
-# Refere https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/change_log/index.html
-fisco_version: 2.6.0
-generator_version: >-
+# FISCO BCOS 版本
+fisco_version: 2.7.0
+fisco_dl_url:
+  - "https://github.com/FISCO-BCOS/FISCO-BCOS/releases/download/v{{ fisco_version }}/fisco-bcos.tar.gz"
+  - "https://osp-1257653870.cos.ap-guangzhou.myqcloud.com/FISCO-BCOS/FISCO-BCOS/releases/v{{ fisco_version }}/fisco-bcos.tar.gz"
+
+# Generator 版本
+fisco_generator_version: 1.6.0
+
+# 控制台版本
+fisco_console_version: >-
   {%- if fisco_version is version('2.7', '<') -%}
-    v1.6.0
-  {%- else -%}
-    v1.7.0
-  {%- endif %}
-console_version: >-
-  {%- if fisco_version is version('2.7', '<') -%}
-    1.1.0
+    1.2.0
   {%- else -%}
     2.7.0
   {%- endif %}
+fisco_console_script_dl: https://gitee.com/FISCO-BCOS/console/raw/master/tools/download_console.sh
+
 # fisco_build_chain_url: "https://github.com/FISCO-BCOS/FISCO-BCOS/releases/download/v{{ fisco_version }}/build_chain.sh"
 # fisco_download_console_url: https://github.com/FISCO-BCOS/console/releases/download/v1.0.10/download_console.sh
 # fisco_bind_address: 0.0.0.0

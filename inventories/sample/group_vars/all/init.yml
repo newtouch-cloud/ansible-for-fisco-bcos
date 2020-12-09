@@ -3,21 +3,26 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: init.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-12-04T17:32:42+08:00
+# @Last modified time: 2020-12-07T20:00:47+08:00
 # @License: GNU General Public License v3.0
 
-# FISCO BCOS 版本
-fisco_version: 2.6.0
-fisco_dl_url: "https://github.com/FISCO-BCOS/FISCO-BCOS/releases/download/v{{ fisco_version }}/fisco-bcos.tar.gz"
+# 各版本变量的设置，详看 https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/change_log/index.html 版本及兼容说明。
 
-# 是否使用国密版。注意，已经部署的集群不可更改此项。
+# FISCO BCOS 版本，
+fisco_version: 2.6.0
+
+# 是否使用国密版。注意，已经生成的集群不可更改此项。
 fisco_gm_enabled: false
 
 # 是否生成控制台。
 fisco_console_enabled: false
+# 控制台版本，详看 https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/installation.html#id8 说明。
+fisco_console_version: 1.1.0
 
 # 是否生成 SDK
 fisco_sdk_enabled: false
+
+fisco_generator_version: 1.6.0
 
 # 变量注释
 # name:           （必填）机构名称。请勿使用纯数字、特殊字符或中文，避免一些判断条件失效。
