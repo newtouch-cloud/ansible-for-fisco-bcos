@@ -38,7 +38,8 @@
                         <list>
 {# 主群节点配置 开始 #}
 {% for node in node_list
-  if node.split(':')[1] == agency.main_group_id|quote
+  if agency.main_group_id|quote == node.split(':')[1]
+  or agency.main_group_id|quote in node.split(':')[6]
 %}
                           <value>{{ node.split(':')[2] }}:{{ node.split(':')[4] }}</value>
 {% endfor %}
@@ -47,25 +48,29 @@
                     </property>
                 </bean>
 {# 循环扩展组 开始 #}
-{% for extra_group_id in agency.extra_group_id
-  if agency.extra_group_id is defined
+{% if agency.extra_group_id is defined
   and
   agency.extra_group_id is truthy
 %}
+{% for extra_group_id in agency.extra_group_id %}
                 <bean id="group{{ extra_group_id }}"  class="org.fisco.bcos.channel.handler.ChannelConnections">
                     <property name="groupId" value="{{ extra_group_id }}" />
                     <property name="connectionsStr">
                         <list>
 {# 循环扩展组节点 开始 #}
-{% for node in node_list if extra_group_id|quote in node.split(':')[6] %}
+{% for node in node_list
+  if extra_group_id|quote == node.split(':')[1]
+  or extra_group_id|quote in node.split(':')[6]
+%}
                           <value>{{ node.split(':')[2] }}:{{ node.split(':')[4] }}</value>
 {% endfor %}
 {# 循环扩展组节点 结束 #}
                         </list>
                     </property>
                 </bean>
-            </list>
 {% endfor %}
+{% endif %}
+            </list>
 {# 循环扩展组 结束 #}
         </property>
     </bean>

@@ -3,7 +3,7 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: generate_archimate.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-12-07T22:16:57+08:00
+# @Last modified time: 2020-12-08T16:43:37+08:00
 # @Copyright: Copyright 2020 the original author or authors.
 
 
@@ -22,12 +22,12 @@
     state: directory
   when: not lookup('fileglob', fisco_workdir + '/archimate')
 
-- name: 生成联盟链拓扑 puml 文件
+- name: 生成联盟链 puml 文件
   template:
     src: "chain_topo.puml.j2"
     dest: "{{ fisco_workdir }}/archimate/chain_topo.puml"
 
-- name: 生成机构拓扑 puml 文件
+- name: 生成机构 puml 文件
   template:
     src: "agency_topo.puml.j2"
     dest: "{{ fisco_workdir }}/archimate/agency_{{ agency.name }}_topo.puml"
@@ -45,3 +45,10 @@
     - "{{ fisco_workdir }}/archimate/*.puml"
   loop_control:
     label: "{{ item | regex_replace('.puml', '.png') }}"
+
+- name: 清理 puml 文件
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_fileglob:
+    - "{{ fisco_workdir }}/archimate/*.puml"
