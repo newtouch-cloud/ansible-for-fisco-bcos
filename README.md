@@ -82,7 +82,24 @@ fisco_gm_enabled: true
 
 请根据文件头部的变量注释，编排好目标配置的信息。
 
-开始生成配置文件。
+**TIPS： 你可以先执行以下命令，生成架构图，来确认配置是否有问题。**
+
+```
+ansible-playbook -i inventories/my_inventory/hosts.ini fisco_bcos.yml -t archimate
+```
+
+图片路径在输出结果中，类似于：
+
+```
+TASK [fisco_bcos : 生成图片文件] ***********************************************************************************************
+Monday 07 December 2020  22:17:04 +0800 (0:00:00.855)       0:00:05.108 *******
+ok: [localhost] => (item=/home/haibin/Workspaces/ansible-for-fisco-bcos/inventories/v2.7.0/deploy/archimate/agency_C_topo.png)
+ok: [localhost] => (item=/home/haibin/Workspaces/ansible-for-fisco-bcos/inventories/v2.7.0/deploy/archimate/agency_B_topo.png)
+ok: [localhost] => (item=/home/haibin/Workspaces/ansible-for-fisco-bcos/inventories/v2.7.0/deploy/archimate/agency_A_topo.png)
+ok: [localhost] => (item=/home/haibin/Workspaces/ansible-for-fisco-bcos/inventories/v2.7.0/deploy/archimate/chain_topo.png)
+```
+
+查看图片，确认没问题后，可以开始生成部署文件。
 
 ```
 ansible-playbook -i inventories/my_inventory/hosts.ini fisco_bcos.yml

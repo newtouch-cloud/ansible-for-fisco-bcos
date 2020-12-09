@@ -3,7 +3,7 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: Vagrantfile
 # @Last modified by:   haibin
-# @Last modified time: 2020-11-30T18:49:04+08:00
+# @Last modified time: 2020-12-04T13:28:18+08:00
 # @Copyright: Copyright 2020 the original author or authors.
 
 
@@ -23,6 +23,7 @@ SUPPORTED_OS = {
   "official-ubuntu1604" => {box: "ubuntu/xenial64", user: "vagrant"},
   "ubuntu1804"          => {box: "generic/ubuntu1804", user: "vagrant"},
   "centos"              => {box: "centos/7",           user: "vagrant"},
+  "centos8"              => {box: "centos/8",           user: "vagrant"},
   "centos-bento"        => {box: "bento/centos-7.5",   user: "vagrant"},
   "fedora"              => {box: "fedora/28-cloud-base",                user: "vagrant"},
   "opensuse"            => {box: "opensuse/openSUSE-15.0-x86_64",       user: "vagrant"},

@@ -3,13 +3,10 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: main.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-11-18T15:38:12+08:00
+# @Last modified time: 2020-12-07T22:00:04+08:00
 # @License: GNU General Public License v3.0
 
 
-
-# 'single' for test, 'enterprise' for production.
-fisco_deploy_mode: enterprise
 
 fisco_workdir: "{{ inventory_dir }}/deploy"
 
@@ -22,22 +19,39 @@ fisco_console_enabled: false
 # 是否生成 SDK
 fisco_sdk_enabled: false
 
-# # Refere https://fisco-bcos-documentation.readthedocs.io/en/latest/docs/installation.html
-# # General
-# fisco_version: 2.6.0
+# FISCO BCOS 版本
+fisco_version: 2.7.0
+fisco_dl_url:
+  - "https://github.com/FISCO-BCOS/FISCO-BCOS/releases/download/v{{ fisco_version }}/fisco-bcos.tar.gz"
+  - "https://osp-1257653870.cos.ap-guangzhou.myqcloud.com/FISCO-BCOS/FISCO-BCOS/releases/v{{ fisco_version }}/fisco-bcos.tar.gz"
+
+# Generator 版本
+fisco_generator_version: 1.6.0
+
+# 控制台版本
+fisco_console_version: >-
+  {%- if fisco_version is version('2.7', '<') -%}
+    1.2.0
+  {%- else -%}
+    2.7.0
+  {%- endif %}
+fisco_console_script_dl: https://gitee.com/FISCO-BCOS/console/raw/master/tools/download_console.sh
+
 # fisco_build_chain_url: "https://github.com/FISCO-BCOS/FISCO-BCOS/releases/download/v{{ fisco_version }}/build_chain.sh"
 # fisco_download_console_url: https://github.com/FISCO-BCOS/console/releases/download/v1.0.10/download_console.sh
 # fisco_bind_address: 0.0.0.0
 # fisco_algorithm_type: PBFT # 共识算法 https://fisco-bcos-documentation.readthedocs.io/en/latest/docs/manual/build_chain.html#coption-optional
 
-# Enterprise
+# 一些 URL 变量
 fisco_generator_git: https://github.com/FISCO-BCOS/generator.git
+pypi_index_url: https://pypi.doubanio.com/simple
 
 
-
-# TODO
+# 生成后的 node 节点 config.ini 配置
 #------------ config.ini 配置开始 ------------#
-fisco_config_ini:
+fisco_node_config_ini:
+  compatibility:
+    supported_version: "{{ fisco_version }}"
   log:
     enable_compress: false      # 是否启用 P2P 网络压缩。如果都是内网节点，建议为 false。公网建链建议为 true。
     log_level: info             # trace、debug、info、warning、error

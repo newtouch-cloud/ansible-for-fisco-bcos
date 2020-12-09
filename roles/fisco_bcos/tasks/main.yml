@@ -3,15 +3,22 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: enterprise.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-12-01T13:35:22+08:00
 # @License: GNU General Public License v3.0
 
 
 - name: 前置检查与变量设置
   import_tasks: pre_tasks.yml
+  tags:
+    - always
+
+- name: "生成架构图在 {{ fisco_workdir }}/archimate/ 目录下"
+  import_tasks: generate/generate_archimate_pic.yml
+  tags:
+    - never
+    - archimate
 
 - name: 生成机构证书
-  include_tasks: generate_agency_certificate.yml
+  include_tasks: generate/generate_agency_certificate.yml
   loop: "{{ agencies }}"
   loop_control:
     loop_var: agency
@@ -19,7 +26,7 @@
   when: agency.name not in agency_existed
 
 - name: 生成机构配置
-  include_tasks: generate_agency_config.yml
+  include_tasks: generate/generate_agency_config.yml
   loop: "{{ agencies }}"
   loop_control:
     loop_var: agency
@@ -27,7 +34,7 @@
   when: agency.name not in agency_existed
 
 - name: 生成节点连接信息文件
-  include_tasks: generate_peers_file.yml
+  include_tasks: generate/generate_peers_file.yml
   loop: "{{ agencies }}"
   loop_control:
     loop_var: agency
@@ -35,7 +42,7 @@
   when: agency.name not in agency_existed
 
 - name: 生成创世区块
-  include_tasks: generate_genesis.yml
+  include_tasks: generate/generate_genesis.yml
   loop: "{{ agencies | selectattr('create_genesis', 'defined') | selectattr('create_genesis') }}"
   loop_control:
     loop_var: agency
@@ -43,7 +50,7 @@
   when: agency.name not in agency_existed
 
 - name: 生成部署文件
-  include_tasks: build_install_package.yml
+  include_tasks: install/install_package.yml
   loop: "{{ agencies }}"
   loop_control:
     loop_var: agency
@@ -51,7 +58,7 @@
   when: agency.name not in agency_existed
 
 - name: 节点扩展
-  include_tasks: expand_node.yml
+  include_tasks: expand/expand_node.yml
   loop: "{{ agencies }}"
   loop_control:
     loop_var: agency
@@ -62,7 +69,7 @@
     - groups['fisco_expand_nodes'] | regex_search(agency.name)
 
 - name: 安装/配置控制台
-  include_tasks: console.yml
+  include_tasks: install/install_console.yml
   loop: "{{ agencies }}"
   loop_control:
     loop_var: agency
@@ -70,7 +77,7 @@
   when: fisco_console_enabled
 
 - name: 安装/配置 SDK
-  include_tasks: sdk.yml
+  include_tasks: install/install_sdk.yml
   loop: "{{ agencies }}"
   loop_control:
     loop_var: agency

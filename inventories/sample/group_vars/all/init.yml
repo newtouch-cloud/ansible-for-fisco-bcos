@@ -3,21 +3,26 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: init.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-12-01T14:57:48+08:00
+# @Last modified time: 2020-12-09T10:56:23+08:00
 # @License: GNU General Public License v3.0
 
-# FISCO BCOS 版本
-fisco_version: 2.6.0
-fisco_dl_url: "https://github.com/FISCO-BCOS/FISCO-BCOS/releases/download/v{{ fisco_version }}/fisco-bcos.tar.gz"
+# 各版本变量的设置，详看 https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/change_log/index.html 版本及兼容说明。
 
-# 是否使用国密版。注意，已经部署的集群不可更改此项。
+# FISCO BCOS 版本，
+fisco_version: 2.6.0
+
+# 是否使用国密版。注意，已经生成的集群不可更改此项。
 fisco_gm_enabled: false
 
-# 是否生成控制台。目前未支持 2.7.0，将下载 1.1.0 版本。
+# 是否生成控制台。
 fisco_console_enabled: false
+# 控制台版本，详看 https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/installation.html#id8 说明。
+fisco_console_version: 1.1.0
 
 # 是否生成 SDK
 fisco_sdk_enabled: false
+
+fisco_generator_version: 1.6.0
 
 # 变量注释
 # name:           （必填）机构名称。请勿使用纯数字、特殊字符或中文，避免一些判断条件失效。
@@ -25,6 +30,11 @@ fisco_sdk_enabled: false
 # nodes:          （必填）机构各节点连接信息。格式 <ip>:<节点数>。如果只填写 IP，则默认为 1 个节点。同 IP 多节点会自动递增对应端口。暂时不支持绑定域名。
 # main_group_id:  （必填）主群组 ID
 # extra_group_id: （可选）额外要加入的目标群组 ID，必须要有对应的 main_group_id。
+
+######################################################
+# 注意：目前不支持给已有联盟增加机构，只允许给已有机构增加节点。#
+#####################################################
+
 
 # 单群组 FISCO BCOS 联盟链，适合开发环境。
 # agencies:
