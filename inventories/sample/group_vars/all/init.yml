@@ -3,7 +3,7 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: init.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-12-07T20:00:47+08:00
+# @Last modified time: 2020-12-09T10:56:23+08:00
 # @License: GNU General Public License v3.0
 
 # 各版本变量的设置，详看 https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/change_log/index.html 版本及兼容说明。
@@ -30,6 +30,11 @@ fisco_generator_version: 1.6.0
 # nodes:          （必填）机构各节点连接信息。格式 <ip>:<节点数>。如果只填写 IP，则默认为 1 个节点。同 IP 多节点会自动递增对应端口。暂时不支持绑定域名。
 # main_group_id:  （必填）主群组 ID
 # extra_group_id: （可选）额外要加入的目标群组 ID，必须要有对应的 main_group_id。
+
+######################################################
+# 注意：目前不支持给已有联盟增加机构，只允许给已有机构增加节点。#
+#####################################################
+
 
 # 单群组 FISCO BCOS 联盟链，适合开发环境。
 # agencies:

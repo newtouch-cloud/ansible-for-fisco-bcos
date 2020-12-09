@@ -1,4 +1,4 @@
-# 云主机的公网IP均为虚拟IP，若listen_ip/jsonrpc_listen_ip/channel_listen_ip填写外网IP，会绑定失败，须填写0.0.0.0
+# 云主机的公网 IP 均为虚拟 IP，若 listen_ip/jsonrpc_listen_ip/channel_listen_ip 填写外网 IP，会绑定失败，须填写 0.0.0.0
 
 [group]
 group_id={{ agency.main_group_id }}
@@ -8,9 +8,9 @@ group_id={{ agency.main_group_id }}
   and (node.split(':')[1] | int) == agency.main_group_id
 %}
 [node{{ loop.index0 }}]
-p2p_ip={{ node.split(':')[2] | ipaddr('private') | ternary(node.split(':')[2]|quote, '0.0.0.0') }}
-rpc_ip={{ node.split(':')[2] | ipaddr('private') | ternary('127.0.0.1', '0.0.0.0') }}
-channel_ip={{ node.split(':')[2] | ipaddr('private') | ternary(node.split(':')[2]|quote, '0.0.0.0') }}
+p2p_ip={{ node.split(':')[2] | ipaddr('public') | ternary('0.0.0.0', node.split(':')[2]|quote) }}
+rpc_ip={{ node.split(':')[2] | ipaddr('public') | ternary('0.0.0.0', '127.0.0.1') }}
+channel_ip={{ node.split(':')[2] | ipaddr('public') | ternary('0.0.0.0', node.split(':')[2]|quote) }}
 p2p_listen_port={{ node.split(':')[3] | default('30300') }}
 channel_listen_port={{ node.split(':')[4] | default('20200') }}
 jsonrpc_listen_port={{ node.split(':')[5] | default('8545') }}
