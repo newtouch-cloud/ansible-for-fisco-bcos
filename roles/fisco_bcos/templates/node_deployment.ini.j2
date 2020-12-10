@@ -3,10 +3,7 @@
 [group]
 group_id={{ agency.main_group_id }}
 
-{% for node in node_list
-  if node.split(':')[0] == agency.name
-  and (node.split(':')[1] | int) == agency.main_group_id
-%}
+{% for node in groups['fisco_agency_' + agency.name] %}
 [node{{ loop.index0 }}]
 p2p_ip={{ node.split(':')[2] | ipaddr('public') | ternary('0.0.0.0', node.split(':')[2]|quote) }}
 rpc_ip={{ node.split(':')[2] | ipaddr('public') | ternary('0.0.0.0', '127.0.0.1') }}

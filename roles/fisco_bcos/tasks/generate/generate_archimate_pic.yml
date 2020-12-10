@@ -3,7 +3,7 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: generate_archimate.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-12-08T16:43:37+08:00
+# @Last modified time: 2020-12-09T13:40:03+08:00
 # @Copyright: Copyright 2020 the original author or authors.
 
 
@@ -26,18 +26,20 @@
   template:
     src: "chain_topo.puml.j2"
     dest: "{{ fisco_workdir }}/archimate/chain_topo.puml"
+    validate: "plantuml -checkonly %s"
 
 - name: 生成机构 puml 文件
   template:
     src: "agency_topo.puml.j2"
     dest: "{{ fisco_workdir }}/archimate/agency_{{ agency.name }}_topo.puml"
+    validate: "plantuml -checkonly %s"
   loop: "{{ agencies }}"
   loop_control:
     loop_var: agency
     label: "{{ fisco_workdir }}/archimate/agency_{{ agency.name }}_topo.puml"
 
 - name: 生成图片文件
-  command: "plantuml {{ item | basename }}"
+  command: "plantuml -nbthread auto {{ item | basename }}"
   args:
     chdir: "{{ fisco_workdir }}/archimate/"
   changed_when: false

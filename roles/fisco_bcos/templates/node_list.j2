@@ -16,7 +16,7 @@ node_list:
 # 检查机构是否已经完成初始化。
 agency_existed:
 {% for agency_name in agencies|map(attribute='name') %}
-{% if lookup('file', fisco_workdir + '/agency_' + agency_name + '/fisco_deploy_agency_' + agency_name + '/start_all.sh', errors='ignore') %}
+{% if lookup('fileglob', fisco_workdir + '/agency_' + agency_name + '/fisco_deploy_agency_' + agency_name + '/start_all.sh', errors='ignore') %}
   - {{ agency_name }}
 {% else %}
   - "机构 {{ agency_name }} 尚未初始化"
@@ -26,7 +26,7 @@ agency_existed:
 # 检查群组是否已经完成初始化。
 group_existed:
 {% for agency in agencies|selectattr('create_genesis', 'defined')|selectattr('create_genesis') %}
-{% if lookup('file', fisco_workdir + '/agency_' + agency.name + '/group/group.' + agency.main_group_id|quote + '.genesis', errors='ignore') %}
+{% if lookup('fileglob', fisco_workdir + '/agency_' + agency.name + '/group/group.' + agency.main_group_id|quote + '.genesis', errors='ignore') %}
   - {{ agency.main_group_id }}
 {% else %}
   - "群组 {{ agency.main_group_id }} 尚未建立"
