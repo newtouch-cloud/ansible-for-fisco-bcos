@@ -21,15 +21,6 @@
         <property name="sslCert" value="sdk.crt" />
         <property name="sslKey" value="sdk.key" />
 
-{% if fisco_gm_enabled %}
-        <!-- GM Ssl certificate configuration -->
-        <property name="gmCaCert" value="gmca.crt" />
-        <property name="gmEnSslCert" value="gmensdk.crt" />
-        <property name="gmEnSslKey" value="gmensdk.key" />
-        <property name="gmSslCert" value="gmsdk.crt" />
-        <property name="gmSslKey" value="gmsdk.key" />
-{% endif %}
-
         <property name="allChannelConnections">
             <list>
 {% for group_id in fisco_main_group_id_list

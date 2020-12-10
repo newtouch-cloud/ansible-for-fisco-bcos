@@ -3,35 +3,30 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: console.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-12-09T11:30:40+08:00
+# @Last modified time: 2020-12-09T14:43:07+08:00
 # @License: GNU General Public License v3.0
 
-
-- name: 检查机构 {{ agency.name }} 的 console 控制台
-  stat:
-    path: "{{ fisco_workdir }}/agency_{{ agency.name }}/console/"
-  register: __console_st
 
 - name: "安装机构 {{ agency.name }} 的 console 控制台"
   command: ./generator --download_console ./ --cdn
   args:
     chdir: "{{ fisco_workdir }}/agency_{{ agency.name }}"
   changed_when: false
-  when: not __console_st.stat.exists
+  when: "not lookup('fileglob', fisco_workdir + '/agency_' + agency.name + '/console')"
 
 - name: 获取 Console 版本号
   set_fact:
     fisco_console_version: >-
       {{ lookup("pipe", fisco_workdir + "/agency_" + agency.name + "/console/start.sh --version | awk '{print $3}'") }}
 
-- name: 1.x 版本配置
+- name: 控制台 1.x 版本配置
   template:
     src: console-applicationContext.xml.j2
     dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/console/conf/applicationContext.xml"
     backup: true
   when: fisco_console_version is version('2', '<')
 
-# - name: 2.x 版本配置
+# - name: 控制台 2.x 版本配置
 #   template:
 #     src: console-config.toml.j2
 #     dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/console/conf/config.toml"
