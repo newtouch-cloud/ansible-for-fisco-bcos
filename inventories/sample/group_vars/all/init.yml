@@ -3,10 +3,14 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: init.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-12-09T10:56:23+08:00
+# @Last modified time: 2020-12-09T17:44:23+08:00
 # @License: GNU General Public License v3.0
 
 # 各版本变量的设置，详看 https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/change_log/index.html 版本及兼容说明。
+
+# Generator 版本，如果需要最新的请改为 master。、
+# 特定版本参看 https://github.com/FISCO-BCOS/generator/tags
+fisco_generator_version: v1.6.0
 
 # FISCO BCOS 版本，
 fisco_version: 2.6.0
@@ -21,8 +25,6 @@ fisco_console_version: 1.1.0
 
 # 是否生成 SDK
 fisco_sdk_enabled: false
-
-fisco_generator_version: 1.6.0
 
 # 变量注释
 # name:           （必填）机构名称。请勿使用纯数字、特殊字符或中文，避免一些判断条件失效。
