@@ -1,0 +1,17 @@
+# The peers to generate the group
+[groupPeers]
+peers=["{%- for node in groups['fisco_node_group_' + agency.main_group_id|quote] -%}
+{{ node.split(':')[2] }}:{{ node.split(':')[4] }}
+{%- if loop.nextitem is defined -%}", "{%- endif -%}
+{%- endfor -%}
+"]
+
+# The consensus configuration of the generated group
+[consensus]
+# The sealerList
+# sealerList=[]
+
+[genesis]
+# The genesis timestamp, It is recommended to set to the current utcTime, which must be greater than 0
+# timestamp = ""
++

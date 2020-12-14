@@ -3,17 +3,17 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: init.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-12-09T17:44:23+08:00
+# @Last modified time: 2020-12-14T19:06:10+08:00
 # @License: GNU General Public License v3.0
 
 # 各版本变量的设置，详看 https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/change_log/index.html 版本及兼容说明。
 
 # Generator 版本，如果需要最新的请改为 master。、
 # 特定版本参看 https://github.com/FISCO-BCOS/generator/tags
-fisco_generator_version: v1.6.0
+fisco_generator_version: master
 
 # FISCO BCOS 版本，
-fisco_version: 2.6.0
+fisco_version: 2.7.0
 
 # 是否使用国密版。注意，已经生成的集群不可更改此项。
 fisco_gm_enabled: false
@@ -21,13 +21,13 @@ fisco_gm_enabled: false
 # 是否生成控制台。
 fisco_console_enabled: false
 # 控制台版本，详看 https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/installation.html#id8 说明。
-fisco_console_version: 1.1.0
+fisco_console_version: 2.7.0
 
 # 是否生成 SDK
 fisco_sdk_enabled: false
 
 # 变量注释
-# name:           （必填）机构名称。请勿使用纯数字、特殊字符或中文，避免一些判断条件失效。
+# name:           （必填）机构名称。请勿使用纯数字、特殊字符、空格或中文，避免一些判断条件失效。
 # create_genesis: 是否生成创世区块，同组(根据 main_group_id 判断)必须有且只有 1 个创世区块机构。（不设置则默认为 false）
 # nodes:          （必填）机构各节点连接信息。格式 <ip>:<节点数>。如果只填写 IP，则默认为 1 个节点。同 IP 多节点会自动递增对应端口。暂时不支持绑定域名。
 # main_group_id:  （必填）主群组 ID
