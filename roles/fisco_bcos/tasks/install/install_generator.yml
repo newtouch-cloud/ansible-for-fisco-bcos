@@ -3,7 +3,7 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: install_generator.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-12-09T17:20:22+08:00
+# @Last modified time: 2020-12-14T19:31:26+08:00
 # @License: GNU General Public License v3.0
 
 
@@ -34,21 +34,16 @@
     chdir: "{{ fisco_workdir }}/generator"
   register: __command_result
 
-- name: "下载 {{ fisco_dl_url | random }}"
-  get_url:
-    url: "{{ fisco_dl_url | random }}"
-    dest: "/tmp/{{ fisco_dl_url | random | basename }}"
-    timeout: 120
-  register: __dl_st
-  until: __dl_st is succeeded
+- name: "下载解压 {{ fisco_dl_url | random }}"
+  unarchive:
+    src: "{{ fisco_dl_url | random }}"
+    dest: "{{ fisco_workdir }}/generator/meta/"
+    remote_src: true
+    mode: 0755
+  register: __unarchive_st
+  until: __unarchive_st is succeeded
   retries: 10
   delay: 5
-
-- name: "解压 /tmp/{{ fisco_dl_url | random | basename }}"
-  unarchive:
-    src: "/tmp/{{ fisco_dl_url | random | basename }}"
-    dest: "{{ fisco_workdir }}/generator/meta/"
-    mode: 0755
 
 - name: 检查 fisco-bcos 版本号是否匹配。
   fail:
