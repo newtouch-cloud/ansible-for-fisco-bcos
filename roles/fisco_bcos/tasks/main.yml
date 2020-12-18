@@ -39,7 +39,7 @@
   loop_control:
     loop_var: agency
     label: "{{ agency.name }}"
-  when: agency.name not in agency_existed
+  # when: agency.name not in agency_existed
 
 - name: 生成创世区块
   include_tasks: generate/generate_genesis.yml
