@@ -3,7 +3,7 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: generate_peers_file.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-12-01T10:40:06+08:00
+# @Last modified time: 2020-12-18T17:11:32+08:00
 # @License: GNU General Public License v3.0
 
 
@@ -14,7 +14,7 @@
     dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/peers_{{ agency.main_group_id }}.txt"
     backup: true
 
-- name: "创建组 {{ agency.group_id }} 的节点 P2P 连接地址文件"
+- name: "创建扩展组的节点 P2P 连接地址文件"
   template:
     src: extra_group_peers.txt.j2
     dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/peers_{{ group_id }}.txt"
@@ -24,8 +24,8 @@
     loop_var: group_id
     label: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/peers_{{ group_id }}.txt"
   when:
-    - agency.group_id is defined
-    - agency.group_id != ''
+    - agency.extra_group_id is defined
+    - agency.extra_group_id is truthy
 
 - name: "发送机构证书到同组创世区块机构 {{ agency.name }}"
   shell: "cp {{ fisco_workdir }}/agency_{{ item }}/agency_{{ item }}_node_info/{{ fisco_gm_enabled | ternary('gm', '') }}cert*.crt {{ fisco_workdir }}/agency_{{ agency.name }}/meta/"

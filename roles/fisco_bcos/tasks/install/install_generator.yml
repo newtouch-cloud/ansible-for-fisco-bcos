@@ -3,7 +3,7 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: install_generator.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-12-14T19:31:26+08:00
+# @Last modified time: 2020-12-18T16:12:26+08:00
 # @License: GNU General Public License v3.0
 
 
@@ -33,6 +33,16 @@
   args:
     chdir: "{{ fisco_workdir }}/generator"
   register: __command_result
+
+- name: 修改 generator 代码
+  replace:
+    path: "{{ fisco_workdir }}/generator/generator"
+    regexp: "{{ item.regexp }}"
+    replace: "{{ item.replace }}"
+  with_items:
+    - regexp: 'return 0'
+      replace: 'return 1'
+
 
 - name: "下载解压 {{ fisco_dl_url | random }}"
   unarchive:

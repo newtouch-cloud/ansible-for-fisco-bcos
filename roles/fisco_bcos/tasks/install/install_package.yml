@@ -3,10 +3,33 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: build_install_package.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-12-01T12:51:39+08:00
+# @Last modified time: 2020-12-18T17:31:14+08:00
 # @License: GNU General Public License v3.0
 
 
+- name: "拷贝同组创世区块"
+  copy:
+    src: "{{ fisco_workdir }}/agency_{{ item.name }}/group/group.{{ item.main_group_id }}.genesis"
+    dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/group.{{ item.main_group_id }}.genesis"
+  loop: "{{ agencies }}"
+  loop_control:
+    label: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/group.{{ item.main_group_id }}.genesis"
+  when:
+    - item.main_group_id == agency.main_group_id
+    - item.create_genesis | default(false)
+
+- name: 拷贝扩展群组的创世区块
+  copy:
+    src: "{{ fisco_workdir }}/agency_{{ item.name }}/group/group.{{ item.main_group_id }}.genesis"
+    dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/group.{{ item.main_group_id }}.genesis"
+  loop: "{{ agencies }}"
+  loop_control:
+    label: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/group.{{ item.main_group_id }}.genesis"
+  when:
+    - agency.extra_group_id is defined
+    - agency.extra_group_id is truthy
+    - item.main_group_id in agency.extra_group_id
+    - item.create_genesis | default(false)
 
 - name: "生成机构 {{ agency.name }} 部署文件"
   command: "./generator --build_install_package ./meta/peers_{{ agency.main_group_id }}.txt ./fisco_deploy_agency_{{ agency.name }}/ {{ fisco_gm_enabled | ternary('-g', '') }}"

@@ -3,10 +3,21 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: expand_node.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-12-01T11:24:29+08:00
+# @Last modified time: 2020-12-18T21:31:08+08:00
 # @License: GNU General Public License v3.0
 
-
+- name: 拷贝扩展群组的创世区块
+  copy:
+    src: "{{ fisco_workdir }}/agency_{{ item.name }}/group/group.{{ item.main_group_id }}.genesis"
+    dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/group.{{ item.main_group_id }}.genesis"
+  loop: "{{ agencies }}"
+  loop_control:
+    label: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/group.{{ item.main_group_id }}.genesis"
+  when:
+    - agency.extra_group_id is defined
+    - agency.extra_group_id is truthy
+    - item.main_group_id in agency.extra_group_id
+    - item.create_genesis | default(false)
 
 - name: "更新新增节点配置文件"
   template:

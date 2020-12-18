@@ -3,7 +3,7 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: pre_tasks.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-12-14T19:10:54+08:00
+# @Last modified time: 2020-12-18T21:22:31+08:00
 # @License: GNU General Public License v3.0
 
 
@@ -142,7 +142,7 @@
     label: "{{ item.split(':')[0:4] | join(':') }} 添加到 fisco_expand_nodes 组"
   when:
     - pre_node_list_path is truthy
-    - item not in lookup('file', pre_node_list_path)
+    - item.split(':')[0:6]|join(':')|quote not in lookup('file', pre_node_list_path)
 
 - name: 检查 extra_group_id 里是否有对应的 main_group_id
   fail:

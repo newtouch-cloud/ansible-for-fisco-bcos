@@ -3,7 +3,7 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: main.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-12-10T13:16:56+08:00
+# @Last modified time: 2020-12-18T16:18:11+08:00
 # @License: GNU General Public License v3.0
 
 
@@ -22,7 +22,7 @@ fisco_sdk_enabled: false
 # FISCO BCOS 版本
 fisco_version: 2.7.0
 fisco_dl_url:
-  - "https://github.com/FISCO-BCOS/FISCO-BCOS/releases/download/v{{ fisco_version }}/fisco-bcos.tar.gz"
+  # - "https://github.com/FISCO-BCOS/FISCO-BCOS/releases/download/v{{ fisco_version }}/fisco-bcos.tar.gz"
   - "https://osp-1257653870.cos.ap-guangzhou.myqcloud.com/FISCO-BCOS/FISCO-BCOS/releases/v{{ fisco_version }}/fisco-bcos.tar.gz"
 
 # Generator 版本

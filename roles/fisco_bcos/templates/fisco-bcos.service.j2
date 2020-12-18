@@ -1,0 +1,11 @@
+[Unit]
+Description=Auto start all fisco bcos nodes
+ConditionVirtualization=!container
+
+[Service]
+Type=oneshot
+ExecStart=/opt/fisco/start_all.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
