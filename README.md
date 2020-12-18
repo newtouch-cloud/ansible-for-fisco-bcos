@@ -1,12 +1,14 @@
 # 一键生成 FISCO-BCOS 企业级架构部署
-本项目为区块链开源项目 [FISCO-BCOS](https://github.com/FISCO-BCOS/FISCO-BCOS) 提供了自动化生成企业级配置文件的 ansible-playbook。2 群组 3 机构 6 节点的环境，可以在 30 秒内（除下载时间）生成配置，极大简化了部署难度，避免了手工配置容易发生的错误。
+本项目为区块链开源项目 [FISCO-BCOS](https://github.com/FISCO-BCOS/FISCO-BCOS) 提供了自动化生成企业级配置文件的 ansible playbook。2 群组 3 机构 6 节点的环境，可以在 30 秒内（不包括下载时间）生成配置，极大简化了部署难度，避免了手工配置容易发生的错误。
 
 # **项目仍在重度开发中，如果你在使用时遇到问题，请先 git pull 更新再试。如果问题依然存在，请提交 issue 以便及时得到解决。非常感谢你的使用。**
 
 # 已实现的功能
 1. 多群组多机构多节点的联盟链初始化配置。目前测试生成 3 群组 5 机构 50 节点的部署文件是没问题的。
-1. 已初始化的机构，新增节点。
-1. 支持国密版。
+1. 可在已初始化的机构里新增节点。
+1. 可指定 generator，ficso-bcos 和 console 的版本。
+1. 可定义是否启用 console，sdk，国密。
+1. 可生成部署架构图，方便部署前后的核对。
 
 # 计划实现的功能
 1. 支持对节点配置文件 config.ini 的定制。
@@ -84,7 +86,7 @@ fisco_gm_enabled: true
 
 请根据文件头部的变量注释，编排好目标配置的信息。更多变量设置请查看 `roles/fisco_bcos/defaults/main.yml` 文件。
 
-**TIPS： 你可以先执行以下命令，生成架构图，来确认配置是否有问题。**
+### **TIPS： 你可以先执行以下命令，生成架构图，来确认配置是否有问题。**
 
 ```
 ansible-playbook -i inventories/my_inventory/hosts.ini fisco_bcos.yml -t archimate
@@ -143,7 +145,7 @@ node_list:
 
 # 已有机构扩展节点
 
-目前仅支持在 init.yml 配置中，给已有的机构增加节点，不支持 agencies 里增加机构。
+### **目前仅支持在 init.yml 配置中，给已有的机构增加节点，不支持 agencies 里增加机构。**
 
 假设第一次初始化的配置是
 
@@ -197,9 +199,14 @@ ansible-playbook -i inventories/my_inventory/hosts.ini fisco_bcos.yml
 
 
 # 如何参与？
-我们欢迎大家在遵循 GPL V3 的前提下，一起来完善代码。请 fork 本项目，提交你的 pull request。
+我们欢迎大家在遵循 Apache-2.0 的前提下，一起来完善代码。请 fork 本项目，提交你的 pull request。
 同时，我们需要定义一些代码规范。
 
 1. 请复制一份 inventory/sample，重命名在同级目录中。避免 sample 目录文件冲突。
 1. 每个 task 必须有 name，用中文注释。
 1. 尽可能的使用 ansible 模块，不鼓励直接使用 shell 命令。
+
+
+# 贡献者
+
+本项目由 [FISCO BCOS 自动化工具兴趣小组](https://github.com/blackflowerli/Wiki/blob/master/FISCO%20BCOS%E8%87%AA%E5%8A%A8%E5%8C%96%E5%B7%A5%E5%85%B7%E7%A0%94%E5%8F%91%E5%85%B4%E8%B6%A3%E5%B0%8F%E7%BB%84README.md) 成员共同编写。
