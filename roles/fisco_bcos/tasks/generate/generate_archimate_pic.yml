@@ -3,7 +3,7 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: generate_archimate.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-12-09T13:40:03+08:00
+# @Last modified time: 2020-12-21T10:26:46+08:00
 # @Copyright: Copyright 2020 the original author or authors.
 
 
@@ -14,13 +14,13 @@
     name:
       - plantuml
       - graphviz
-  when: not lookup('pipe', 'which plantuml')
+  when: "not lookup('pipe', 'which plantuml')"
 
 - name: "创建 {{ fisco_workdir }}/archimate 目录"
   file:
     path: "{{ fisco_workdir }}/archimate"
     state: directory
-  when: not lookup('fileglob', fisco_workdir + '/archimate')
+  when: "not lookup('fileglob', fisco_workdir + '/archimate')"
 
 - name: 生成联盟链 puml 文件
   template:

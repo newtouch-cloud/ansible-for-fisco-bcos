@@ -3,7 +3,7 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: pre_tasks.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-12-18T21:22:31+08:00
+# @Last modified time: 2020-12-21T12:06:19+08:00
 # @License: GNU General Public License v3.0
 
 
@@ -150,4 +150,4 @@
   loop: "{{ agencies | selectattr('extra_group_id', 'defined') | sum(attribute='extra_group_id', start=[]) | unique }}"
   loop_control:
     label: "检查群组 {{ item }} 是否存在。"
-  when: item not in fisco_main_group_id_list
+  when: "item not in fisco_main_group_id_list"

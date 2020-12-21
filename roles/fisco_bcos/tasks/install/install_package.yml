@@ -3,7 +3,7 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: build_install_package.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-12-18T17:31:14+08:00
+# @Last modified time: 2020-12-21T12:04:58+08:00
 # @License: GNU General Public License v3.0
 
 
@@ -69,4 +69,4 @@
   loop: "{{ node_list }}"
   loop_control:
     label: "修改 {{ fisco_workdir }}/agency_{{ agency.name }}/fisco_deploy_agency_{{ agency.name }}/node_{{ item.split(':')[2] }}_{{ item.split(':')[3] }}/config.ini"
-  when: item.split(':')[0] == agency.name
+  when: "item.split(':')[0] == agency.name"

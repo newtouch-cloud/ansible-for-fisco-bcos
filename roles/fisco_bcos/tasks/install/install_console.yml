@@ -3,7 +3,7 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: console.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-12-14T19:12:53+08:00
+# @Last modified time: 2020-12-21T12:04:06+08:00
 # @License: GNU General Public License v3.0
 
 
@@ -24,11 +24,11 @@
     src: console-applicationContext.xml.j2
     dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/console/conf/applicationContext.xml"
     backup: true
-  when: fisco_console_version is version('2', '<')
+  when: "fisco_console_version is version('2', '<')"
 
 - name: 控制台 2.x 版本配置
   template:
     src: "console-config.toml.j2"
     dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/console/conf/config.toml"
     backup: true
-  when: fisco_console_version is version('2', '>=')
+  when: "fisco_console_version is version('2', '>=')"

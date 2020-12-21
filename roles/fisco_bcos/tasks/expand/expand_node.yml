@@ -3,7 +3,7 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: expand_node.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-12-18T22:27:43+08:00
+# @Last modified time: 2020-12-21T12:02:57+08:00
 # @License: GNU General Public License v3.0
 
 - name: 拷贝扩展群组的创世区块
@@ -80,4 +80,4 @@
   loop: "{{ groups['fisco_expand_nodes'] | sort }}"
   loop_control:
     label: "{{ fisco_workdir }}/agency_{{ agency.name }}/fisco_deploy_agency_{{ agency.name }}_expand_{{ groups['fisco_expand_nodes'] | hash('md5') }}/node_{{ item.split(':')[2] }}_{{ item.split(':')[3] }}/config.ini"
-  when: item.split(':')[0] == agency.name
+  when: "item.split(':')[0] == agency.name"
