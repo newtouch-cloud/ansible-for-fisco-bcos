@@ -3,7 +3,7 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: pre_tasks.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-12-21T12:06:19+08:00
+# @Last modified time: 2020-12-30T15:41:57+08:00
 # @License: GNU General Public License v3.0
 
 
@@ -94,6 +94,14 @@
         | list
         | count
     ) > 1
+
+- name: 检查是否有重复 IP
+  fail:
+    msg: "配置冲突：有多个机构使用了相同的 {{ item.split(':')[2:5]|join(':')|quote }} 配置，请修改后再执行。"
+  loop: "{{ node_list }}"
+  loop_control:
+    label: "{{ item.split(':')[2:5]|join(':')|quote }}"
+  when: "(node_list | regex_findall(item.split(':')[2:5]|join(':')|quote) | count) > 1"
 
 - name: 节点分组 | 根据机构名称
   add_host:
