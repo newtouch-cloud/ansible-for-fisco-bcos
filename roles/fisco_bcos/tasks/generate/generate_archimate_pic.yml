@@ -3,7 +3,7 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: generate_archimate.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-12-30T16:26:09+08:00
+# @Last modified time: 2020-12-30T16:28:27+08:00
 # @Copyright: Copyright 2020 the original author or authors.
 
 
@@ -50,6 +50,7 @@
         timeout: 120
         mode: 0644
       register: __plantuml_dl_st
+      until: __plantuml_dl_st is succeeded
       retries: 10
       delay: 3
     - name: 创建 /usr/bin/plantuml 执行脚本
