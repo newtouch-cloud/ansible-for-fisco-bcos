@@ -3,10 +3,8 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: generate_archimate.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-12-30T16:28:27+08:00
+# @Last modified time: 2020-12-30T17:59:17+08:00
 # @Copyright: Copyright 2020 the original author or authors.
-
-
 
 - block:
     - name: YUM | 安装 java-1.8.0-openjdk
@@ -14,31 +12,26 @@
         name:
           - java-1.8.0-openjdk
           - graphviz
-      when:
-        - lookup('pipe', 'java -version || echo "false"') == 'false'
-        - ansible_os_family == 'RedHat'
+      when: "ansible_os_family == 'RedHat'"
     - name: APT | 安装 default-jre
       package:
         name:
           - default-jre
           - graphviz
-      when:
-        - lookup('pipe', 'java -version || echo "false"') == 'false'
-        - ansible_os_family == 'Debian'
+      when: "ansible_os_family == 'Debian'"
     - name: PACMAN | 安装 jre8-openjdk
       package:
         name:
           - jre8-openjdk
           - graphviz
-      when:
-        - lookup('pipe', 'java -version || echo "false"') == 'false'
-        - ansible_os_family == 'Archlinux'
+      when: "ansible_os_family == 'Archlinux'"
     - name: 未支持系统
       fail:
         msg: "不支持在当前系统自动安装 JRE，请参考相关方法手动安装。"
-      when:
-        - lookup('pipe', 'java -version || echo "false"') == 'false'
-        - ansible_os_family not in ['Debian', 'RedHat', 'Archlinux']
+      when: "ansible_os_family not in ['Debian', 'RedHat', 'Archlinux']"
+  when: lookup('pipe', 'java -version || echo "false"') == 'false'
+
+- block:
     - name: 创建 /usr/share/java/plantuml/ 目录
       file:
         path: /usr/share/java/plantuml/
