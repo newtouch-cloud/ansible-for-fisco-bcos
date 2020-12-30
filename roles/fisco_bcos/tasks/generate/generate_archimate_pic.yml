@@ -3,7 +3,7 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: generate_archimate.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-12-30T16:00:21+08:00
+# @Last modified time: 2020-12-30T16:15:43+08:00
 # @Copyright: Copyright 2020 the original author or authors.
 
 
@@ -45,7 +45,7 @@
         state: directory
     - name: 下载 plantuml
       get_url:
-        src: https://sourceforge.net/projects/plantuml/files/plantuml.jar/download
+        url: https://sourceforge.net/projects/plantuml/files/plantuml.jar/download
         dest: /usr/share/java/plantuml/plantuml.jar
         mode: 0644
     - name: 创建 /usr/bin/plantuml 执行脚本
