@@ -3,7 +3,7 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: generate_archimate.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-12-30T16:15:43+08:00
+# @Last modified time: 2020-12-30T16:26:09+08:00
 # @Copyright: Copyright 2020 the original author or authors.
 
 
@@ -47,7 +47,11 @@
       get_url:
         url: https://sourceforge.net/projects/plantuml/files/plantuml.jar/download
         dest: /usr/share/java/plantuml/plantuml.jar
+        timeout: 120
         mode: 0644
+      register: __plantuml_dl_st
+      retries: 10
+      delay: 3
     - name: 创建 /usr/bin/plantuml 执行脚本
       copy:
         content: |
@@ -55,6 +59,7 @@
           exec /usr/bin/java -jar '/usr/share/java/plantuml/plantuml.jar' "$@"
         dest: /usr/bin/plantuml
         mode: 0755
+  become: true
   when: >-
     lookup('pipe', 'which plantuml || echo "false"') == 'false'
 
