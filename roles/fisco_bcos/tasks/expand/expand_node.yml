@@ -3,10 +3,21 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: expand_node.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-12-01T11:24:29+08:00
+# @Last modified time: 2020-12-21T12:02:57+08:00
 # @License: GNU General Public License v3.0
 
-
+- name: 拷贝扩展群组的创世区块
+  copy:
+    src: "{{ fisco_workdir }}/agency_{{ item.name }}/group/group.{{ item.main_group_id }}.genesis"
+    dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/group.{{ item.main_group_id }}.genesis"
+  loop: "{{ agencies }}"
+  loop_control:
+    label: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/group.{{ item.main_group_id }}.genesis"
+  when:
+    - agency.extra_group_id is defined
+    - agency.extra_group_id is truthy
+    - item.main_group_id in agency.extra_group_id
+    - item.create_genesis | default(false)
 
 - name: "更新新增节点配置文件"
   template:
@@ -38,14 +49,24 @@
     chdir: "{{ fisco_workdir }}/agency_{{ agency.name }}/"
   changed_when: false
 
-- name: "为新增节点导入 {{ agency.extra_group_id }} 群组创世区块"
-  command: "./generator --add_group ./meta/group.{{ item }}.genesis ./fisco_deploy_agency_{{ agency.name }}_expand_{{ groups['fisco_expand_nodes'] | hash('md5') }}"
-  args:
-    chdir: "{{ fisco_workdir }}/agency_{{ agency.name }}"
-  changed_when: false
-  loop: "{{ agency.extra_group_id }}"
-  loop_control:
-    label: "./generator --add_group ./meta/group.{{ item }}.genesis ./fisco_deploy_agency_{{ agency.name }}/"
+- block:
+    - name: "群组扩展 | 机构 {{ agency.name }} 为现有节点初始化 {{ agency.extra_group_id }} 群组"
+      command: "./generator --add_group ./meta/group.{{ item }}.genesis ./fisco_deploy_agency_{{ agency.name }}_expand_{{ groups['fisco_expand_nodes'] | hash('md5') }}"
+      args:
+        chdir: "{{ fisco_workdir }}/agency_{{ agency.name }}"
+      changed_when: false
+      loop: "{{ agency.extra_group_id }}"
+      loop_control:
+        label: "./generator --add_group ./meta/group.{{ item }}.genesis ./fisco_deploy_agency_{{ agency.name }}_expand_{{ groups['fisco_expand_nodes'] | hash('md5') }}"
+
+    - name: "群组扩展 | 机构 {{ agency.name }} 添加其它组 {{ agency.extra_group_id }} 节点信息"
+      command: "./generator --add_peers ./meta/peers_{{ item }}.txt ./fisco_deploy_agency_{{ agency.name }}_expand_{{ groups['fisco_expand_nodes'] | hash('md5') }}"
+      args:
+        chdir: "{{ fisco_workdir }}/agency_{{ agency.name }}"
+      loop: "{{ agency.extra_group_id }}"
+      loop_control:
+        label: "./generator --add_peers ./meta/peers_{{ item }}.txt ./fisco_deploy_agency_{{ agency.name }}_expand_{{ groups['fisco_expand_nodes'] | hash('md5') }}"
+      changed_when: false
   when:
     - agency.extra_group_id is defined
     - agency.extra_group_id is truthy
@@ -59,4 +80,4 @@
   loop: "{{ groups['fisco_expand_nodes'] | sort }}"
   loop_control:
     label: "{{ fisco_workdir }}/agency_{{ agency.name }}/fisco_deploy_agency_{{ agency.name }}_expand_{{ groups['fisco_expand_nodes'] | hash('md5') }}/node_{{ item.split(':')[2] }}_{{ item.split(':')[3] }}/config.ini"
-  when: item.split(':')[0] == agency.name
+  when: "item.split(':')[0] == agency.name"

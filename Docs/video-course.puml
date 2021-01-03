@@ -1,0 +1,17 @@
+@startmindmap
+
++ Ansible for FISCO BCOS 视频讲解课程
+++ Ansible 简介
++++ Ansible 的优缺点
++++ ansible.cfg 的配置
++++ Ansible 项目结构解析
++++ playbook、role、vars 和 modules 等概念
+
+-- 项目源码讲解
+--- inventories 和 tasks 目录结构说明
+--- 项目常用模块用法
+--- lookup 的用法
+--- loop 的用法
+--- Jinja2 模板
+
+@endmindmap

@@ -3,24 +3,65 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: generate_archimate.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-12-09T13:40:03+08:00
+# @Last modified time: 2021-01-03T15:29:28+08:00
 # @Copyright: Copyright 2020 the original author or authors.
 
+- block:
+    - name: YUM | 安装 java-1.8.0-openjdk
+      package:
+        name:
+          - java-1.8.0-openjdk
+          - graphviz
+      when: "ansible_os_family == 'RedHat'"
+    - name: APT | 安装 default-jre
+      package:
+        name:
+          - default-jre
+          - graphviz
+      when: "ansible_os_family == 'Debian'"
+    - name: PACMAN | 安装 jre8-openjdk
+      package:
+        name:
+          - jre8-openjdk
+          - graphviz
+      when: "ansible_os_family == 'Archlinux'"
+    - name: 未支持系统
+      fail:
+        msg: "不支持在当前系统自动安装 JRE，请参考相关方法手动安装。"
+      when: "ansible_os_family not in ['Debian', 'RedHat', 'Archlinux']"
+  when: lookup('pipe', 'java -version || echo "false"') == 'false'
 
-
-- name: 安装 plantuml
-  become: yes
-  package:
-    name:
-      - plantuml
-      - graphviz
-  when: not lookup('pipe', 'which plantuml')
+- block:
+    - name: 创建 /usr/share/java/plantuml/ 目录
+      file:
+        path: /usr/share/java/plantuml/
+        state: directory
+    - name: 下载 plantuml
+      get_url:
+        url: https://sourceforge.net/projects/plantuml/files/plantuml.jar/download
+        dest: /usr/share/java/plantuml/plantuml.jar
+        timeout: 120
+        mode: 0644
+      register: __plantuml_dl_st
+      until: __plantuml_dl_st is succeeded
+      retries: 10
+      delay: 3
+    - name: 创建 /usr/bin/plantuml 执行脚本
+      copy:
+        content: |
+          #!/bin/sh
+          exec java -jar '/usr/share/java/plantuml/plantuml.jar' "$@"
+        dest: /usr/bin/plantuml
+        mode: 0755
+  become: true
+  when: >-
+    lookup('pipe', 'which plantuml || echo "false"') == 'false'
 
 - name: "创建 {{ fisco_workdir }}/archimate 目录"
   file:
     path: "{{ fisco_workdir }}/archimate"
     state: directory
-  when: not lookup('fileglob', fisco_workdir + '/archimate')
+  when: "not lookup('fileglob', fisco_workdir + '/archimate')"
 
 - name: 生成联盟链 puml 文件
   template:

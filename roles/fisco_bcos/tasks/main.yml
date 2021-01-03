@@ -23,7 +23,7 @@
   loop_control:
     loop_var: agency
     label: "{{ agency.name }}"
-  when: agency.name not in agency_existed
+  when: "agency.name not in agency_existed"
 
 - name: 生成机构配置
   include_tasks: generate/generate_agency_config.yml
@@ -31,7 +31,7 @@
   loop_control:
     loop_var: agency
     label: "{{ agency.name }}"
-  when: agency.name not in agency_existed
+  when: "agency.name not in agency_existed"
 
 - name: 生成节点连接信息文件
   include_tasks: generate/generate_peers_file.yml
@@ -39,7 +39,7 @@
   loop_control:
     loop_var: agency
     label: "{{ agency.name }}"
-  when: agency.name not in agency_existed
+  # when: "agency.name not in agency_existed"
 
 - name: 生成创世区块
   include_tasks: generate/generate_genesis.yml
@@ -47,7 +47,7 @@
   loop_control:
     loop_var: agency
     label: "{{ agency.name }}"
-  when: agency.name not in agency_existed
+  when: "agency.name not in agency_existed"
 
 - name: 生成部署文件
   include_tasks: install/install_package.yml
@@ -55,7 +55,7 @@
   loop_control:
     loop_var: agency
     label: "{{ agency.name }}"
-  when: agency.name not in agency_existed
+  when: "agency.name not in agency_existed"
 
 - name: 节点扩展
   include_tasks: expand/expand_node.yml
