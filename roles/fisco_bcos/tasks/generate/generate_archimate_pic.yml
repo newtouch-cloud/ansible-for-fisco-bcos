@@ -3,7 +3,7 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: generate_archimate.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-12-30T17:59:17+08:00
+# @Last modified time: 2021-01-03T15:29:28+08:00
 # @Copyright: Copyright 2020 the original author or authors.
 
 - block:
@@ -50,7 +50,7 @@
       copy:
         content: |
           #!/bin/sh
-          exec /usr/bin/java -jar '/usr/share/java/plantuml/plantuml.jar' "$@"
+          exec java -jar '/usr/share/java/plantuml/plantuml.jar' "$@"
         dest: /usr/bin/plantuml
         mode: 0755
   become: true
