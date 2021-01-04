@@ -3,52 +3,60 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: pre_tasks.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-12-30T15:41:57+08:00
+# @Last modified time: 2021-01-04T20:53:29+08:00
 # @License: GNU General Public License v3.0
 
 
-
-- name: "非国密版 | 检查 generator 目录"
-  stat:
-    path: "{{ item }}"
-    get_attributes: false
-    get_checksum: false
-    get_mime: false
-  register: __generator_dir
-  with_items:
-    - "{{ fisco_workdir }}/generator/meta/fisco-bcos"
-    - "{{ fisco_workdir }}/generator/dir_agency_ca"
-    - "{{ fisco_workdir }}/generator/dir_chain_ca"
-  when: not fisco_gm_enabled
-
-- name: "国密版 | 检查 generator 目录"
-  stat:
-    path: "{{ item }}"
-    get_attributes: false
-    get_checksum: false
-    get_mime: false
-  register: __generator_dir_gm
-  with_items:
-    - "{{ fisco_workdir }}/generator/meta/fisco-bcos"
-    - "{{ fisco_workdir }}/generator/dir_agency_ca"
-    - "{{ fisco_workdir }}/generator/dir_chain_ca"
-    - "{{ fisco_workdir }}/generator/dir_chain_ca_normal"
-  when: fisco_gm_enabled
-
-- set_fact:
-    __generator_dir_st: "{{ (__generator_dir_gm.results + __generator_dir.results) | selectattr('stat.exists', 'defined') | map(attribute='stat.exists') }}"
-    __generator_dir_exists: "{{ (__generator_dir.results + __generator_dir_gm.results) | selectattr('stat.path', 'defined') | map(attribute='stat.path') | join(', ') }}"
-
-- name: 如果 generator 目录内容不完整，则中止执行。
-  fail:
-    msg: "{{ fisco_workdir }}/generator/ 目录初始化不完整，只有 {{ __generator_dir_exists }} 存在。某些情况下，generator 目录可能不完整，并且 generator 命令不一定能重新生成。如果不是已经部署的，可以安全删除 {{ fisco_workdir }} 目录，重新执行。如果已经部署了，请到社区里寻求帮助。"
-  when:
-    - "true in __generator_dir_st"
-    - "false in __generator_dir_st"
+- name: "创建 {{ fisco_workdir }}"
+  file:
+    path: "{{ fisco_workdir }}"
+    state: directory
+  when: >-
+    lookup('pipe', 'stat ' + fisco_workdir + ' || echo "false"') == "false"
 
 - block:
-    - include_tasks: install/install_generator.yml
-  when: false in __generator_dir_st
+    - name: "非国密版 | 检查 generator 目录"
+      stat:
+        path: "{{ item }}"
+        get_attributes: false
+        get_checksum: false
+        get_mime: false
+      register: __generator_dir
+      with_items:
+        - "{{ fisco_workdir }}/generator/meta/fisco-bcos"
+        - "{{ fisco_workdir }}/generator/dir_agency_ca"
+        - "{{ fisco_workdir }}/generator/dir_chain_ca"
+      when: not fisco_gm_enabled
+
+    - name: "国密版 | 检查 generator 目录"
+      stat:
+        path: "{{ item }}"
+        get_attributes: false
+        get_checksum: false
+        get_mime: false
+      register: __generator_dir_gm
+      with_items:
+        - "{{ fisco_workdir }}/generator/meta/fisco-bcos"
+        - "{{ fisco_workdir }}/generator/dir_agency_ca"
+        - "{{ fisco_workdir }}/generator/dir_chain_ca"
+        - "{{ fisco_workdir }}/generator/dir_chain_ca_normal"
+      when: fisco_gm_enabled
+
+    - set_fact:
+        __generator_dir_st: "{{ (__generator_dir_gm.results + __generator_dir.results) | selectattr('stat.exists', 'defined') | map(attribute='stat.exists') }}"
+        __generator_dir_exists: "{{ (__generator_dir.results + __generator_dir_gm.results) | selectattr('stat.path', 'defined') | map(attribute='stat.path') | join(', ') }}"
+
+    - name: 如果 generator 目录内容不完整，则中止执行。
+      fail:
+        msg: "{{ fisco_workdir }}/generator/ 目录初始化不完整，只有 {{ __generator_dir_exists }} 存在。某些情况下，generator 目录可能不完整，并且 generator 命令不一定能重新生成。如果不是已经部署的，可以安全删除 {{ fisco_workdir }} 目录，重新执行。如果已经部署了，请到社区里寻求帮助。"
+      when:
+        - "true in __generator_dir_st"
+        - "false in __generator_dir_st"
+
+    - block:
+        - include_tasks: install/install_generator.yml
+      when: false in __generator_dir_st
+  when: "'archimate' not in ansible_run_tags"
 
 - name: "生成节点清单 {{ fisco_workdir }}/node_list.yml"
   template:

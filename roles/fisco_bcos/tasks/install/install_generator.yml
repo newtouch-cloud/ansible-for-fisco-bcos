@@ -3,7 +3,7 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: install_generator.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-12-21T12:04:30+08:00
+# @Last modified time: 2021-01-04T17:48:14+08:00
 # @License: GNU General Public License v3.0
 
 
@@ -16,6 +16,7 @@
       - openssl
       - curl
       - rsync
+      - sudo
 
 - name: "获取 {{ fisco_generator_git }} 代码（版本 {{ fisco_generator_version }}）"
   git:
@@ -42,7 +43,6 @@
   with_items:
     - regexp: 'return 0'
       replace: 'return 1'
-
 
 - name: "下载解压 {{ fisco_dl_url | random }}"
   unarchive:

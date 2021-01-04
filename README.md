@@ -1,6 +1,13 @@
 # 一键生成 FISCO-BCOS 企业级架构部署
 本项目为区块链开源项目 [FISCO-BCOS](https://github.com/FISCO-BCOS/FISCO-BCOS) 提供了自动化生成企业级配置文件的 ansible playbook。2 群组 3 机构 6 节点的环境，可以在 30 秒内（不包括下载时间）生成配置，极大简化了部署难度，避免了手工配置容易发生的错误。
 
+注：30 秒时间是在以下机器配置中录得
+- CPU: Intel(R) Xeon(R) CPU E5-2680 v2 @ 2.80GHz * 2
+
+- RAM: DDR3（1333MHz）8GB * 12
+- HD: WD 4TB 7200rpm
+- OS: Manjaro Linux(Kernel 5.10.2)
+
 # **项目仍在重度开发中，如果你在使用时遇到问题，请先 git pull 更新再试。如果问题依然存在，请提交 issue 以便及时得到解决。非常感谢你的使用。**
 
 # 重要提醒：已上线的联盟链，请勿必备份并保管好 deploy 目录！
@@ -26,17 +33,20 @@
 * [FISCO](https://github.com/FISCO-BCOS/FISCO-BCOS/blob/master/docs/README_CN.md): v2.6.0
 * [Ansible](https://github.com/ansible/ansible): 2.10.3
 
-## 运行依赖
-* Linux。目前在 Ubuntu 16.04 上启动通过。
-* 安装 ansible 2.10.3 或以上版本。
+## 验证环境（基于 Docker 容器）
+|系统|版本|
+|---|---|
+|CentOS|8|
+|Ubuntu|16.04, 18.04, 20.04|
 
+# 安装 python 模块（建议使用 python3 环境）
 ```
 curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-sudo python get-pip.py
-pip install --user -U -r requirements.txt
+sudo python3 get-pip.py
+pip3 install --user -U -r requirements.txt
 ```
 
-如果已经安装了 ansible，但版本低于 2.10 的，请运行 `pip install --user -U ansible` 升级到最新版。目前确认 2.9 或以下版本，不兼容部分语法。
+如果已经安装了 ansible，但版本低于 2.10 的，请运行 `pip3 install --user -U ansible` 升级到最新版。目前确认 2.9 或以下版本，不兼容部分语法。
 
 ## 联盟链初始化
 复制一份 inventory 配置。假设新环境是 'my_inventory'。
@@ -88,11 +98,14 @@ fisco_gm_enabled: true
 
 请根据文件头部的变量注释，编排好目标配置的信息。更多变量设置请查看 `roles/fisco_bcos/defaults/main.yml` 文件。
 
-### **TIPS： 你可以先执行以下命令，生成架构图，来确认配置是否有问题。**
+#### **TIPS： 你可以先执行以下命令，生成架构图，来确认配置是否有问题。**
 
 ```
 ansible-playbook -i inventories/my_inventory/hosts.ini fisco_bcos.yml -t archimate
 ```
+
+#### **TIPS： 如果执行时无法显示中文，或 python 报错 `UnicodeEncodeError: 'ascii' codec can't encode characters`，请执行 `export LC_ALL=C.UTF-8` 后再试。**
+#### **TIPS： 由于精力有限，无法覆盖多个 Linux 发行版。如果生成的图片不能正确显示中文，请根据你的 Linux 发行版，查找 Java 显示中文的解决方法。欢迎提交你的解决方案到我们的 issue 列表里。**
 
 图片路径在输出结果中，类似于：
 
@@ -106,6 +119,7 @@ ok: [localhost] => (item=/home/haibin/Workspaces/ansible-for-fisco-bcos/inventor
 ```
 
 查看图片，确认没问题后，可以开始生成部署文件。
+
 
 ```
 ansible-playbook -i inventories/my_inventory/hosts.ini fisco_bcos.yml
