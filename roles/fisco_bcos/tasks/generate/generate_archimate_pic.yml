@@ -3,27 +3,31 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: generate_archimate.yml
 # @Last modified by:   haibin
-# @Last modified time: 2021-01-04T14:25:45+08:00
+# @Last modified time: 2021-01-04T18:51:39+08:00
 # @Copyright: Copyright 2020 the original author or authors.
 
 - block:
+    - name: 安装依赖
+      package:
+        name:
+          - graphviz
     - name: YUM | 安装 java-1.8.0-openjdk
       package:
         name:
           - java-1.8.0-openjdk
-          - graphviz
+          - google-noto-sans-cjk-ttc-fonts
       when: "ansible_os_family == 'RedHat'"
     - name: APT | 安装 default-jre
       package:
         name:
           - default-jre
-          - graphviz
+          - fonts-noto-cjk
       when: "ansible_os_family == 'Debian'"
     - name: PACMAN | 安装 jre8-openjdk
       package:
         name:
           - jre8-openjdk
-          - graphviz
+          - noto-fonts-cjk
       when: "ansible_os_family == 'Archlinux'"
     - name: 未支持系统
       fail:
@@ -75,6 +79,8 @@
   command: "java -jar ~/.local/bin/plantuml.jar -nbthread auto {{ item | basename }}"
   args:
     chdir: "{{ fisco_workdir }}/archimate/"
+  environment:
+    LC_ALL: C.UTF-8
   changed_when: false
   with_fileglob:
     - "{{ fisco_workdir }}/archimate/*.puml"
