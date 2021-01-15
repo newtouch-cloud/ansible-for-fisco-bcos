@@ -10,7 +10,7 @@
 
 # **项目仍在重度开发中，如果你在使用时遇到问题，请先 git pull 更新再试。如果问题依然存在，请提交 issue 以便及时得到解决。非常感谢你的使用。**
 
-# 重要提醒：已上线的联盟链，请勿必备份并保管好 deploy 目录！
+# 重要提醒：已上线的联盟链，请务必备份并保管好 deploy 目录！
 
 # 已实现的功能
 1. 多群组多机构多节点的联盟链初始化配置。目前测试生成 3 群组 5 机构 50 节点的部署文件是没问题的。
@@ -225,4 +225,4 @@ ansible-playbook -i inventories/my_inventory/hosts.ini fisco_bcos.yml
 
 # 贡献者
 
-本项目由 [FISCO BCOS 自动化工具兴趣小组](https://github.com/blackflowerli/Wiki/blob/master/FISCO%20BCOS%E8%87%AA%E5%8A%A8%E5%8C%96%E5%B7%A5%E5%85%B7%E7%A0%94%E5%8F%91%E5%85%B4%E8%B6%A3%E5%B0%8F%E7%BB%84README.md) 成员共同编写。
+本项目由 [FISCO BCOS 自动化工具兴趣小组](https://github.com/FISCO-BCOS/Wiki/blob/master/FISCO%20BCOS%E8%87%AA%E5%8A%A8%E5%8C%96%E5%B7%A5%E5%85%B7%E7%A0%94%E5%8F%91%E5%85%B4%E8%B6%A3%E5%B0%8F%E7%BB%84README.md) 成员共同编写。

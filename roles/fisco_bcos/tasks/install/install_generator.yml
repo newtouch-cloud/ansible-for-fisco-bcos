@@ -3,7 +3,7 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: install_generator.yml
 # @Last modified by:   haibin
-# @Last modified time: 2021-01-04T17:48:14+08:00
+# @Last modified time: 2021-01-06T10:19:24+08:00
 # @License: GNU General Public License v3.0
 
 
@@ -30,7 +30,7 @@
   delay: 3
 
 - name: "安装 generator"
-  shell: "export PIP_INDEX_URL={{ pypi_index_url }} &&  bash ./scripts/install.sh"
+  shell: "export PIP_INDEX_URL={{ pypi_index_url }} && bash ./scripts/install.sh"
   args:
     chdir: "{{ fisco_workdir }}/generator"
   register: __command_result

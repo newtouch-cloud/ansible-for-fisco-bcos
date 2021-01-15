@@ -3,7 +3,7 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: tmuxp_tail_fisco_log.yaml
 # @Last modified by:   haibin
-# @Last modified time: 2020-11-23T19:12:12+08:00
+# @Last modified time: 2021-01-12T11:03:59+08:00
 # @Copyright: Copyright 2020 the original author or authors.
 
 
@@ -19,19 +19,19 @@ windows:
     panes:
       - shell_command:
           - ssh -i ~/.vagrant.d/insecure_private_key vagrant@172.17.8.101
-          - multitail --mergeall -E 'SEALER' /opt/fisco_nodes/node_*/log/*.log
+          - multitail --mergeall /opt/fisco_nodes/node_*/log/*.log
 
       - shell_command:
           - ssh -i ~/.vagrant.d/insecure_private_key vagrant@172.17.8.102
-          - multitail --mergeall -E 'SEALER' /opt/fisco_nodes/node_*/log/*.log
+          - multitail --mergeall /opt/fisco_nodes/node_*/log/*.log
 
       - shell_command:
           - ssh -i ~/.vagrant.d/insecure_private_key vagrant@172.17.8.103
-          - multitail --mergeall -E 'SEALER' /opt/fisco_nodes/node_*/log/*.log
+          - multitail --mergeall /opt/fisco_nodes/node_*/log/*.log
 
       - shell_command:
           - ssh -i ~/.vagrant.d/insecure_private_key vagrant@172.17.8.104
-          - multitail --mergeall -E 'SEALER' /opt/fisco_nodes/node_*/log/*.log
+          - multitail --mergeall /opt/fisco_nodes/node_*/log/*.log
 
   - layout: tiled
     options:
@@ -41,19 +41,19 @@ windows:
     panes:
       - shell_command:
           - ssh -i ~/.vagrant.d/insecure_private_key vagrant@172.17.8.105
-          - multitail --mergeall -E 'SEALER' /opt/fisco_nodes/node_*/log/*.log
+          - multitail --mergeall /opt/fisco_nodes/node_*/log/*.log
 
       - shell_command:
           - ssh -i ~/.vagrant.d/insecure_private_key vagrant@172.17.8.106
-          - multitail --mergeall -E 'SEALER' /opt/fisco_nodes/node_*/log/*.log
+          - multitail --mergeall /opt/fisco_nodes/node_*/log/*.log
 
       - shell_command:
           - ssh -i ~/.vagrant.d/insecure_private_key vagrant@172.17.8.107
-          - multitail --mergeall -E 'SEALER' /opt/fisco_nodes/node_*/log/*.log
+          - multitail --mergeall /opt/fisco_nodes/node_*/log/*.log
 
       - shell_command:
           - ssh -i ~/.vagrant.d/insecure_private_key vagrant@172.17.8.108
-          - multitail --mergeall -E 'SEALER' /opt/fisco_nodes/node_*/log/*.log
+          - multitail --mergeall /opt/fisco_nodes/node_*/log/*.log
 
   - layout: tiled
     options:
@@ -63,8 +63,8 @@ windows:
     panes:
       - shell_command:
           - ssh -i ~/.vagrant.d/insecure_private_key vagrant@172.17.8.109
-          - multitail --mergeall -E 'SEALER' /opt/fisco_nodes/node_*/log/*.log
+          - multitail --mergeall /opt/fisco_nodes/node_*/log/*.log
 
       - shell_command:
           - ssh -i ~/.vagrant.d/insecure_private_key vagrant@172.17.8.110
-          - multitail --mergeall -E 'SEALER' /opt/fisco_nodes/node_*/log/*.log
+          - multitail --mergeall /opt/fisco_nodes/node_*/log/*.log
