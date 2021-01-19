@@ -1,11 +1,12 @@
 # 机构名称:主群组编号:节点IP:P2P端口:Channel端口:RPC端口:额外群组编号('0'表示没有)
 
+
 node_list:
 {% for node in agencies|subelements('nodes') %}
 {# 单 IP 多节点 #}
 {% if node.1.split(':')[1] is defined %}
-{% for i in range(0, node.1.split(':')[1]|int)|list %}
-  - {{ node.0.name }}:{{ node.0.main_group_id }}:{{ node.1.split(':')[0] }}:{{ 30300 + i }}:{{ 20200 + i }}:{{ 8545 + i }}:[{{ node.0.extra_group_id | default('0') | join(',') }}]
+{% for j in range(0,node.1.split(':')[1]|int)|list %}
+  - {{ node.0.name }}:{{ node.0.main_group_id[0] }}:{{ node.1.split(':')[0] }}:{{ 30300 + j }}:{{ 20200 + j }}:{{ 8545 + j }}:[{{ node.0.extra_group_id | default('0') | join(',') }}]
 {% endfor %}
 {% else %}
 {# 单 IP 单节点 #}

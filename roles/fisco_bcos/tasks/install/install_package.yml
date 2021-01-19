@@ -9,33 +9,56 @@
 
 - name: "拷贝同组创世区块"
   copy:
-    src: "{{ fisco_workdir }}/agency_{{ item.name }}/group/group.{{ item.main_group_id }}.genesis"
-    dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/group.{{ item.main_group_id }}.genesis"
+    src: "{{ fisco_workdir }}/agency_{{ item.name }}/group/group.{{ loop_main_group_id }}.genesis"
+    dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/group.{{ loop_main_group_id }}.genesis"
   loop: "{{ agencies }}"
   loop_control:
-    label: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/group.{{ item.main_group_id }}.genesis"
+    label: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/group.{{ loop_main_group_id }}.genesis"
   when:
-    - item.main_group_id == agency.main_group_id
+    - "loop_main_group_id in agency.main_group_id"
+    - "loop_main_group_id in item.main_group_id"
     - item.create_genesis | default(false)
 
 - name: 拷贝扩展群组的创世区块
   copy:
-    src: "{{ fisco_workdir }}/agency_{{ item.name }}/group/group.{{ item.main_group_id }}.genesis"
-    dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/group.{{ item.main_group_id }}.genesis"
+    src: "{{ fisco_workdir }}/agency_{{ item.name }}/group/group.{{ loop_main_group_id }}.genesis"
+    dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/group.{{ loop_main_group_id }}.genesis"
   loop: "{{ agencies }}"
   loop_control:
-    label: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/group.{{ item.main_group_id }}.genesis"
+    label: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/group.{{ loop_main_group_id }}.genesis"
   when:
     - agency.extra_group_id is defined
     - agency.extra_group_id is truthy
-    - item.main_group_id in agency.extra_group_id
+    - "loop_main_group_id in agency.extra_group_id"
+    - "loop_main_group_id in item.main_group_id"
     - item.create_genesis | default(false)
 
-- name: "生成机构 {{ agency.name }} 部署文件"
-  command: "./generator --build_install_package ./meta/peers_{{ agency.main_group_id }}.txt ./fisco_deploy_agency_{{ agency.name }}/ {{ fisco_gm_enabled | ternary('-g', '') }}"
+- name: 设置机构部署文件列表
+  set_fact:
+    build_installed_package_agency: []
+
+- block:
+  - name: "生成机构 {{ agency.name }} 部署文件"
+    command: "./generator --build_install_package ./meta/peers_{{ loop_main_group_id }}.txt ./fisco_deploy_agency_{{ agency.name }}/ {{ fisco_gm_enabled | ternary('-g', '') }}"
+    args:
+      chdir: "{{ fisco_workdir }}/agency_{{ agency.name }}"
+    changed_when: false
+    
+  - name: 更新已部署节点机构列表
+    set_fact:
+      build_installed_package_agency: "{{ build_installed_package_agency + [agency.name] }}"
+
+  when: 
+    - "agency.name not in build_installed_package_agency"
+    - "loop_main_group_id in agency.main_group_id"
+
+
+- name: "根据主群组文件 group.{{ loop_main_group_id }}.genesis 初始化当前机构的群组 {{ loop_main_group_id }}"
+  command: "./generator --add_group ./meta/group.{{ loop_main_group_id }}.genesis ./fisco_deploy_agency_{{ agency.name }}/"
   args:
-    chdir: "{{ fisco_workdir }}/agency_{{ agency.name }}"
+      chdir: "{{ fisco_workdir }}/agency_{{ agency.name }}"
   changed_when: false
+  when: loop_main_group_id in agency.main_group_id
 
 - block:
     - name: "群组扩展 | 机构 {{ agency.name }} 为现有节点初始化 {{ agency.extra_group_id }} 群组"
@@ -60,6 +83,11 @@
     - agency.extra_group_id is truthy
 
 # https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/manual/configuration.html#config-ini
+- name: 机构节点目录是否存在
+  stat:
+    path: "./fisco_deploy_agency_{{ agency.name }}"
+  register: agency_directory_existence
+  
 - name: 更新 listen_ip。如果是公网 IP，则监听 0.0.0.0。
   ini_file:
     path: "{{ fisco_workdir }}/agency_{{ agency.name }}/fisco_deploy_agency_{{ agency.name }}/node_{{ item.split(':')[2] }}_{{ item.split(':')[3] }}/config.ini"
@@ -69,4 +97,6 @@
   loop: "{{ node_list }}"
   loop_control:
     label: "修改 {{ fisco_workdir }}/agency_{{ agency.name }}/fisco_deploy_agency_{{ agency.name }}/node_{{ item.split(':')[2] }}_{{ item.split(':')[3] }}/config.ini"
-  when: "item.split(':')[0] == agency.name"
+  when: 
+    - "item.split(':')[0] == agency.name"
+    - agency_directory_existence.stat.exists

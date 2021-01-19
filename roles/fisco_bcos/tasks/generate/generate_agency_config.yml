@@ -14,14 +14,28 @@
     dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/conf/group_genesis.ini"
     mode: 0600
 
-- name: "更新机构 {{ agency.name }} 节点配置文件"
-  template:
-    src: "node_deployment.ini.j2"
-    dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/conf/node_deployment.ini"
-    mode: 0600
-
-- name: "生成机构 {{ agency.name }} 节点信息"
-  command: "./generator --generate_all_certificates ./agency_{{ agency.name }}_node_info {{ fisco_gm_enabled | ternary('-g', '') }}"
-  args:
-    chdir: "{{ fisco_workdir }}/agency_{{ agency.name }}"
-  changed_when: false
+- block:
+  - name: "更新机构 {{ agency.name }} 节点配置文件"
+    template:
+      src: "node_deployment.ini.j2"
+      dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/conf/node_deployment.ini"
+      mode: 0600
+    
+  - name: 更新节点配置文件生成标志
+    set_fact:
+      node_deployed_agency: "{{ node_deployed_agency + [agency.name] }}"
+      
+  when: "agency.name not in node_deployed_agency"
+  
+- block:
+  - name: "生成机构 {{ agency.name }} 节点证书"
+    command: "./generator --generate_all_certificates ./agency_{{ agency.name }}_node_info {{ fisco_gm_enabled | ternary('-g', '') }}"
+    args:
+      chdir: "{{ fisco_workdir }}/agency_{{ agency.name }}"
+    changed_when: false
+    
+  - name: 更新机构节点证书生成标志
+    set_fact:
+      node_cert_generated_agency: "{{ node_cert_generated_agency + [agency.name] }}"
+ 
+  when: "agency.name not in node_cert_generated_agency"

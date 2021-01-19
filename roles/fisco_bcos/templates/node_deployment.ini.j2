@@ -1,7 +1,7 @@
 # 云主机的公网 IP 均为虚拟 IP，若 listen_ip/jsonrpc_listen_ip/channel_listen_ip 填写外网 IP，会绑定失败，须填写 0.0.0.0
 
 [group]
-group_id={{ agency.main_group_id }}
+group_id={{ loop_main_group_id }}
 
 {% for node in groups['fisco_agency_' + agency.name] %}
 [node{{ loop.index0 }}]

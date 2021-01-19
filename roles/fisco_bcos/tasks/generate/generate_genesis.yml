@@ -8,7 +8,7 @@
 
 
 
-- name: "生成群组 {{ agency.main_group_id }} 创世区块"
+- name: "生成群组 {{ loop_main_group_id }} 创世区块"
   command: "./generator --create_group_genesis ./group {{ fisco_gm_enabled | ternary('-g', '') }}"
   args:
     chdir: "{{ fisco_workdir }}/agency_{{ agency.name }}"
