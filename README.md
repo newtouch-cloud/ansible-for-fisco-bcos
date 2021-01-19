@@ -257,7 +257,7 @@ ansible-playbook -i inventories/my_inventory/hosts.ini fisco_bcos.yml
 	     - 2
 ```
 
-- 假设要给机构 A 新增群组 4
+- 假设要给机构 A，B 新增群组 4
 
 ```
 	agencies:
@@ -271,6 +271,13 @@ ansible-playbook -i inventories/my_inventory/hosts.ini fisco_bcos.yml
 	     - 4
 	   extra_group_id:
 	     - 2
+	- name: B
+	   nodes:
+	     - 172.17.8.103
+	     - 172.17.8.104
+	   main_group_id: 
+	     - 1
+	     - 4
 ```
 ###### 3.2 生成新群组
 &emsp;&emsp;在 ansible-for-fisco-bcos 目录中执行如下命令
@@ -278,10 +285,7 @@ ansible-playbook -i inventories/my_inventory/hosts.ini fisco_bcos.yml
 ansible-playbook -i inventories/my_inventory/hosts.ini fisco_bcos.yml
 ```
 ###### 3.3 查看执行结果
-&emsp;&emsp;到机构 A 的节点目录中查看是否生成群组 4 的群组文件 ( group.4.genesis, group.4.ini)
-```
-ls -al inventories/my_inventory/deploy/agency_A/fisco_deploy_agency_A/node_172.17.8.101_30300/conf
-```
+&emsp;&emsp;到机构 A 和 B 的节点目录中查看是否生成群组 4 的群组文件 ( group.4.genesis, group.4.ini)
 
 ## 如何参与？
 我们欢迎大家在遵循 Apache-2.0 的前提下，一起来完善代码。请 fork 本项目，提交你的 pull request。
