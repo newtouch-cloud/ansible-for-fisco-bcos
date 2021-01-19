@@ -73,22 +73,34 @@
   set_fact:
     node_list: "{{ node_list | sort }}" # 节点列表重新升序排列，让输出信息比较美观可读。
     pre_node_list_path: "{{ lookup('pipe', 'ls -1tr ' + fisco_workdir + '/node_list.yml.*~ | tail -n1') }}" # 检查 node_list.yml 是否有备份文件。如有，获取文件路径，做新旧节点对比。
-    fisco_main_group_id_list: "{{ agencies | map(attribute='main_group_id') | unique }}" # 建立所有群组的 ID 列表。
-
-- name: 检查每个群组是否有且只有 1 个创世区块机构
+    
+- name: "设置列表变量"
+  set_fact:
+    fisco_main_group_id_list: []
+    count_main_group_id_list: []
+  
+- name: "建立所有群组的 ID 列表"
+  block:
+    - name: "建立主群组 ID 列表"
+      set_fact:
+        fisco_main_group_id_list: "{{ fisco_main_group_id_list + item.main_group_id }}"
+      with_items: "{{ agencies }}"
+    - name: "群组 ID 去重"
+      set_fact:
+        fisco_main_group_id_list: "{{ fisco_main_group_id_list | unique }}"
+    - name: "建立对比群组 ID 列表"
+      set_fact:
+        count_main_group_id_list: "{{ count_main_group_id_list + item.main_group_id }}"
+      loop: "{{ agencies }}"
+      when:
+        - item.create_genesis is defined
+        - item.create_genesis
+    
+- name: "检查每个群组是否有且只有 1 个创世区块机构"
   fail:
-    msg: "群组 {{ item }} 没有指定或存在多个创世区块机构。请排查 {{ inventory_dir }}/group_vars/all/init.yml 文件并确定组内，有且只有 1 个创世区块机构（拥有 create_genesis: true 属性）。"
-  loop: "{{ fisco_main_group_id_list }}"
-  loop_control:
-    label: "检查群组 {{ item }}"
-  when: >-
-    ( agencies
-        | selectattr('main_group_id', '==', item)
-        | selectattr('create_genesis', 'defined')
-        | selectattr('create_genesis')
-        | list
-        | count
-    ) != 1
+    msg: "create_genesis: true 时，机构对应的 main_group_id 不能存在重复，请排查 {{ inventory_dir }}/group_vars/all/init.yml 文件"
+  when: count_main_group_id_list|length > fisco_main_group_id_list|length
+
 
 - name: 检查机构是否有重名
   fail:
@@ -104,12 +116,19 @@
     ) > 1
 
 - name: 检查是否有重复 IP
-  fail:
-    msg: "配置冲突：有多个机构使用了相同的 {{ item.split(':')[2:5]|join(':')|quote }} 配置，请修改后再执行。"
-  loop: "{{ node_list }}"
-  loop_control:
-    label: "{{ item.split(':')[2:5]|join(':')|quote }}"
-  when: "(node_list | regex_findall(item.split(':')[2:5]|join(':')|quote) | count) > 1"
+  block:
+    - name: 提取机构和 IP
+      set_fact:
+        agency_server: "{{ agency_server|default([]) + [item.split(':')[0:3:2]|join(':')] }}"
+      with_items: "{{ node_list }}"
+    - name: agency_server 元素去重
+      set_fact:
+        agency_server: "{{ agency_server | unique }}"
+    - name: 计算是否有重复 IP 在不同机构中
+      fail:
+        msg: "配置冲突：有多个机构使用了相同的 {{ item.split(':')[1] }} 配置，请修改后再执行。"
+      with_items: "{{ agency_server }}"
+      when: "(agency_server | regex_findall(item.split(':')[1]) | count) > 1"
 
 - name: 节点分组 | 根据机构名称
   add_host:
@@ -121,33 +140,28 @@
 
 - name: 节点分组 | 根据 main_group_id 和 extra_group_id
   add_host:
-    name: "{{ item.1 }}"
+    name: "{{ item.1.split(':')[0] }}:{{ item.0 }}:{{item.1.split(':')[2:6] | join(':')}}"
     group: "fisco_node_group_{{ item.0 }}"
   with_nested:
     - "{{ fisco_main_group_id_list }}"
     - "{{ node_list }}"
+    - "{{ agencies }}"
   loop_control:
     label: "节点 {{ item.1.split(':')[2:4] | join(':') }} 添加到 fisco_node_group_{{ item.0 }} 组"
   when: >-
-    item.0|quote == item.1.split(':')[1]
+    ( item.0|quote == item.1.split(':')[1] and item.1.split(':')[0] == item.2.name )
     or
-    item.0|quote in item.1.split(':')[6]
+    ( item.0|quote in item.1.split(':')[6] and item.1.split(':')[0] == item.2.name )
+    or
+    ( item.0|quote != item.1.split(':')[1] and item.0|quote not in item.1.split(':')[6] and item.2.name == item.1.split(':')[0] and item.0 in item.2.main_group_id )
 
 - name: 机构分组 | 根据 main_group_id
   add_host:
-    name: "{{ item.name }}"
-    group: "fisco_agency_group_{{ item.main_group_id }}"
-  loop: "{{ agencies }}"
-  loop_control:
-    label: "机构 {{ item.name }} 添加到 fisco_agency_group_{{ item.main_group_id }} 组"
-
-- name: 机构分组 | 根据 extra_group_id
-  add_host:
     name: "{{ item.0.name }}"
     group: "fisco_agency_group_{{ item.1 }}"
-  loop: "{{ agencies | selectattr('extra_group_id', 'defined') | subelements('extra_group_id') }}"
-  loop_control:
-    label: "机构 {{ item.0.name }} 添加到 fisco_agency_group_{{ item.1 }} 组"
+  with_subelements: 
+    - "{{ agencies }}"
+    - main_group_id
 
 - name: 新增节点加入 'fisco_expand_nodes' 组
   add_host:
@@ -162,8 +176,9 @@
 
 - name: 检查 extra_group_id 里是否有对应的 main_group_id
   fail:
-    msg: “群组 {{ item }} 不存在，请检查 init.yml 的 agencies[*]['extra_group_id'] 是否有对应的 main_group_id。”
+    msg: "群组 {{ item }} 不存在，请检查 init.yml 的 agencies[*]['extra_group_id'] 是否有对应的 main_group_id。"
   loop: "{{ agencies | selectattr('extra_group_id', 'defined') | sum(attribute='extra_group_id', start=[]) | unique }}"
   loop_control:
     label: "检查群组 {{ item }} 是否存在。"
   when: "item not in fisco_main_group_id_list"
+  

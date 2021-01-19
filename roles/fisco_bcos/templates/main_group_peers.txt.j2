@@ -1,5 +1,5 @@
 {%
-  for node in groups['fisco_node_group_' + agency.main_group_id|quote]
+  for node in groups['fisco_node_group_' + loop_main_group_id|quote]
   if node.split(':')[0] != agency.name
 %}
 {{ node.split(':')[2] }}:{{ node.split(':')[3] }}

@@ -52,18 +52,21 @@ agencies:
     create_genesis: true
     nodes:
       - 172.17.8.101:2
-    main_group_id: 1
+    main_group_id: 
+      - 1
     extra_group_id:
       - 2
   - name: B
     nodes:
       - 172.17.8.103:2
-    main_group_id: 1
+    main_group_id: 
+      - 1
   - name: C
     create_genesis: true
     nodes:
       - 172.17.8.105:2
-    main_group_id: 2
+    main_group_id: 
+      - 2
 
 # 更大的部署， 3 群组 5 机构 50 节点，其中机构 A 属于仲裁机构（与所有群组相通）。请根据你的实际部署需求进行调整。理论上规模大小无限支持。
 # agencies:

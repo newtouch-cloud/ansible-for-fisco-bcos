@@ -1,7 +1,7 @@
 [group]
-group_id={{ agency.main_group_id }}
+group_id={{ loop_main_group_id }}
 
 [nodes]
-{% for node in groups['fisco_node_group_' + agency.main_group_id|quote] %}
+{% for node in groups['fisco_node_group_' + loop_main_group_id|quote] %}
 node{{ loop.index0 }}={{ node.split(':')[2] }}:{{ node.split(':')[3] | default('30300') }}
 {% endfor %}

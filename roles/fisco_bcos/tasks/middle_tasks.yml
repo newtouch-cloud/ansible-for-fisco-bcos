@@ -1,0 +1,38 @@
+# @Author: Haibin Lee <haibin>
+# @Date:   2021-1-17T16:56:37+08:00
+# @Email:  jolycao@webank.com
+# @Filename: middle_tasks.yml
+# @Last modified by:   jolycao
+# @Last modified time: 2021-01-04T20:53:29+08:00
+# @License: GNU General Public License v3.0
+
+- name: 生成机构配置
+  include_tasks: generate/generate_agency_config.yml
+  loop: "{{ agencies }}"
+  loop_control:
+    loop_var: agency
+    label: "{{ agency.name }}"
+  when: "loop_main_group_id in agency.main_group_id"
+  
+- name: 生成节点连接信息文件
+  include_tasks: generate/generate_peers_file.yml
+  loop: "{{ agencies }}"
+  loop_control:
+    loop_var: agency
+    label: "{{ agency.name }}"
+  
+- name: 生成创世区块
+  include_tasks: generate/generate_genesis.yml
+  loop: "{{ agencies | selectattr('create_genesis', 'defined') | selectattr('create_genesis') }}"
+  loop_control:
+    loop_var: agency
+    label: "{{ agency.name }}"
+  when: 
+    - "loop_main_group_id in agency.main_group_id"
+  
+- name: 生成部署文件
+  include_tasks: install/install_package.yml
+  loop: "{{ agencies }}"
+  loop_control:
+    loop_var: agency
+    label: "{{ agency.name }}"

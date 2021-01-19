@@ -25,37 +25,18 @@
     label: "{{ agency.name }}"
   when: "agency.name not in agency_existed"
 
-- name: 生成机构配置
-  include_tasks: generate/generate_agency_config.yml
-  loop: "{{ agencies }}"
-  loop_control:
-    loop_var: agency
-    label: "{{ agency.name }}"
-  when: "agency.name not in agency_existed"
-
-- name: 生成节点连接信息文件
-  include_tasks: generate/generate_peers_file.yml
-  loop: "{{ agencies }}"
-  loop_control:
-    loop_var: agency
-    label: "{{ agency.name }}"
-  # when: "agency.name not in agency_existed"
-
-- name: 生成创世区块
-  include_tasks: generate/generate_genesis.yml
-  loop: "{{ agencies | selectattr('create_genesis', 'defined') | selectattr('create_genesis') }}"
-  loop_control:
-    loop_var: agency
-    label: "{{ agency.name }}"
-  when: "agency.name not in agency_existed"
-
-- name: 生成部署文件
-  include_tasks: install/install_package.yml
-  loop: "{{ agencies }}"
-  loop_control:
-    loop_var: agency
-    label: "{{ agency.name }}"
-  when: "agency.name not in agency_existed"
+- block: 
+  - name: 设置机构节点判断变量
+    set_fact:
+      node_deployed_agency: []
+      node_cert_generated_agency: []
+      
+  - name: 生成机构节点
+    include_tasks: middle_tasks.yml
+    loop: "{{ fisco_main_group_id_list }}"
+    loop_control:
+      loop_var: loop_main_group_id
+      label: "{{ loop_main_group_id }}"
 
 - name: 节点扩展
   include_tasks: expand/expand_node.yml
