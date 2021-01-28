@@ -59,7 +59,7 @@ cp -R inventories/sample inventories/my_inventory
 ##### 1.3 修改 init.yml 配置文件
 
 ```shell
-nano inventories/my_inventory/group_vars/init.yml
+nano inventories/my_inventory/group_vars/all/init.yml
 
 # 文件配置样例如下
 
