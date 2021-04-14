@@ -3,7 +3,7 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: pre_tasks.yml
 # @Last modified by:   haibin
-# @Last modified time: 2021-01-04T20:53:29+08:00
+# @Last modified time: 2021-02-18T18:50:02+08:00
 # @License: GNU General Public License v3.0
 
 
@@ -11,11 +11,9 @@
   file:
     path: "{{ fisco_workdir }}"
     state: directory
-  when: >-
-    lookup('pipe', 'stat ' + fisco_workdir + ' || echo "false"') == "false"
 
 - block:
-    - name: "非国密版 | 检查 generator 目录"
+    - name: "非国密版 | 检查 generator 目录完整性"
       stat:
         path: "{{ item }}"
         get_attributes: false
@@ -28,7 +26,7 @@
         - "{{ fisco_workdir }}/generator/dir_chain_ca"
       when: not fisco_gm_enabled
 
-    - name: "国密版 | 检查 generator 目录"
+    - name: "国密版 | 检查 generator 目录完整性"
       stat:
         path: "{{ item }}"
         get_attributes: false
@@ -73,43 +71,42 @@
   set_fact:
     node_list: "{{ node_list | sort }}" # 节点列表重新升序排列，让输出信息比较美观可读。
     pre_node_list_path: "{{ lookup('pipe', 'ls -1tr ' + fisco_workdir + '/node_list.yml.*~ | tail -n1') }}" # 检查 node_list.yml 是否有备份文件。如有，获取文件路径，做新旧节点对比。
-    
+
 - name: "设置列表变量"
   set_fact:
     fisco_main_group_id_list: []
     count_main_group_id_list: []
-  
+
 - name: "建立所有群组的 ID 列表"
   block:
     - name: "建立主群组 ID 列表"
       set_fact:
         fisco_main_group_id_list: "{{ fisco_main_group_id_list + item.main_group_id }}"
-      with_items: "{{ agencies }}"
+      with_items: "{{ fisco_agencies }}"
     - name: "群组 ID 去重"
       set_fact:
         fisco_main_group_id_list: "{{ fisco_main_group_id_list | unique }}"
     - name: "建立对比群组 ID 列表"
       set_fact:
         count_main_group_id_list: "{{ count_main_group_id_list + item.main_group_id }}"
-      loop: "{{ agencies }}"
+      loop: "{{ fisco_agencies }}"
       when:
         - item.create_genesis is defined
         - item.create_genesis
-    
+
 - name: "检查每个群组是否有且只有 1 个创世区块机构"
   fail:
     msg: "create_genesis: true 时，机构对应的 main_group_id 不能存在重复，请排查 {{ inventory_dir }}/group_vars/all/init.yml 文件"
   when: count_main_group_id_list|length > fisco_main_group_id_list|length
 
-
 - name: 检查机构是否有重名
   fail:
     msg: "机构 {{ item.name }} 有重名，请检查 init.yml 配置。"
-  loop: "{{ agencies }}"
+  loop: "{{ fisco_agencies }}"
   loop_control:
     label: "{{ item.name }}"
   when: >-
-    ( agencies
+    ( fisco_agencies
         | selectattr('name', '==', item.name)
         | list
         | count
@@ -145,7 +142,7 @@
   with_nested:
     - "{{ fisco_main_group_id_list }}"
     - "{{ node_list }}"
-    - "{{ agencies }}"
+    - "{{ fisco_agencies }}"
   loop_control:
     label: "节点 {{ item.1.split(':')[2:4] | join(':') }} 添加到 fisco_node_group_{{ item.0 }} 组"
   when: >-
@@ -159,8 +156,8 @@
   add_host:
     name: "{{ item.0.name }}"
     group: "fisco_agency_group_{{ item.1 }}"
-  with_subelements: 
-    - "{{ agencies }}"
+  with_subelements:
+    - "{{ fisco_agencies }}"
     - main_group_id
 
 - name: 新增节点加入 'fisco_expand_nodes' 组
@@ -176,9 +173,8 @@
 
 - name: 检查 extra_group_id 里是否有对应的 main_group_id
   fail:
-    msg: "群组 {{ item }} 不存在，请检查 init.yml 的 agencies[*]['extra_group_id'] 是否有对应的 main_group_id。"
-  loop: "{{ agencies | selectattr('extra_group_id', 'defined') | sum(attribute='extra_group_id', start=[]) | unique }}"
+    msg: "群组 {{ item }} 不存在，请检查 init.yml 的 fisco_agencies[*]['extra_group_id'] 是否有对应的 main_group_id。"
+  loop: "{{ fisco_agencies | selectattr('extra_group_id', 'defined') | sum(attribute='extra_group_id', start=[]) | unique }}"
   loop_control:
     label: "检查群组 {{ item }} 是否存在。"
   when: "item not in fisco_main_group_id_list"
-  

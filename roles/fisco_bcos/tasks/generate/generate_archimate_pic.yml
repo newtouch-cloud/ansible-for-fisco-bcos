@@ -3,11 +3,11 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: generate_archimate.yml
 # @Last modified by:   haibin
-# @Last modified time: 2021-01-04T18:51:39+08:00
+# @Last modified time: 2021-02-03T12:34:45+08:00
 # @Copyright: Copyright 2020 the original author or authors.
 
 - block:
-    - name: 安装依赖
+    - name: 安装 plantuml 依赖
       package:
         name:
           - graphviz
@@ -70,7 +70,7 @@
     src: "agency_topo.puml.j2"
     dest: "{{ fisco_workdir }}/archimate/agency_{{ agency.name }}_topo.puml"
     validate: "java -jar ~/.local/bin/plantuml.jar -checkonly %s"
-  loop: "{{ agencies }}"
+  loop: "{{ fisco_agencies }}"
   loop_control:
     loop_var: agency
     label: "{{ fisco_workdir }}/archimate/agency_{{ agency.name }}_topo.puml"

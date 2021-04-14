@@ -8,7 +8,7 @@
 
 - name: 生成机构配置
   include_tasks: generate/generate_agency_config.yml
-  loop: "{{ agencies }}"
+  loop: "{{ fisco_agencies }}"
   loop_control:
     loop_var: agency
     label: "{{ agency.name }}"
@@ -16,14 +16,14 @@
   
 - name: 生成节点连接信息文件
   include_tasks: generate/generate_peers_file.yml
-  loop: "{{ agencies }}"
+  loop: "{{ fisco_agencies }}"
   loop_control:
     loop_var: agency
     label: "{{ agency.name }}"
   
 - name: 生成创世区块
   include_tasks: generate/generate_genesis.yml
-  loop: "{{ agencies | selectattr('create_genesis', 'defined') | selectattr('create_genesis') }}"
+  loop: "{{ fisco_agencies | selectattr('create_genesis', 'defined') | selectattr('create_genesis') }}"
   loop_control:
     loop_var: agency
     label: "{{ agency.name }}"
@@ -32,7 +32,7 @@
   
 - name: 生成部署文件
   include_tasks: install/install_package.yml
-  loop: "{{ agencies }}"
+  loop: "{{ fisco_agencies }}"
   loop_control:
     loop_var: agency
     label: "{{ agency.name }}"

@@ -11,7 +11,7 @@
   tags:
     - always
 
-- name: "生成架构图在 {{ fisco_workdir }}/archimate/ 目录下"
+- name: "在 {{ fisco_workdir }}/archimate/ 目录生成架构图"
   import_tasks: generate/generate_archimate_pic.yml
   tags:
     - never
@@ -19,18 +19,18 @@
 
 - name: 生成机构证书
   include_tasks: generate/generate_agency_certificate.yml
-  loop: "{{ agencies }}"
+  loop: "{{ fisco_agencies }}"
   loop_control:
     loop_var: agency
-    label: "{{ agency.name }}"
+    label: "开始生成机构 {{ agency.name }} 的证书"
   when: "agency.name not in agency_existed"
 
-- block: 
+- block:
   - name: 设置机构节点判断变量
     set_fact:
       node_deployed_agency: []
       node_cert_generated_agency: []
-      
+
   - name: 生成机构节点
     include_tasks: middle_tasks.yml
     loop: "{{ fisco_main_group_id_list }}"
@@ -40,7 +40,7 @@
 
 - name: 节点扩展
   include_tasks: expand/expand_node.yml
-  loop: "{{ agencies }}"
+  loop: "{{ fisco_agencies }}"
   loop_control:
     loop_var: agency
     label: "{{ agency.name }}"
@@ -51,7 +51,7 @@
 
 - name: 安装/配置控制台
   include_tasks: install/install_console.yml
-  loop: "{{ agencies }}"
+  loop: "{{ fisco_agencies }}"
   loop_control:
     loop_var: agency
     label: "{{ agency.name }}"
@@ -59,7 +59,7 @@
 
 - name: 安装/配置 SDK
   include_tasks: install/install_sdk.yml
-  loop: "{{ agencies }}"
+  loop: "{{ fisco_agencies }}"
   loop_control:
     loop_var: agency
     label: "{{ agency.name }}"
@@ -69,7 +69,7 @@
 #   archive:
 #     path: "{{ fisco_workdir }}/agency_{{ agency.name }}/fisco_deploy_agency_{{ agency.name }}"
 #     dest: "{{ fisco_workdir }}/fisco_deploy_agency_{{ agency.name }}.tgz"
-#   loop: "{{ agencies }}"
+#   loop: "{{ fisco_agencies }}"
 #   loop_control:
 #     loop_var: agency
 #     label: "{{ fisco_workdir }}/fisco_deploy_agency_{{ agency.name }}.tgz"

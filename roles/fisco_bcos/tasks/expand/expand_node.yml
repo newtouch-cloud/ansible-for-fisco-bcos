@@ -10,7 +10,7 @@
   copy:
     src: "{{ fisco_workdir }}/agency_{{ item.name }}/group/group.{{ item.main_group_id }}.genesis"
     dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/group.{{ item.main_group_id }}.genesis"
-  loop: "{{ agencies }}"
+  loop: "{{ fisco_agencies }}"
   loop_control:
     label: "{{ fisco_workdir }}/agency_{{ agency.name }}/meta/group.{{ item.main_group_id }}.genesis"
   when:

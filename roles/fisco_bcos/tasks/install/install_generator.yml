@@ -3,7 +3,7 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: install_generator.yml
 # @Last modified by:   haibin
-# @Last modified time: 2021-01-06T10:19:24+08:00
+# @Last modified time: 2021-02-18T15:46:26+08:00
 # @License: GNU General Public License v3.0
 
 
@@ -24,6 +24,7 @@
     dest: "{{ fisco_workdir }}/generator"
     version: "{{ fisco_generator_version }}"
     depth: 1
+    force: true
   register: __git_st
   until: __git_st is succeeded
   retries: 10
@@ -35,14 +36,14 @@
     chdir: "{{ fisco_workdir }}/generator"
   register: __command_result
 
-- name: 修改 generator 代码
-  replace:
-    path: "{{ fisco_workdir }}/generator/generator"
-    regexp: "{{ item.regexp }}"
-    replace: "{{ item.replace }}"
-  with_items:
-    - regexp: 'return 0'
-      replace: 'return 1'
+# - name: 修改 generator 代码
+#   replace:
+#     path: "{{ fisco_workdir }}/generator/generator"
+#     regexp: "{{ item.regexp }}"
+#     replace: "{{ item.replace }}"
+#   with_items:
+#     - regexp: 'return 0'
+#       replace: 'return 1'
 
 - name: "下载解压 {{ fisco_dl_url | random }}"
   unarchive:
@@ -55,12 +56,12 @@
   retries: 10
   delay: 5
 
-- name: 检查 fisco-bcos 版本号是否匹配。
-  fail:
-    msg: >-
-      已存在版本 {{ lookup("pipe", fisco_workdir + "/generator/meta/fisco-bcos -v | grep -i Version | awk '{print $4}'") }} 的 ficso-bcos，与 init.yml 设置的 'fisco_version: {{ fisco_version }}' 不匹配。请删除 {{ fisco_workdir }}/generator/meta/fisco-bcos 或修改 init.yml 后再重试。
-  when: >-
-    lookup("pipe", fisco_workdir + "/generator/meta/fisco-bcos -v | grep -i Version | awk '{print $4}'") is version(fisco_version, '!=')
+# - name: 检查 fisco-bcos 版本号是否匹配。
+#   fail:
+#     msg: >-
+#       已存在版本 {{ lookup("pipe", fisco_workdir + "/generator/meta/fisco-bcos -v | grep -i Version | awk '{print $4}'") }} 的 ficso-bcos，与 init.yml 设置的 'fisco_version: {{ fisco_version }}' 不匹配。请删除 {{ fisco_workdir }}/generator/meta/fisco-bcos 或修改 init.yml 后再重试。
+#   when: >-
+#     lookup("pipe", fisco_workdir + "/generator/meta/fisco-bcos -v | grep -i version | awk '{print $(NF)}'") is version(fisco_version, '!=')
 
 - name: "普通版 | 生成联盟链证书"
   command: "./generator --generate_chain_certificate ./dir_chain_ca"

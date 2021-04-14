@@ -5,7 +5,7 @@ group_id={{ agency.main_group_id }}
   if node in groups['fisco_agency_' + agency.name]
 %}
 [node{{ loop.index0 }}]
-p2p_ip={{ node.split(':')[2] | ipaddr('public') | ternary('0.0.0.0', node.split(':')[2]|quote) }}
+p2p_ip={{ node.split(':')[2] }}
 rpc_ip={{ node.split(':')[2] | ipaddr('public') | ternary('0.0.0.0', '127.0.0.1') }}
 channel_ip={{ node.split(':')[2] | ipaddr('public') | ternary('0.0.0.0', node.split(':')[2]|quote) }}
 p2p_listen_port={{ node.split(':')[3] | default('30300') }}

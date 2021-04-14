@@ -3,10 +3,30 @@
 # @Email:  haibin.li@newtouch.com
 # @Filename: main.yml
 # @Last modified by:   haibin
-# @Last modified time: 2020-12-18T16:18:11+08:00
+# @Last modified time: 2021-02-18T15:58:41+08:00
 # @License: GNU General Public License v3.0
 
-
+# 官方技术手册演示部署，2 群组 3 机构 6 节点。
+fisco_agencies:
+  - name: A
+    create_genesis: true
+    nodes:
+      - 172.17.8.101:2
+    main_group_id:
+      - 1
+    extra_group_id:
+      - 2
+  - name: B
+    nodes:
+      - 172.17.8.103:2
+    main_group_id:
+      - 1
+  - name: C
+    create_genesis: true
+    nodes:
+      - 172.17.8.105:2
+    main_group_id:
+      - 2
 
 fisco_workdir: "{{ inventory_dir }}/deploy"
 
@@ -43,7 +63,7 @@ fisco_console_script_dl: https://gitee.com/FISCO-BCOS/console/raw/master/tools/d
 # fisco_algorithm_type: PBFT # 共识算法 https://fisco-bcos-documentation.readthedocs.io/en/latest/docs/manual/build_chain.html#coption-optional
 
 # 一些 URL 变量
-fisco_generator_git: https://github.com/FISCO-BCOS/generator.git
+fisco_generator_git: https://gitee.com/FISCO-BCOS/generator.git
 pypi_index_url: https://pypi.doubanio.com/simple
 
 
