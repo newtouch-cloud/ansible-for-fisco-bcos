@@ -40,16 +40,11 @@
       file:
         path: ~/.local/bin/
         state: directory
-    - name: 下载 plantuml
-      get_url:
-        url: https://sourceforge.net/projects/plantuml/files/plantuml.jar/download
+    - name: 复制 plantuml.jar
+      copy:
+        src: ./plantuml.jar
         dest: ~/.local/bin/plantuml.jar
-        timeout: 120
         mode: 0644
-      register: __plantuml_dl_st
-      until: __plantuml_dl_st is succeeded
-      retries: 10
-      delay: 3
   when: >-
     lookup('pipe', 'stat ~/.local/bin/plantuml.jar || echo "false"') == 'false'
 
