@@ -1,0 +1,17 @@
+- name: Stoping fisco nodes
+  become: true
+  become_user: fisco
+  command: "bash {{ deploy_path }}/stop_all.sh"
+  changed_when: false
+  listen:
+    - stop_fisco
+    - restart_fisco
+
+- name: Starting fisco nodes
+  become: true
+  become_user: fisco
+  command: "bash {{ deploy_path }}/start_all.sh"
+  changed_when: false
+  listen:
+    - start_fisco
+    - restart_fisco

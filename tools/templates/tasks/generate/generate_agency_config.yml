@@ -1,0 +1,41 @@
+# @Author: Haibin Lee <haibin>
+# @Date:   2020-11-11T16:56:37+08:00
+# @Email:  haibin.li@newtouch.com
+# @Filename: generate_agency_config.yml
+# @Last modified by:   haibin
+# @Last modified time: 2020-11-11T17:37:31+08:00
+# @License: GNU General Public License v3.0
+
+
+
+- name: "更新机构 {{ agency.name }} 区块配置文件"
+  template:
+    src: "group_genesis.ini.j2"
+    dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/conf/group_genesis.ini"
+    mode: 0600
+
+- block:
+  - name: "更新机构 {{ agency.name }} 节点配置文件"
+    template:
+      src: "node_deployment.ini.j2"
+      dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/conf/node_deployment.ini"
+      mode: 0600
+    
+  - name: 更新节点配置文件生成标志
+    set_fact:
+      node_deployed_agency: "{{ node_deployed_agency + [agency.name] }}"
+      
+  when: "agency.name not in node_deployed_agency"
+  
+- block:
+  - name: "生成机构 {{ agency.name }} 节点证书"
+    command: "./generator --generate_all_certificates ./agency_{{ agency.name }}_node_info {{ fisco_gm_enabled | ternary('-g', '') }}"
+    args:
+      chdir: "{{ fisco_workdir }}/agency_{{ agency.name }}"
+    changed_when: false
+    
+  - name: 更新机构节点证书生成标志
+    set_fact:
+      node_cert_generated_agency: "{{ node_cert_generated_agency + [agency.name] }}"
+ 
+  when: "agency.name not in node_cert_generated_agency"

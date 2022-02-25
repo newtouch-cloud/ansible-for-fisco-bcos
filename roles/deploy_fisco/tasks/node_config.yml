@@ -1,0 +1,35 @@
+- set_fact:
+    ini_items: "{{ item.split(';') }}"
+  with_items: >-
+    {%- for section in node_config_ini | dict2items -%}
+    {%- for option in section.value | dict2items -%}
+      {{ section.key }},{{ option.key }},{{ option.value }}
+    {%- if loop.nextitem is defined -%};{%- endif -%}
+    {%- endfor -%}
+    {%- if loop.nextitem is defined -%};{%- endif -%}
+    {%- endfor -%}
+  loop_control:
+    label: "{{ item.split(';') }}"
+
+# - debug:
+#     msg: "{{ item.1.split(',') }}"
+#   with_nested:
+#     - "{{ deploy_file_list.files | selectattr('path', 'search', 'fisco_deploy_agency_') | map(attribute='path') }}"
+#     - "{{ ini_items }}"
+#   loop_control:
+#     label: "{{ deploy_path }}/{{ item.0 | basename }}/config.ini {{ item.1 }}"
+
+- name: Change node configurations
+  local_action:
+    module: ini_file
+    path: "{{ item.0 }}/config.ini"
+    section: "{{ item.1.split(',')[0] }}"
+    option: "{{ item.1.split(',')[1] }}"
+    value: "{{ item.1.split(',')[2] }}"
+  with_nested:
+    - "{{ deploy_file_list.files | selectattr('path', 'search', 'fisco_deploy_agency_') | map(attribute='path') }}"
+    - "{{ ini_items }}"
+  loop_control:
+    label: "{{ item.0 }}/config.ini {{ item.1 }}"
+  notify:
+    - restart_fisco

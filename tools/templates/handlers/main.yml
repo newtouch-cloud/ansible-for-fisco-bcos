@@ -1,0 +1,14 @@
+# @Author: Haibin Lee <haibin>
+# @Date:   2020-11-11T16:56:37+08:00
+# @Email:  haibin.li@newtouch.com
+# @Filename: main.yml
+# @Last modified by:   haibin
+# @Last modified time: 2020-11-11T17:38:27+08:00
+# @License: GNU General Public License v3.0
+
+
+
+- name: 备份当前 node_list.yml
+  copy:
+    src: "{{ fisco_workdir }}/node_list.yml"
+    dest: "{{ fisco_workdir }}/node_list.yml.backup~"

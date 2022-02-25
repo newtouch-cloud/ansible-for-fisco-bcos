@@ -1,0 +1,43 @@
+- name: Create user 'fisco'
+  user:
+    name: fisco
+    home: "{{ deploy_path }}"
+    shell: "{{ ansible_user_shell }}"
+
+- name: Create deploy file list
+  local_action:
+    module: find
+    paths: "{{ inventory_dir }}/deploy/"
+    patterns:
+      - "node_{{ ansible_host }}_*"
+    use_regex: true
+    recurse: true
+    file_type: directory
+  register: deploy_file_list
+
+- include_tasks: node_config.yml
+
+- name: Upload deploy files
+  synchronize:
+    src: "{{ item }}"
+    dest: "{{ deploy_path }}/"
+    use_ssh_args: true
+    rsync_opts:
+      - "--chown=fisco:fisco"
+  loop: "{{ deploy_file_list.files | selectattr('path', 'search', 'fisco_deploy_agency_') | map(attribute='path') }}"
+
+- name: Upload start and stop scripts
+  copy:
+    src: "{{ item }}"
+    dest: "{{ deploy_path }}/"
+    mode: 0700
+    owner: fisco
+    group: fisco
+  with_fileglob:
+    - "{{ inventory_dir }}/deploy/generator/tpl/*_all.sh"
+
+- file:
+    path: "{{ deploy_path }}"
+    owner: fisco
+    group: fisco
+    recurse: true

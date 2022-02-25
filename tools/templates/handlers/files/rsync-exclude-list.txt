@@ -1,0 +1,7 @@
+dir_chain_ca
+dir_chain_ca_normal
+dir_agency_ca
+dir_agency_ca_normal
+tmp_one_click
+node_deployment.ini
+group_genesis.ini

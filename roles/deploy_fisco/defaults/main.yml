@@ -1,0 +1,4 @@
+node_config_ini:
+  log:
+    level: warning
+    max_log_file_size: 100

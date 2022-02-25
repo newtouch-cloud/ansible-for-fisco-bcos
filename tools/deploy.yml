@@ -1,0 +1,6 @@
+- hosts: fisco
+  # gather_facts: false
+  vars:
+    deploy_path: /opt/fisco
+  roles:
+    - deploy_fisco

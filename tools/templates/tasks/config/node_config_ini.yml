@@ -1,0 +1,15 @@
+# @Author: Haibin Lee <haibin>
+# @Date:   2020-12-04T17:20:09+08:00
+# @Email:  haibin.li@newtouch.com
+# @Filename: node_config_ini.yml
+# @Last modified by:   haibin
+# @Last modified time: 2020-12-04T17:31:16+08:00
+# @Copyright: Copyright 2020 the original author or authors.
+
+- name:
+  ini_file:
+    path: ""
+    section: "{{ config }}"
+    option: "{{}}"
+  with_nested:
+    - "{{ lookup('fileglob', fisco_workdir + 'agency_*/fisco_deploy_agency_*/node_*/config.ini') }}"

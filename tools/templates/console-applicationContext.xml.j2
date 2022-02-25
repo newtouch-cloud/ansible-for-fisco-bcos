@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:tx="http://www.springframework.org/schema/tx" xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+         http://www.springframework.org/schema/tx
+    http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+         http://www.springframework.org/schema/aop
+    http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
+
+
+    <bean id="encryptType" class="org.fisco.bcos.web3j.crypto.EncryptType">
+        <constructor-arg value="{{ fisco_gm_enabled | ternary('1', '0') }}"/> <!-- 0:standard 1:guomi -->
+    </bean>
+
+    <bean id="groupChannelConnectionsConfig" class="org.fisco.bcos.channel.handler.GroupChannelConnectionsConfig">
+        <property name="caCert" value="ca.crt" />
+        <property name="sslCert" value="sdk.crt" />
+        <property name="sslKey" value="sdk.key" />
+
+{% if fisco_gm_enabled %}
+        <!-- GM Ssl certificate configuration -->
+        <property name="gmCaCert" value="gmca.crt" />
+        <property name="gmEnSslCert" value="gmensdk.crt" />
+        <property name="gmEnSslKey" value="gmensdk.key" />
+        <property name="gmSslCert" value="gmsdk.crt" />
+        <property name="gmSslKey" value="gmsdk.key" />
+{% endif %}
+
+        <property name="allChannelConnections">
+            <list>
+{% for group_id in fisco_main_group_id_list
+  if group_id == agency.main_group_id
+  or (agency.extra_group_id is defined
+  and agency.extra_group_id is truthy
+  and group_id in agency.extra_group_id)
+%}
+                <bean id="group{{ group_id }}" class="org.fisco.bcos.channel.handler.ChannelConnections">
+                    <property name="groupId" value="{{ group_id }}" />
+                    <property name="connectionsStr">
+                        <list>
+{% for node in groups['fisco_agency_' + agency.name] %}
+                            <value>{{ node.split(':')[2] }}:{{ node.split(':')[4] }}</value>
+{% endfor %}
+                        </list>
+                    </property>
+                </bean>
+{% endfor %}
+            </list>
+        </property>
+    </bean>
+
+    <bean id="channelService" class="org.fisco.bcos.channel.client.Service" depends-on="groupChannelConnectionsConfig">
+        <property name="groupId" value="{{ agency.main_group_id }}" />
+        <property name="agencyName" value="{{ agency.name }}" />
+        <property name="allChannelConnections" ref="groupChannelConnectionsConfig"></property>
+    </bean>
+
+</beans>

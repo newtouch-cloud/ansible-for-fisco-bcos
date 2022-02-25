@@ -58,7 +58,7 @@
 
 - name: "生成节点清单 {{ fisco_workdir }}/node_list.yml"
   template:
-    src: "node_list.j2"
+    src: "node_list.yml.j2"
     dest: "{{ fisco_workdir }}/node_list.yml"
     backup: true
   notify: "备份当前 node_list.yml"

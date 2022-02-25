@@ -71,7 +71,7 @@
     label: "{{ fisco_workdir }}/archimate/agency_{{ agency.name }}_topo.puml"
 
 - name: 生成图片文件
-  command: "java -jar ~/.local/bin/plantuml.jar -nbthread auto {{ item | basename }}"
+  shell: "export LC_ALL=C.UTF-8 && java -jar ~/.local/bin/plantuml.jar -nbthread auto {{ item | basename }}"
   args:
     chdir: "{{ fisco_workdir }}/archimate/"
   environment:

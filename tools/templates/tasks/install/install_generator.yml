@@ -1,0 +1,83 @@
+# @Author: Haibin Lee <haibin>
+# @Date:   2020-11-11T16:56:37+08:00
+# @Email:  haibin.li@newtouch.com
+# @Filename: install_generator.yml
+# @Last modified by:   haibin
+# @Last modified time: 2021-02-18T15:46:26+08:00
+# @License: GNU General Public License v3.0
+
+
+
+- name: 安装必要工具
+  become: true
+  package:
+    name:
+      - git
+      - openssl
+      - curl
+      - rsync
+      - sudo
+
+- name: "获取 {{ fisco_generator_git }} 代码（版本 {{ fisco_generator_version }}）"
+  git:
+    repo: "{{ fisco_generator_git }}"
+    dest: "{{ fisco_workdir }}/generator"
+    version: "{{ fisco_generator_version }}"
+    depth: 1
+    force: true
+  register: __git_st
+  until: __git_st is succeeded
+  retries: 10
+  delay: 3
+
+- name: "安装 generator"
+  shell: "export PIP_INDEX_URL={{ pypi_index_url }} && bash ./scripts/install.sh"
+  args:
+    chdir: "{{ fisco_workdir }}/generator"
+  register: __command_result
+
+# - name: 修改 generator 代码
+#   replace:
+#     path: "{{ fisco_workdir }}/generator/generator"
+#     regexp: "{{ item.regexp }}"
+#     replace: "{{ item.replace }}"
+#   with_items:
+#     - regexp: 'return 0'
+#       replace: 'return 1'
+
+- name: "下载解压 {{ fisco_dl_url | random }}"
+  unarchive:
+    src: "{{ fisco_dl_url | random }}"
+    dest: "{{ fisco_workdir }}/generator/meta/"
+    remote_src: true
+    mode: 0755
+  register: __unarchive_st
+  until: __unarchive_st is succeeded
+  retries: 10
+  delay: 5
+
+# - name: 检查 fisco-bcos 版本号是否匹配。
+#   fail:
+#     msg: >-
+#       已存在版本 {{ lookup("pipe", fisco_workdir + "/generator/meta/fisco-bcos -v | grep -i Version | awk '{print $4}'") }} 的 ficso-bcos，与 init.yml 设置的 'fisco_version: {{ fisco_version }}' 不匹配。请删除 {{ fisco_workdir }}/generator/meta/fisco-bcos 或修改 init.yml 后再重试。
+#   when: >-
+#     lookup("pipe", fisco_workdir + "/generator/meta/fisco-bcos -v | grep -i version | awk '{print $(NF)}'") is version(fisco_version, '!=')
+
+- name: "普通版 | 生成联盟链证书"
+  command: "./generator --generate_chain_certificate ./dir_chain_ca"
+  args:
+    chdir: "{{ fisco_workdir }}/generator/"
+    warn: false
+  changed_when: false
+  when: not fisco_gm_enabled
+
+- name: 国密版 | 生成联盟链证书
+  command: "{{ item }}"
+  with_items:
+    - "./generator --generate_chain_certificate ./dir_chain_ca -g"
+    - "./generator --generate_chain_certificate ./dir_chain_ca_normal"
+  args:
+    chdir: "{{ fisco_workdir }}/generator/"
+    warn: false
+  changed_when: false
+  when: fisco_gm_enabled

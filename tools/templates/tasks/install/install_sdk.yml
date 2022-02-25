@@ -1,0 +1,20 @@
+# @Author: Haibin Lee <haibin>
+# @Date:   2020-12-01T12:51:54+08:00
+# @Email:  haibin.li@newtouch.com
+# @Filename: post_tasks.yml
+# @Last modified by:   haibin
+# @Last modified time: 2020-12-10T14:10:58+08:00
+# @Copyright: Copyright 2020 the original author or authors.
+
+- name: "生成 SDK 在 {{ fisco_workdir }}/agency_{{ agency.name }}/fisco_sdk_agency_{{ agency.name }}"
+  command: "./generator --get_sdk_file ./fisco_sdk_agency_{{ agency.name }}"
+  args:
+    chdir: "{{ fisco_workdir }}/agency_{{ agency.name }}"
+  changed_when: false
+  when: "not lookup('fileglob', fisco_workdir + '/agency_' + agency.name + '/fisco_sdk_agency_' + agency.name)"
+
+- name: "更新 {{ fisco_workdir }}/agency_{{ agency.name }}/fisco_sdk_agency_{{ agency.name }}/applicationContext.xml"
+  template:
+    src: sdk-applicationContext.xml.j2
+    dest: "{{ fisco_workdir }}/agency_{{ agency.name }}/fisco_sdk_agency_{{ agency.name }}/applicationContext.xml"
+    backup: true

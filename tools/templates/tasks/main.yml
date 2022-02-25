@@ -1,0 +1,75 @@
+# @Author: Haibin Lee <haibin>
+# @Date:   2020-11-11T16:56:37+08:00
+# @Email:  haibin.li@newtouch.com
+# @Filename: enterprise.yml
+# @Last modified by:   haibin
+# @License: GNU General Public License v3.0
+
+
+- name: 前置检查与变量设置
+  import_tasks: pre_tasks.yml
+  tags:
+    - always
+
+- name: "在 {{ fisco_workdir }}/archimate/ 目录生成架构图"
+  import_tasks: generate/generate_archimate_pic.yml
+  tags:
+    - never
+    - archimate
+
+- name: 生成机构证书
+  include_tasks: generate/generate_agency_certificate.yml
+  loop: "{{ fisco_agencies }}"
+  loop_control:
+    loop_var: agency
+    label: "开始生成机构 {{ agency.name }} 的证书"
+  when: "agency.name not in agency_existed"
+
+- block:
+  - name: 设置机构节点判断变量
+    set_fact:
+      node_deployed_agency: []
+      node_cert_generated_agency: []
+
+  - name: 生成机构节点
+    include_tasks: middle_tasks.yml
+    loop: "{{ fisco_main_group_id_list }}"
+    loop_control:
+      loop_var: loop_main_group_id
+      label: "{{ loop_main_group_id }}"
+
+- name: 节点扩展
+  include_tasks: expand/expand_node.yml
+  loop: "{{ fisco_agencies }}"
+  loop_control:
+    loop_var: agency
+    label: "{{ agency.name }}"
+  when:
+    - "'fisco_expand_nodes' in groups"
+    - agency.name in agency_existed
+    - groups['fisco_expand_nodes'] | regex_search(agency.name)
+
+- name: 安装/配置控制台
+  include_tasks: install/install_console.yml
+  loop: "{{ fisco_agencies }}"
+  loop_control:
+    loop_var: agency
+    label: "{{ agency.name }}"
+  when: fisco_console_enabled
+
+- name: 安装/配置 SDK
+  include_tasks: install/install_sdk.yml
+  loop: "{{ fisco_agencies }}"
+  loop_control:
+    loop_var: agency
+    label: "{{ agency.name }}"
+  when: fisco_sdk_enabled
+
+# - name: 打包部署文件
+#   archive:
+#     path: "{{ fisco_workdir }}/agency_{{ agency.name }}/fisco_deploy_agency_{{ agency.name }}"
+#     dest: "{{ fisco_workdir }}/fisco_deploy_agency_{{ agency.name }}.tgz"
+#   loop: "{{ fisco_agencies }}"
+#   loop_control:
+#     loop_var: agency
+#     label: "{{ fisco_workdir }}/fisco_deploy_agency_{{ agency.name }}.tgz"

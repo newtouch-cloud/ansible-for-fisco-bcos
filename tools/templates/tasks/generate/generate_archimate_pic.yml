@@ -1,0 +1,90 @@
+# @Author: Haibin Lee <haibin>
+# @Date:   2020-11-24T10:45:09+08:00
+# @Email:  haibin.li@newtouch.com
+# @Filename: generate_archimate.yml
+# @Last modified by:   haibin
+# @Last modified time: 2021-02-03T12:34:45+08:00
+# @Copyright: Copyright 2020 the original author or authors.
+
+- block:
+    - name: 安装 plantuml 依赖
+      package:
+        name:
+          - graphviz
+    - name: YUM | 安装 java-1.8.0-openjdk
+      package:
+        name:
+          - java-1.8.0-openjdk
+          - google-noto-sans-cjk-ttc-fonts
+      when: "ansible_os_family == 'RedHat'"
+    - name: APT | 安装 default-jre
+      package:
+        name:
+          - default-jre
+          - fonts-noto-cjk
+      when: "ansible_os_family == 'Debian'"
+    - name: PACMAN | 安装 jre8-openjdk
+      package:
+        name:
+          - jre8-openjdk
+          - noto-fonts-cjk
+      when: "ansible_os_family == 'Archlinux'"
+    - name: 未支持系统
+      fail:
+        msg: "不支持在当前系统自动安装 JRE，请参考相关方法手动安装。"
+      when: "ansible_os_family not in ['Debian', 'RedHat', 'Archlinux']"
+  when: lookup('pipe', 'java -version || echo "false"') == 'false'
+
+- block:
+    - name: 创建 ~/.local/bin/ 目录
+      file:
+        path: ~/.local/bin/
+        state: directory
+    - name: 复制 plantuml.jar
+      copy:
+        src: ./plantuml.jar
+        dest: ~/.local/bin/plantuml.jar
+        mode: 0644
+  when: >-
+    lookup('pipe', 'stat ~/.local/bin/plantuml.jar || echo "false"') == 'false'
+
+- name: "创建 {{ fisco_workdir }}/archimate 目录"
+  file:
+    path: "{{ fisco_workdir }}/archimate"
+    state: directory
+  when: "not lookup('fileglob', fisco_workdir + '/archimate')"
+
+- name: 生成联盟链 puml 文件
+  template:
+    src: "chain_topo.puml.j2"
+    dest: "{{ fisco_workdir }}/archimate/chain_topo.puml"
+    validate: "java -jar ~/.local/bin/plantuml.jar -checkonly %s"
+
+- name: 生成机构 puml 文件
+  template:
+    src: "agency_topo.puml.j2"
+    dest: "{{ fisco_workdir }}/archimate/agency_{{ agency.name }}_topo.puml"
+    validate: "java -jar ~/.local/bin/plantuml.jar -checkonly %s"
+  loop: "{{ fisco_agencies }}"
+  loop_control:
+    loop_var: agency
+    label: "{{ fisco_workdir }}/archimate/agency_{{ agency.name }}_topo.puml"
+
+- name: 生成图片文件
+  command: "java -jar ~/.local/bin/plantuml.jar -nbthread auto {{ item | basename }}"
+  args:
+    chdir: "{{ fisco_workdir }}/archimate/"
+  environment:
+    LC_ALL: C.UTF-8
+  changed_when: false
+  with_fileglob:
+    - "{{ fisco_workdir }}/archimate/*.puml"
+  loop_control:
+    label: "{{ item | regex_replace('.puml', '.png') }}"
+
+- name: 清理 puml 文件
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_fileglob:
+    - "{{ fisco_workdir }}/archimate/*.puml"
